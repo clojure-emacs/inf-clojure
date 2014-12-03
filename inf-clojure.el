@@ -72,9 +72,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     ["Load File..." clojure-load-file t]
     "--"
     ["Show Arglist..." clojure-show-arglist t]
-    ["Describe Symbol..." clojure-describe-sym t]
-    ["Show Documentation for Function..." clojure-show-function-documentation t]
-    ["Show Documentation for Variable..." clojure-show-variable-documentation t]))
+    ["Show Documentation for Var..." clojure-show-var-documentation t]))
 
 ;;; These commands augment Clojure mode, so you can process Clojure code in
 ;;; the source files.
@@ -87,9 +85,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 (define-key clojure-mode-map "\C-c\C-z" 'switch-to-clojure)
 (define-key clojure-mode-map "\C-c\C-l" 'clojure-load-file)
 (define-key clojure-mode-map "\C-c\C-a" 'clojure-show-arglist)
-(define-key clojure-mode-map "\C-c\C-d" 'clojure-describe-sym)
-(define-key clojure-mode-map "\C-c\C-f" 'clojure-show-function-documentation)
-(define-key clojure-mode-map "\C-c\C-v" 'clojure-show-variable-documentation)
+(define-key clojure-mode-map "\C-c\C-v" 'clojure-show-var-documentation)
 
 (defcustom inf-clojure-program "lein repl"
   "Program name for invoking an inferior Clojure in Inferior Clojure mode."
