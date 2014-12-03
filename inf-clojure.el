@@ -219,7 +219,7 @@ of `inf-clojure-program').  Runs the hooks from
 `inf-clojure-mode-hook' (after the `comint-mode-hook' is run).
 \(Type \\[describe-mode] in the process buffer for a list of commands.)"
   (interactive (list (if current-prefix-arg
-                         (read-string "Run clojure: " inf-clojure-program)
+                         (read-string "Run Clojure: " inf-clojure-program)
                        inf-clojure-program)))
   (if (not (comint-check-proc "*inf-clojure*"))
       (let ((cmdlist (split-string cmd)))
