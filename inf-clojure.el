@@ -166,7 +166,7 @@ Clojure source.
     `switch-to-clojure' switches the current buffer to the Clojure process buffer.
     `clojure-eval-defun' sends the current defun to the Clojure process.
     `clojure-eval-region' sends the current region to the Clojure process.
-    
+
     Prefixing the clojure-eval/defun/region commands with
     a \\[universal-argument] causes a switch to the Clojure process buffer after sending
     the text.
@@ -439,7 +439,7 @@ See variable `clojure-arglist-command'."
           (process-send-string proc completion-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
-          (setq completions (butlast (split-string kept "\r?\n") 2))
+          (setq completions (read kept))
           ;; Subprocess echoes output on Windows and OS X.
           (when (and completions (string= (concat (car completions) "\n") completion-snippet))
             (setq completions (cdr completions))))
