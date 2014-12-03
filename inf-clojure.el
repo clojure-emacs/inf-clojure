@@ -1,4 +1,4 @@
-;;; inf-clojure.el --- an inferior-clojure mode
+;;; inf-clojure.el --- an inferior-clojure mode -*- lexical-binding: t; -*-
 
 ;; Copyright (C) Bozhidar Batsov
 
