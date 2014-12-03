@@ -192,7 +192,7 @@ If you accidentally suspend your process, use \\[comint-continue-subjob]
 to continue it."
   (setq comint-prompt-regexp inf-clojure-prompt)
   (setq mode-line-process '(":%s"))
-  (lisp-mode-variables nil)
+  (clojure-mode-variables)
   (setq comint-get-old-input (function clojure-get-old-input))
   (setq comint-input-filter (function clojure-input-filter))
   (set (make-local-variable 'comint-prompt-read-only) inf-clojure-prompt-read-only)
