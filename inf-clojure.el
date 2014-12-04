@@ -60,6 +60,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-l" 'clojure-load-file)
     (define-key map "\C-c\C-a" 'clojure-show-arglist)
     (define-key map "\C-c\C-v" 'clojure-show-var-documentation)
+    (define-key map "\C-c\C-s" 'clojure-show-var-source)
     map))
 
 (easy-menu-define
@@ -72,7 +73,8 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     ["Load File..." clojure-load-file t]
     "--"
     ["Show Arglist..." clojure-show-arglist t]
-    ["Show Documentation for Var..." clojure-show-var-documentation t]))
+    ["Show Documentation for Var..." clojure-show-var-documentation t]
+    ["Show Source for Var..." clojure-show-var-source t]))
 
 ;;; These commands augment Clojure mode, so you can process Clojure code in
 ;;; the source files.
@@ -86,6 +88,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 (define-key clojure-mode-map "\C-c\C-l" 'clojure-load-file)
 (define-key clojure-mode-map "\C-c\C-a" 'clojure-show-arglist)
 (define-key clojure-mode-map "\C-c\C-v" 'clojure-show-var-documentation)
+(define-key clojure-mode-map "\C-c\C-s" 'clojure-show-var-source)
 
 (defcustom inf-clojure-program "lein repl"
   "Program name for invoking an inferior Clojure in Inferior Clojure mode."
@@ -355,6 +358,10 @@ Used by these commands to determine defaults."
   "(clojure.repl/doc %s)\n"
   "Command to query inferior Clojure for a var's documentation.")
 
+(defvar clojure-var-source-command
+  "(clojure.repl/source %s)\n"
+  "Command to query inferior Clojure for a var's source.")
+
 (defvar clojure-arglist-command
   "(:arglists (clojure.core/meta #'%s))\n"
   "Command to query inferior Clojure for a function's arglist.")
@@ -409,6 +416,12 @@ The value is nil if it can't find one."
 See variable `clojure-var-doc-command'."
   (interactive (clojure-symprompt "Var doc" (clojure-var-at-pt)))
   (comint-proc-query (inf-clojure-proc) (format clojure-var-doc-command var)))
+
+(defun clojure-show-var-source (var)
+  "Send a command to the inferior Clojure to give source for VAR.
+See variable `clojure-var-source-command'."
+  (interactive (clojure-symprompt "Var source" (clojure-var-at-pt)))
+  (comint-proc-query (inf-clojure-proc) (format clojure-var-source-command var)))
 
 (defun clojure-show-arglist (fn)
   "Send a query to the inferior Clojure for the arglist for function FN.
