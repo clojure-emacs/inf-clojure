@@ -25,8 +25,18 @@
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
+;;
 ;; inf-lisp adapted for Clojure.
+;;
+;; If you're installing manually, you'll need to:
+;; * drop the file somewhere on your load path (perhaps ~/.emacs.d)
+;; * Add the following lines to your .emacs file:
+;;
+;;    (autoload 'inf-clojure "inf-clojure" "Run an inferior Clojure process" t)
+;;    (add-hook 'clojure-mode-hook 'inf-clojure-minor-mode)
+;;
+;; Installation via ELPA interface does the above for you
+;; automatically.
 
 ;;; Code:
 
@@ -76,19 +86,29 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     ["Show Documentation for Var..." clojure-show-var-documentation t]
     ["Show Source for Var..." clojure-show-var-source t]))
 
-;;; These commands augment Clojure mode, so you can process Clojure code in
-;;; the source files.
-(define-key clojure-mode-map "\M-\C-x"  'clojure-eval-defun)     ; Gnu convention
-(define-key clojure-mode-map "\C-x\C-e" 'clojure-eval-last-sexp) ; Gnu convention
-(define-key clojure-mode-map "\C-c\C-e" 'clojure-eval-defun)
-(define-key clojure-mode-map "\C-c\C-r" 'clojure-eval-region)
-(define-key clojure-mode-map "\C-c\C-n" 'clojure-eval-form-and-next)
-(define-key clojure-mode-map "\C-c\C-p" 'clojure-eval-paragraph)
-(define-key clojure-mode-map "\C-c\C-z" 'switch-to-clojure)
-(define-key clojure-mode-map "\C-c\C-l" 'clojure-load-file)
-(define-key clojure-mode-map "\C-c\C-a" 'clojure-show-arglist)
-(define-key clojure-mode-map "\C-c\C-v" 'clojure-show-var-documentation)
-(define-key clojure-mode-map "\C-c\C-s" 'clojure-show-var-source)
+(defvar inf-clojure-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "\M-\C-x"  'clojure-eval-defun)     ; Gnu convention
+    (define-key map "\C-x\C-e" 'clojure-eval-last-sexp) ; Gnu convention
+    (define-key map "\C-c\C-e" 'clojure-eval-defun)
+    (define-key map "\C-c\C-r" 'clojure-eval-region)
+    (define-key map "\C-c\C-n" 'clojure-eval-form-and-next)
+    (define-key map "\C-c\C-p" 'clojure-eval-paragraph)
+    (define-key map "\C-c\C-z" 'switch-to-clojure)
+    (define-key map "\C-c\C-l" 'clojure-load-file)
+    (define-key map "\C-c\C-a" 'clojure-show-arglist)
+    (define-key map "\C-c\C-v" 'clojure-show-var-documentation)
+    (define-key map "\C-c\C-s" 'clojure-show-var-source)
+    map))
+
+;;;###autoload
+(define-minor-mode inf-clojure-minor-mode
+  "Minor mode for interacting with the inferior Clojure process buffer.
+
+The following commands are available:
+
+\\{inf-clojure-minor-mode-map}"
+  :lighter "" :keymap inf-clojure-minor-mode-map)
 
 (defcustom inf-clojure-program "lein repl"
   "Program name for invoking an inferior Clojure in Inferior Clojure mode."
@@ -489,6 +509,9 @@ Returns the selected completion or nil."
                 (completion-table-with-cache #'inf-clojure-completions)
               (completion-table-dynamic #'inf-clojure-completions))))))
 
+;;;###autoload
+(dolist (mode clojure-source-modes)
+  (add-hook (intern (format "%s-hook" mode)) 'inf-clojure-minor-mode))
 
 (provide 'inf-clojure)
 
