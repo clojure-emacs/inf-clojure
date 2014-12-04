@@ -359,6 +359,10 @@ Used by these commands to determine defaults."
   "(:arglists (clojure.core/meta #'%s))\n"
   "Command to query inferior Clojure for a function's arglist.")
 
+(defvar clojure-completion-command
+  "(complete.core/completions \"%s\")\n"
+  "Command to query inferior Clojure for completion candidates.")
+
 ;;; Ancillary functions
 ;;; ===================
 
@@ -435,7 +439,7 @@ See variable `clojure-arglist-command'."
     (unwind-protect
         (let ((completion-snippet
                (format
-                "(complete.core/completions \"%s\")\n" (substring-no-properties expr))))
+                clojure-completion-command (substring-no-properties expr))))
           (process-send-string proc completion-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
