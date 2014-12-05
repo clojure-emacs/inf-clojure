@@ -349,8 +349,8 @@ describing the last `clojure-load-file' command.")
 (defcustom clojure-source-modes '(clojure-mode)
   "Used to determine if a buffer contains Clojure source code.
 If it's loaded into a buffer that is in one of these major modes, it's
-considered a Clojure source file by `clojure-load-file' and `clojure-compile-file'.
-Used by these commands to determine defaults."
+considered a Clojure source file by `clojure-load-file'.
+Used by this command to determine defaults."
   :type '(repeat symbol)
   :group 'inf-clojure)
 
