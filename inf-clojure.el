@@ -233,16 +233,18 @@ to continue it."
   "t if STR does not match `inf-clojure-filter-regexp'."
   (not (string-match inf-clojure-filter-regexp str)))
 
+(defun inf-clojure-chomp (string)
+  (if (string-match "[\n]\\'" string)
+      (replace-match "" t t string)
+    string))
+
 (defun clojure-preoutput-filter (str)
   "Preprocess the output STR from interactive commands."
-  (if (string-prefix-p "clojure-" (symbol-name (or this-command last-command)))
-      ;; prepend a newline to the output string
-      (let ((string (concat "\n" str)))
-        ;; strip the extra trailing newline
-        (if (string-match "[\n]+\\'" string)
-            (replace-match "" t t string)
-          string))
-    str))
+  (cond
+   ((string-prefix-p "clojure-" (symbol-name (or this-command last-command)))
+    ;; prepend a newline to the output string
+    (inf-clojure-chomp (concat "\n" str)))
+   (t str)))
 
 ;;;###autoload
 (defun inf-clojure (cmd)
