@@ -219,6 +219,7 @@ to continue it."
   (setq comint-get-old-input (function clojure-get-old-input))
   (setq comint-input-filter (function clojure-input-filter))
   (set (make-local-variable 'comint-prompt-read-only) inf-clojure-prompt-read-only)
+  (add-hook 'comint-preoutput-filter-functions 'clojure-preoutput-filter nil t)
   (add-hook 'completion-at-point-functions 'inf-clojure-completion-at-point nil t))
 
 (defun clojure-get-old-input ()
@@ -231,6 +232,17 @@ to continue it."
 (defun clojure-input-filter (str)
   "t if STR does not match `inf-clojure-filter-regexp'."
   (not (string-match inf-clojure-filter-regexp str)))
+
+(defun clojure-preoutput-filter (str)
+  "Preprocess the output STR from interactive commands."
+  (if (string-prefix-p "clojure-" (symbol-name (or this-command last-command)))
+      ;; prepend a newline to the output string
+      (let ((string (concat "\n" str)))
+        ;; strip the extra trailing newline
+        (if (string-match "[\n]+\\'" string)
+            (replace-match "" t t string)
+          string))
+    str))
 
 ;;;###autoload
 (defun inf-clojure (cmd)
