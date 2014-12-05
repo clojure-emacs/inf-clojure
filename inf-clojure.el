@@ -287,24 +287,16 @@ Prefix argument means switch to the Clojure buffer afterwards."
   "Send the string to the inferior Clojure process to be executed."
   (comint-send-string (inf-clojure-proc) (concat string "\n")))
 
-(defun clojure-do-defun (do-string do-region)
+(defun clojure-eval-defun (&optional and-go)
   "Send the current defun to the inferior Clojure process.
-The actually processing is done by `do-string' and `do-region'
- which determine whether the code is compiled before evaluation.
-DEFVAR forms reset the variables to the init values."
+Prefix argument means switch to the Clojure buffer afterwards."
+  (interactive "P")
   (save-excursion
     (end-of-defun)
     (skip-chars-backward " \t\n\r\f") ;  Makes allegro happy
     (let ((end (point)) (case-fold-search t))
       (beginning-of-defun)
-      (funcall do-region (point) end))))
-
-(defun clojure-eval-defun (&optional and-go)
-  "Send the current defun to the inferior Clojure process.
-DEFVAR forms reset the variables to the init values.
-Prefix argument means switch to the Clojure buffer afterwards."
-  (interactive "P")
-  (clojure-do-defun 'clojure-eval-string 'clojure-eval-region)
+      (clojure-eval-region (point) end)))
   (if and-go (switch-to-clojure t)))
 
 (defun clojure-eval-last-sexp (&optional and-go)
