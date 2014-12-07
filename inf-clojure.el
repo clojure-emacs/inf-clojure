@@ -99,6 +99,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-a" 'clojure-show-arglist)
     (define-key map "\C-c\C-v" 'clojure-show-var-documentation)
     (define-key map "\C-c\C-s" 'clojure-show-var-source)
+    (define-key map "\C-c\C-i" 'clojure-show-ns-vars)
     map))
 
 ;;;###autoload
@@ -396,6 +397,10 @@ Used by this command to determine defaults."
   "(complete.core/completions \"%s\")\n"
   "Command to query inferior Clojure for completion candidates.")
 
+(defvar clojure-ns-vars-command
+  "(clojure.repl/dir %s)\n"
+  "Command to show the public vars in a namespace.")
+
 ;;; Ancillary functions
 ;;; ===================
 
@@ -454,6 +459,12 @@ See variable `clojure-var-source-command'."
 See variable `clojure-arglist-command'."
   (interactive (clojure-symprompt "Arglist" (clojure-fn-called-at-pt)))
   (comint-proc-query (inf-clojure-proc) (format clojure-arglist-command fn)))
+
+(defun clojure-show-ns-vars (ns)
+  "Send a query to the inferior Clojure for the public vars in NS.
+See variable `clojure-ns-vars-command'."
+  (interactive (clojure-symprompt "Ns vars" (clojure-find-ns)))
+  (comint-proc-query (inf-clojure-proc) (format clojure-ns-vars-command ns)))
 
 
 ;;  "Returns the current inferior Clojure process.
