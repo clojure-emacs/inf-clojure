@@ -100,6 +100,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-v" 'clojure-show-var-documentation)
     (define-key map "\C-c\C-s" 'clojure-show-var-source)
     (define-key map "\C-c\C-i" 'clojure-show-ns-vars)
+    (define-key map "\C-c\C-A" 'clojure-apropos)
     map))
 
 ;;;###autoload
@@ -401,6 +402,11 @@ Used by this command to determine defaults."
   "(clojure.repl/dir %s)\n"
   "Command to show the public vars in a namespace.")
 
+(defvar clojure-apropos-command
+  "(doseq [var (sort (clojure.repl/apropos \"%s\"))]
+     (println (str var)))\n"
+  "Command to invoke apropos.")
+
 ;;; Ancillary functions
 ;;; ===================
 
@@ -465,6 +471,12 @@ See variable `clojure-arglist-command'."
 See variable `clojure-ns-vars-command'."
   (interactive (clojure-symprompt "Ns vars" (clojure-find-ns)))
   (comint-proc-query (inf-clojure-proc) (format clojure-ns-vars-command ns)))
+
+(defun clojure-apropos (var)
+  "Send a command to the inferior Clojure to give apropos for VAR.
+See variable `clojure-apropos-command'."
+  (interactive (clojure-symprompt "Var apropos" (clojure-var-at-pt)))
+  (comint-proc-query (inf-clojure-proc) (format clojure-apropos-command var)))
 
 
 ;;  "Returns the current inferior Clojure process.
