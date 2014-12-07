@@ -101,6 +101,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-s" 'clojure-show-var-source)
     (define-key map "\C-c\C-i" 'clojure-show-ns-vars)
     (define-key map "\C-c\C-A" 'clojure-apropos)
+    (define-key map "\C-c\C-m" 'clojure-macroexpand)
     map))
 
 ;;;###autoload
@@ -407,6 +408,12 @@ Used by this command to determine defaults."
      (println (str var)))\n"
   "Command to invoke apropos.")
 
+(defvar clojure-macroexpand-command
+  "(clojure.core/macroexpand '%s)\n")
+
+(defvar clojure-macroexpand-1-command
+  "(clojure.core/macroexpand-1 '%s)\n")
+
 ;;; Ancillary functions
 ;;; ===================
 
@@ -477,6 +484,19 @@ See variable `clojure-ns-vars-command'."
 See variable `clojure-apropos-command'."
   (interactive (clojure-symprompt "Var apropos" (clojure-var-at-pt)))
   (comint-proc-query (inf-clojure-proc) (format clojure-apropos-command var)))
+
+(defun clojure-macroexpand (&optional macro-1)
+  "Send a command to the inferior Clojure to give apropos for VAR.
+See variable `clojure-macroexpand-command'.
+With a prefix arg MACRO-1 uses `clojure-macroexpand-1-command'."
+  (interactive "P")
+  (let ((last-sexp (buffer-substring-no-properties (save-excursion (backward-sexp) (point)) (point))))
+    (comint-send-string
+     (inf-clojure-proc)
+     (format (if macro-1
+                 clojure-macroexpand-1-command
+               clojure-macroexpand-command)
+             last-sexp))))
 
 
 ;;  "Returns the current inferior Clojure process.
