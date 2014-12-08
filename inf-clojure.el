@@ -109,7 +109,10 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 The following commands are available:
 
 \\{inf-clojure-minor-mode-map}"
-  :lighter "" :keymap inf-clojure-minor-mode-map)
+  :lighter "" :keymap inf-clojure-minor-mode-map
+  (make-local-variable 'completion-at-point-functions)
+  (add-to-list 'completion-at-point-functions
+               'inf-clojure-completion-at-point))
 
 (defcustom inf-clojure-program "lein repl"
   "Program name for invoking an inferior Clojure in Inferior Clojure mode."
