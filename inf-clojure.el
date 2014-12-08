@@ -34,9 +34,6 @@
 ;;
 ;;    (autoload 'inf-clojure "inf-clojure" "Run an inferior Clojure process" t)
 ;;    (add-hook 'clojure-mode-hook 'inf-clojure-minor-mode)
-;;
-;; Installation via ELPA interface does the above for you
-;; automatically.
 
 ;;; Code:
 
@@ -568,10 +565,6 @@ Returns the selected completion or nil."
             (if (fboundp 'completion-table-with-cache)
                 (completion-table-with-cache #'inf-clojure-completions)
               (completion-table-dynamic #'inf-clojure-completions))))))
-
-;;;###autoload
-(dolist (mode inf-clojure-source-modes)
-  (add-hook (intern (format "%s-hook" mode)) 'inf-clojure-minor-mode))
 
 (provide 'inf-clojure)
 

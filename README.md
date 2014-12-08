@@ -32,6 +32,13 @@ If the installation doesn't work try refreshing the package list:
 
 <kbd>M-x package-refresh-contents</kbd>
 
+Add the following to your Emacs config to enable
+`inf-clojure-minor-mode` for Clojure source buffers:
+
+```el
+(add-hook 'clojure-mode-hook 'inf-clojure-minor-mode)
+```
+
 ## Usage
 
 `M-x inf-clojure` or `C-c C-z` within a Clojure source file.
