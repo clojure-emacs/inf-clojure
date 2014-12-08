@@ -102,6 +102,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
     (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
+    (define-key map "\C-c\M-n" 'inf-clojure-set-ns)
     map))
 
 ;;;###autoload
@@ -403,6 +404,10 @@ Used by this command to determine defaults."
   "(clojure.repl/dir %s)\n"
   "Command to show the public vars in a namespace.")
 
+(defvar inf-clojure-set-ns-command
+  "(clojure.core/in-ns '%s)\n"
+  "Command to set the namespace of the inferior Clojure process.")
+
 (defvar inf-clojure-apropos-command
   "(doseq [var (sort (clojure.repl/apropos \"%s\"))]
      (println (str var)))\n"
@@ -478,6 +483,12 @@ See variable `inf-clojure-arglist-command'."
 See variable `inf-clojure-ns-vars-command'."
   (interactive (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
   (comint-proc-query (inf-clojure-proc) (format inf-clojure-ns-vars-command ns)))
+
+(defun inf-clojure-set-ns (ns)
+  "Set the ns of the inferior Clojure process to NS.
+Defaults to the ns of the current buffer."
+  (interactive (inf-clojure-symprompt "Set ns to" (clojure-find-ns)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-set-ns-command ns)))
 
 (defun inf-clojure-apropos (var)
   "Send a command to the inferior Clojure to give apropos for VAR.
