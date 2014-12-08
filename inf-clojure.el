@@ -66,11 +66,11 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
-    (define-key map "\C-x\C-e" 'clojure-eval-last-sexp)
-    (define-key map "\C-c\C-l" 'clojure-load-file)
-    (define-key map "\C-c\C-a" 'clojure-show-arglist)
-    (define-key map "\C-c\C-v" 'clojure-show-var-documentation)
-    (define-key map "\C-c\C-s" 'clojure-show-var-source)
+    (define-key map "\C-x\C-e" 'inf-clojure-eval-last-sexp)
+    (define-key map "\C-c\C-l" 'inf-clojure-load-file)
+    (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
+    (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
+    (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
     map))
 
 (easy-menu-define
@@ -78,30 +78,30 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
   inf-clojure-mode-map
   "Inferior Clojure Menu"
   '("Inf-Clojure"
-    ["Eval Last Sexp" clojure-eval-last-sexp t]
+    ["Eval Last Sexp" inf-clojure-eval-last-sexp t]
     "--"
-    ["Load File..." clojure-load-file t]
+    ["Load File..." inf-clojure-load-file t]
     "--"
-    ["Show Arglist..." clojure-show-arglist t]
-    ["Show Documentation for Var..." clojure-show-var-documentation t]
-    ["Show Source for Var..." clojure-show-var-source t]))
+    ["Show Arglist..." inf-clojure-show-arglist t]
+    ["Show Documentation for Var..." inf-clojure-show-var-documentation t]
+    ["Show Source for Var..." inf-clojure-show-var-source t]))
 
 (defvar inf-clojure-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\M-\C-x"  'clojure-eval-defun)     ; Gnu convention
-    (define-key map "\C-x\C-e" 'clojure-eval-last-sexp) ; Gnu convention
-    (define-key map "\C-c\C-e" 'clojure-eval-defun)
-    (define-key map "\C-c\C-r" 'clojure-eval-region)
-    (define-key map "\C-c\C-n" 'clojure-eval-form-and-next)
-    (define-key map "\C-c\C-p" 'clojure-eval-paragraph)
+    (define-key map "\M-\C-x"  'inf-clojure-eval-defun)     ; Gnu convention
+    (define-key map "\C-x\C-e" 'inf-clojure-eval-last-sexp) ; Gnu convention
+    (define-key map "\C-c\C-e" 'inf-clojure-eval-defun)
+    (define-key map "\C-c\C-r" 'inf-clojure-eval-region)
+    (define-key map "\C-c\C-n" 'inf-clojure-eval-form-and-next)
+    (define-key map "\C-c\C-p" 'inf-clojure-eval-paragraph)
     (define-key map "\C-c\C-z" 'switch-to-clojure)
-    (define-key map "\C-c\C-l" 'clojure-load-file)
-    (define-key map "\C-c\C-a" 'clojure-show-arglist)
-    (define-key map "\C-c\C-v" 'clojure-show-var-documentation)
-    (define-key map "\C-c\C-s" 'clojure-show-var-source)
-    (define-key map "\C-c\C-i" 'clojure-show-ns-vars)
-    (define-key map "\C-c\C-A" 'clojure-apropos)
-    (define-key map "\C-c\C-m" 'clojure-macroexpand)
+    (define-key map "\C-c\C-i" 'inf-clojure-show-ns-vars)
+    (define-key map "\C-c\C-A" 'inf-clojure-apropos)
+    (define-key map "\C-c\C-m" 'inf-clojure-macroexpand)
+    (define-key map "\C-c\C-l" 'inf-clojure-load-file)
+    (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
+    (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
+    (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
     map))
 
 ;;;###autoload
@@ -143,7 +143,7 @@ named `*inf-clojure*'.  You can switch between the different process
 buffers with \\[switch-to-buffer].
 
 Commands that send text from source buffers to Clojure processes --
-like `clojure-eval-defun' or `clojure-show-arglist' -- have to choose a process
+like `inf-clojure-eval-defun' or `inf-clojure-show-arglist' -- have to choose a process
 to send to, when you have more than one Clojure process around.  This
 is determined by the global variable `inf-clojure-buffer'.  Suppose you
 have three inferior Clojures running:
@@ -151,7 +151,7 @@ have three inferior Clojures running:
     foo                 inf-clojure
     bar                 inf-clojure<2>
     *inf-clojure*     inf-clojure<3>
-If you do a \\[clojure-eval-defun] command on some Clojure source code,
+If you do a \\[inf-clojure-eval-defun] command on some Clojure source code,
 what process do you send it to?
 
 - If you're in a process buffer (foo, bar, or *inf-clojure*),
@@ -190,10 +190,10 @@ Customization: Entry to this mode runs the hooks on `comint-mode-hook' and
 You can send text to the inferior Clojure process from other buffers containing
 Clojure source.
     `switch-to-clojure' switches the current buffer to the Clojure process buffer.
-    `clojure-eval-defun' sends the current defun to the Clojure process.
-    `clojure-eval-region' sends the current region to the Clojure process.
+    `inf-clojure-eval-defun' sends the current defun to the Clojure process.
+    `inf-clojure-eval-region' sends the current region to the Clojure process.
 
-    Prefixing the clojure-eval/defun/region commands with
+    Prefixing the inf-clojure-eval/defun/region commands with
     a \\[universal-argument] causes a switch to the Clojure process buffer after sending
     the text.
 
@@ -219,20 +219,20 @@ to continue it."
   (setq comint-prompt-regexp inf-clojure-prompt)
   (setq mode-line-process '(":%s"))
   (clojure-mode-variables)
-  (setq comint-get-old-input (function clojure-get-old-input))
-  (setq comint-input-filter (function clojure-input-filter))
+  (setq comint-get-old-input (function inf-clojure-get-old-input))
+  (setq comint-input-filter (function inf-clojure-input-filter))
   (set (make-local-variable 'comint-prompt-read-only) inf-clojure-prompt-read-only)
-  (add-hook 'comint-preoutput-filter-functions 'clojure-preoutput-filter nil t)
+  (add-hook 'comint-preoutput-filter-functions 'inf-clojure-preoutput-filter nil t)
   (add-hook 'completion-at-point-functions 'inf-clojure-completion-at-point nil t))
 
-(defun clojure-get-old-input ()
+(defun inf-clojure-get-old-input ()
   "Return a string containing the sexp ending at point."
   (save-excursion
     (let ((end (point)))
       (backward-sexp)
       (buffer-substring (point) end))))
 
-(defun clojure-input-filter (str)
+(defun inf-clojure-input-filter (str)
   "t if STR does not match `inf-clojure-filter-regexp'."
   (not (string-match inf-clojure-filter-regexp str)))
 
@@ -241,10 +241,10 @@ to continue it."
       (replace-match "" t t string)
     string))
 
-(defun clojure-preoutput-filter (str)
+(defun inf-clojure-preoutput-filter (str)
   "Preprocess the output STR from interactive commands."
   (cond
-   ((string-prefix-p "clojure-" (symbol-name (or this-command last-command)))
+   ((string-prefix-p "inf-clojure-" (symbol-name (or this-command last-command)))
     ;; prepend a newline to the output string
     (inf-clojure-chomp (concat "\n" str)))
    (t str)))
@@ -272,15 +272,15 @@ of `inf-clojure-program').  Runs the hooks from
 ;;;###autoload
 (defalias 'run-clojure 'inf-clojure)
 
-(defun clojure-eval-paragraph (&optional and-go)
+(defun inf-clojure-eval-paragraph (&optional and-go)
   "Send the current paragraph to the inferior Clojure process.
 Prefix argument means switch to the Clojure buffer afterwards."
   (interactive "P")
   (save-excursion
     (mark-paragraph)
-    (clojure-eval-region (point) (mark) and-go)))
+    (inf-clojure-eval-region (point) (mark) and-go)))
 
-(defun clojure-eval-region (start end &optional and-go)
+(defun inf-clojure-eval-region (start end &optional and-go)
   "Send the current region to the inferior Clojure process.
 Prefix argument means switch to the Clojure buffer afterwards."
   (interactive "r\nP")
@@ -288,11 +288,11 @@ Prefix argument means switch to the Clojure buffer afterwards."
   (comint-send-string (inf-clojure-proc) "\n")
   (if and-go (switch-to-clojure t)))
 
-(defun clojure-eval-string (string)
+(defun inf-clojure-eval-string (string)
   "Send the string to the inferior Clojure process to be executed."
   (comint-send-string (inf-clojure-proc) (concat string "\n")))
 
-(defun clojure-eval-defun (&optional and-go)
+(defun inf-clojure-eval-defun (&optional and-go)
   "Send the current defun to the inferior Clojure process.
 Prefix argument means switch to the Clojure buffer afterwards."
   (interactive "P")
@@ -301,21 +301,21 @@ Prefix argument means switch to the Clojure buffer afterwards."
     (skip-chars-backward " \t\n\r\f") ;  Makes allegro happy
     (let ((end (point)) (case-fold-search t))
       (beginning-of-defun)
-      (clojure-eval-region (point) end)))
+      (inf-clojure-eval-region (point) end)))
   (if and-go (switch-to-clojure t)))
 
-(defun clojure-eval-last-sexp (&optional and-go)
+(defun inf-clojure-eval-last-sexp (&optional and-go)
   "Send the previous sexp to the inferior Clojure process.
 Prefix argument means switch to the Clojure buffer afterwards."
   (interactive "P")
-  (clojure-eval-region (save-excursion (backward-sexp) (point)) (point) and-go))
+  (inf-clojure-eval-region (save-excursion (backward-sexp) (point)) (point) and-go))
 
-(defun clojure-eval-form-and-next ()
+(defun inf-clojure-eval-form-and-next ()
   "Send the previous sexp to the inferior Clojure process and move to the next one."
   (interactive "")
   (while (not (zerop (car (syntax-ppss))))
     (up-list))
-  (clojure-eval-last-sexp)
+  (inf-clojure-eval-last-sexp)
   (forward-sexp))
 
 (defun switch-to-clojure (eob-p)
@@ -335,41 +335,41 @@ With argument, positions cursor at end of buffer."
     (goto-char (point-max))))
 
 
-;;; Now that clojure-eval-/defun/region takes an optional prefix arg,
+;;; Now that inf-clojure-eval-/defun/region takes an optional prefix arg,
 ;;; these commands are redundant. But they are kept around for the user
 ;;; to bind if he wishes, for backwards functionality, and because it's
 ;;; easier to type C-c e than C-u C-c C-e.
 
-(defun clojure-eval-region-and-go (start end)
+(defun inf-clojure-eval-region-and-go (start end)
   "Send the current region to the inferior Clojure, and switch to its buffer."
   (interactive "r")
-  (clojure-eval-region start end t))
+  (inf-clojure-eval-region start end t))
 
-(defun clojure-eval-defun-and-go ()
+(defun inf-clojure-eval-defun-and-go ()
   "Send the current defun to the inferior Clojure, and switch to its buffer."
   (interactive)
-  (clojure-eval-defun t))
+  (inf-clojure-eval-defun t))
 
-(defvar clojure-prev-l/c-dir/file nil
+(defvar inf-clojure-prev-l/c-dir/file nil
   "Record last directory and file used in loading or compiling.
 This holds a cons cell of the form `(DIRECTORY . FILE)'
-describing the last `clojure-load-file' command.")
+describing the last `inf-clojure-load-file' command.")
 
-(defcustom clojure-source-modes '(clojure-mode)
+(defcustom inf-clojure-source-modes '(clojure-mode)
   "Used to determine if a buffer contains Clojure source code.
 If it's loaded into a buffer that is in one of these major modes, it's
-considered a Clojure source file by `clojure-load-file'.
+considered a Clojure source file by `inf-clojure-load-file'.
 Used by this command to determine defaults."
   :type '(repeat symbol)
   :group 'inf-clojure)
 
-(defun clojure-load-file (file-name)
+(defun inf-clojure-load-file (file-name)
   "Load a Clojure file into the inferior Clojure process."
-  (interactive (comint-get-source "Load Clojure file: " clojure-prev-l/c-dir/file
-                                  clojure-source-modes nil)) ; nil because LOAD
+  (interactive (comint-get-source "Load Clojure file: " inf-clojure-prev-l/c-dir/file
+                                  inf-clojure-source-modes nil)) ; nil because LOAD
                                         ; doesn't need an exact name
   (comint-check-source file-name) ; Check to see if buffer needs saved.
-  (setq clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
+  (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
                                         (file-name-nondirectory file-name)))
   (comint-send-string (inf-clojure-proc)
                       (format inf-clojure-load-command file-name))
@@ -383,42 +383,42 @@ Used by this command to determine defaults."
 ;;; Command strings
 ;;; ===============
 
-(defvar clojure-var-doc-command
+(defvar inf-clojure-var-doc-command
   "(clojure.repl/doc %s)\n"
   "Command to query inferior Clojure for a var's documentation.")
 
-(defvar clojure-var-source-command
+(defvar inf-clojure-var-source-command
   "(clojure.repl/source %s)\n"
   "Command to query inferior Clojure for a var's source.")
 
-(defvar clojure-arglist-command
+(defvar inf-clojure-arglist-command
   "(:arglists (clojure.core/meta #'%s))\n"
   "Command to query inferior Clojure for a function's arglist.")
 
-(defvar clojure-completion-command
+(defvar inf-clojure-completion-command
   "(complete.core/completions \"%s\")\n"
   "Command to query inferior Clojure for completion candidates.")
 
-(defvar clojure-ns-vars-command
+(defvar inf-clojure-ns-vars-command
   "(clojure.repl/dir %s)\n"
   "Command to show the public vars in a namespace.")
 
-(defvar clojure-apropos-command
+(defvar inf-clojure-apropos-command
   "(doseq [var (sort (clojure.repl/apropos \"%s\"))]
      (println (str var)))\n"
   "Command to invoke apropos.")
 
-(defvar clojure-macroexpand-command
+(defvar inf-clojure-macroexpand-command
   "(clojure.core/macroexpand '%s)\n")
 
-(defvar clojure-macroexpand-1-command
+(defvar inf-clojure-macroexpand-1-command
   "(clojure.core/macroexpand-1 '%s)\n")
 
 ;;; Ancillary functions
 ;;; ===================
 
 ;;; Reads a string from the user.
-(defun clojure-symprompt (prompt default)
+(defun inf-clojure-symprompt (prompt default)
   (list (let* ((prompt (if default
                            (format "%s (default %s): " prompt default)
                          (concat prompt ": ")))
@@ -427,7 +427,7 @@ Used by this command to determine defaults."
 
 
 ;;; Adapted from function-called-at-point in help.el.
-(defun clojure-fn-called-at-pt ()
+(defun inf-clojure-fn-called-at-pt ()
   "Returns the name of the function called in the current call.
 The value is nil if it can't find one."
   (condition-case nil
@@ -442,7 +442,7 @@ The value is nil if it can't find one."
 
 
 ;;; Adapted from variable-at-point in help.el.
-(defun clojure-var-at-pt ()
+(defun inf-clojure-var-at-pt ()
   (condition-case ()
       (save-excursion
         (forward-sexp -1)
@@ -455,47 +455,47 @@ The value is nil if it can't find one."
 ;;; Documentation functions: var doc and arglist.
 ;;; ======================================================================
 
-(defun clojure-show-var-documentation (var)
+(defun inf-clojure-show-var-documentation (var)
   "Send a command to the inferior Clojure to give documentation for VAR.
-See variable `clojure-var-doc-command'."
-  (interactive (clojure-symprompt "Var doc" (clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format clojure-var-doc-command var)))
+See variable `inf-clojure-var-doc-command'."
+  (interactive (inf-clojure-symprompt "Var doc" (inf-clojure-var-at-pt)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-doc-command var)))
 
-(defun clojure-show-var-source (var)
+(defun inf-clojure-show-var-source (var)
   "Send a command to the inferior Clojure to give source for VAR.
-See variable `clojure-var-source-command'."
-  (interactive (clojure-symprompt "Var source" (clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format clojure-var-source-command var)))
+See variable `inf-clojure-var-source-command'."
+  (interactive (inf-clojure-symprompt "Var source" (inf-clojure-var-at-pt)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-command var)))
 
-(defun clojure-show-arglist (fn)
+(defun inf-clojure-show-arglist (fn)
   "Send a query to the inferior Clojure for the arglist for function FN.
-See variable `clojure-arglist-command'."
-  (interactive (clojure-symprompt "Arglist" (clojure-fn-called-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format clojure-arglist-command fn)))
+See variable `inf-clojure-arglist-command'."
+  (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-arglist-command fn)))
 
-(defun clojure-show-ns-vars (ns)
+(defun inf-clojure-show-ns-vars (ns)
   "Send a query to the inferior Clojure for the public vars in NS.
-See variable `clojure-ns-vars-command'."
-  (interactive (clojure-symprompt "Ns vars" (clojure-find-ns)))
-  (comint-proc-query (inf-clojure-proc) (format clojure-ns-vars-command ns)))
+See variable `inf-clojure-ns-vars-command'."
+  (interactive (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-ns-vars-command ns)))
 
-(defun clojure-apropos (var)
+(defun inf-clojure-apropos (var)
   "Send a command to the inferior Clojure to give apropos for VAR.
-See variable `clojure-apropos-command'."
-  (interactive (clojure-symprompt "Var apropos" (clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format clojure-apropos-command var)))
+See variable `inf-clojure-apropos-command'."
+  (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-var-at-pt)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-apropos-command var)))
 
-(defun clojure-macroexpand (&optional macro-1)
+(defun inf-clojure-macroexpand (&optional macro-1)
   "Send a command to the inferior Clojure to give apropos for VAR.
-See variable `clojure-macroexpand-command'.
-With a prefix arg MACRO-1 uses `clojure-macroexpand-1-command'."
+See variable `inf-clojure-macroexpand-command'.
+With a prefix arg MACRO-1 uses `inf-clojure-macroexpand-1-command'."
   (interactive "P")
   (let ((last-sexp (buffer-substring-no-properties (save-excursion (backward-sexp) (point)) (point))))
     (comint-send-string
      (inf-clojure-proc)
      (format (if macro-1
-                 clojure-macroexpand-1-command
-               clojure-macroexpand-command)
+                 inf-clojure-macroexpand-1-command
+               inf-clojure-macroexpand-command)
              last-sexp))))
 
 
@@ -521,7 +521,7 @@ With a prefix arg MACRO-1 uses `clojure-macroexpand-1-command'."
     (unwind-protect
         (let ((completion-snippet
                (format
-                clojure-completion-command (substring-no-properties expr))))
+                inf-clojure-completion-command (substring-no-properties expr))))
           (process-send-string proc completion-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
@@ -559,7 +559,7 @@ Returns the selected completion or nil."
               (completion-table-dynamic #'inf-clojure-completions))))))
 
 ;;;###autoload
-(dolist (mode clojure-source-modes)
+(dolist (mode inf-clojure-source-modes)
   (add-hook (intern (format "%s-hook" mode)) 'inf-clojure-minor-mode))
 
 (provide 'inf-clojure)
