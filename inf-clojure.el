@@ -6,7 +6,7 @@
 ;;       Olin Shivers <shivers@cs.cmu.edu>
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, clojure
-;; Version: 1.0.0-cvs
+;; Version: 1.0.0
 ;; Package-Requires: ((emacs "24.1") (clojure-mode "4.0"))
 
 ;; This file is part of GNU Emacs.
