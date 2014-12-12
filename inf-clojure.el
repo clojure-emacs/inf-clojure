@@ -91,7 +91,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-r" 'inf-clojure-eval-region)
     (define-key map "\C-c\C-n" 'inf-clojure-eval-form-and-next)
     (define-key map "\C-c\C-p" 'inf-clojure-eval-paragraph)
-    (define-key map "\C-c\C-z" 'switch-to-clojure)
+    (define-key map "\C-c\C-z" 'inf-clojure-switch-to-repl)
     (define-key map "\C-c\C-i" 'inf-clojure-show-ns-vars)
     (define-key map "\C-c\C-A" 'inf-clojure-apropos)
     (define-key map "\C-c\C-m" 'inf-clojure-macroexpand)
@@ -190,7 +190,7 @@ Customization: Entry to this mode runs the hooks on `comint-mode-hook' and
 
 You can send text to the inferior Clojure process from other buffers containing
 Clojure source.
-    `switch-to-clojure' switches the current buffer to the Clojure process buffer.
+    `inf-clojure-switch-to-repl' switches the current buffer to the Clojure process buffer.
     `inf-clojure-eval-defun' sends the current defun to the Clojure process.
     `inf-clojure-eval-region' sends the current region to the Clojure process.
 
@@ -287,7 +287,7 @@ Prefix argument means switch to the Clojure buffer afterwards."
   (interactive "r\nP")
   (comint-send-region (inf-clojure-proc) start end)
   (comint-send-string (inf-clojure-proc) "\n")
-  (if and-go (switch-to-clojure t)))
+  (if and-go (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-eval-string (string)
   "Send the string to the inferior Clojure process to be executed."
@@ -303,7 +303,7 @@ Prefix argument means switch to the Clojure buffer afterwards."
     (let ((end (point)) (case-fold-search t))
       (beginning-of-defun)
       (inf-clojure-eval-region (point) end)))
-  (if and-go (switch-to-clojure t)))
+  (if and-go (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-eval-last-sexp (&optional and-go)
   "Send the previous sexp to the inferior Clojure process.
@@ -319,7 +319,7 @@ Prefix argument means switch to the Clojure buffer afterwards."
   (inf-clojure-eval-last-sexp)
   (forward-sexp))
 
-(defun switch-to-clojure (eob-p)
+(defun inf-clojure-switch-to-repl (eob-p)
   "Switch to the inferior Clojure process buffer.
 With argument, positions cursor at end of buffer."
   (interactive "P")
@@ -374,7 +374,7 @@ Used by this command to determine defaults."
                                         (file-name-nondirectory file-name)))
   (comint-send-string (inf-clojure-proc)
                       (format inf-clojure-load-command file-name))
-  (switch-to-clojure t))
+  (inf-clojure-switch-to-repl t))
 
 
 ;;; Documentation functions: function doc, var doc, arglist, and
