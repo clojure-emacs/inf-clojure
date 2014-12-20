@@ -68,20 +68,17 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
     (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
+    (easy-menu-define inf-clojure-menu map
+      "Inferior Clojure Menu"
+      '("Inf-Clojure"
+        ["Eval Last Sexp" inf-clojure-eval-last-sexp t]
+        "--"
+        ["Load File..." inf-clojure-load-file t]
+        "--"
+        ["Show Arglist..." inf-clojure-show-arglist t]
+        ["Show Documentation for Var..." inf-clojure-show-var-documentation t]
+        ["Show Source for Var..." inf-clojure-show-var-source t]))
     map))
-
-(easy-menu-define
-  inf-clojure-menu
-  inf-clojure-mode-map
-  "Inferior Clojure Menu"
-  '("Inf-Clojure"
-    ["Eval Last Sexp" inf-clojure-eval-last-sexp t]
-    "--"
-    ["Load File..." inf-clojure-load-file t]
-    "--"
-    ["Show Arglist..." inf-clojure-show-arglist t]
-    ["Show Documentation for Var..." inf-clojure-show-var-documentation t]
-    ["Show Source for Var..." inf-clojure-show-var-source t]))
 
 (defvar inf-clojure-minor-mode-map
   (let ((map (make-sparse-keymap)))
