@@ -68,9 +68,9 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
     (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
-    (easy-menu-define inf-clojure-menu map
-      "Inferior Clojure Menu"
-      '("Inf-Clojure"
+    (easy-menu-define inf-clojure-mode-menu map
+      "Inferior Clojure REPL Menu"
+      '("Inf-Clojure REPL"
         ["Eval Last Sexp" inf-clojure-eval-last-sexp t]
         "--"
         ["Load File..." inf-clojure-load-file t]
@@ -97,6 +97,24 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
     (define-key map "\C-c\M-n" 'inf-clojure-set-ns)
+    (easy-menu-define inf-clojure-minor-mode-menu map
+      "Inferior Clojure Minor Mode Menu"
+      '("Inf-Clojure"
+        ["Eval top-level sexp at point" inf-clojure-eval-defun t]
+        ["Eval last sexp" inf-clojure-eval-last-sexp t]
+        ["Eval region" inf-clojure-eval-region t]
+        "--"
+        ["Load file..." inf-clojure-load-file t]
+        "--"
+        ["Switch to REPL" inf-clojure-switch-to-repl t]
+        ["Set REPL ns" inf-clojure-set-ns t]
+        "--"
+        ["Show arglist" inf-clojure-show-arglist t]
+        ["Show documentation for var" inf-clojure-show-var-documentation t]
+        ["Show source for var" inf-clojure-show-var-source t]
+        ["Show vars in ns" inf-clojure-show-ns-varst]
+        ["Apropos" inf-clojure-apropos t]
+        ["Macroexpand" inf-clojure-macroexpand t]))
     map))
 
 ;;;###autoload
