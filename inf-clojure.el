@@ -71,13 +71,13 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (easy-menu-define inf-clojure-mode-menu map
       "Inferior Clojure REPL Menu"
       '("Inf-Clojure REPL"
-        ["Eval Last Sexp" inf-clojure-eval-last-sexp t]
+        ["Eval last sexp" inf-clojure-eval-last-sexp t]
         "--"
-        ["Load File..." inf-clojure-load-file t]
+        ["Load file" inf-clojure-load-file t]
         "--"
-        ["Show Arglist..." inf-clojure-show-arglist t]
-        ["Show Documentation for Var..." inf-clojure-show-var-documentation t]
-        ["Show Source for Var..." inf-clojure-show-var-source t]))
+        ["Show arglist" inf-clojure-show-arglist t]
+        ["Show documentation for var" inf-clojure-show-var-documentation t]
+        ["Show source for var" inf-clojure-show-var-source t]))
     map))
 
 (defvar inf-clojure-minor-mode-map
