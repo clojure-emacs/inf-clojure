@@ -265,6 +265,21 @@ to continue it."
     (inf-clojure-chomp (concat "\n" str)))
    (t str)))
 
+(defvar inf-clojure-project-root-files
+  '("project.clj" "build.boot")
+  "A list of files that can be considered project markers.")
+
+(defun inf-clojure-project-root ()
+  "Retrieve the root directory of a project if available.
+
+Fallback to `default-directory.' if not within a project."
+  (or (car (remove nil
+                   (mapcar (lambda
+                             (file)
+                             (locate-dominating-file default-directory file))
+                           inf-clojure-project-root-files)))
+      default-directory))
+
 ;;;###autoload
 (defun inf-clojure (cmd)
   "Run an inferior Clojure process, input and output via buffer `*inf-clojure*'.
@@ -277,13 +292,14 @@ of `inf-clojure-program').  Runs the hooks from
   (interactive (list (if current-prefix-arg
                          (read-string "Run Clojure: " inf-clojure-program)
                        inf-clojure-program)))
-  (if (not (comint-check-proc "*inf-clojure*"))
-      (let ((cmdlist (split-string cmd)))
-        (set-buffer (apply (function make-comint)
-                           "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
-        (inf-clojure-mode)))
-  (setq inf-clojure-buffer "*inf-clojure*")
-  (pop-to-buffer-same-window "*inf-clojure*"))
+  (let ((default-directory (inf-clojure-project-root)))
+    (if (not (comint-check-proc "*inf-clojure*"))
+        (let ((cmdlist (split-string cmd)))
+          (set-buffer (apply (function make-comint)
+                             "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
+          (inf-clojure-mode)))
+    (setq inf-clojure-buffer "*inf-clojure*")
+    (pop-to-buffer-same-window "*inf-clojure*")))
 
 ;;;###autoload
 (defalias 'run-clojure 'inf-clojure)
