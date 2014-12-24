@@ -249,10 +249,11 @@ to continue it."
       (buffer-substring (point) end))))
 
 (defun inf-clojure-input-filter (str)
-  "t if STR does not match `inf-clojure-filter-regexp'."
+  "Return t if STR does not match `inf-clojure-filter-regexp'."
   (not (string-match inf-clojure-filter-regexp str)))
 
 (defun inf-clojure-chomp (string)
+  "Remove final newline from STRING."
   (if (string-match "[\n]\\'" string)
       (replace-match "" t t string)
     string))
@@ -292,14 +293,15 @@ of `inf-clojure-program').  Runs the hooks from
   (interactive (list (if current-prefix-arg
                          (read-string "Run Clojure: " inf-clojure-program)
                        inf-clojure-program)))
-  (let ((default-directory (inf-clojure-project-root)))
-    (if (not (comint-check-proc "*inf-clojure*"))
-        (let ((cmdlist (split-string cmd)))
-          (set-buffer (apply (function make-comint)
-                             "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
-          (inf-clojure-mode)))
-    (setq inf-clojure-buffer "*inf-clojure*")
-    (pop-to-buffer-same-window "*inf-clojure*")))
+  (if (not (comint-check-proc "*inf-clojure*"))
+      ;; run the new process in the project's root when in a project folder
+      (let ((default-directory (inf-clojure-project-root))
+            (cmdlist (split-string cmd)))
+        (set-buffer (apply (function make-comint)
+                           "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
+        (inf-clojure-mode)))
+  (setq inf-clojure-buffer "*inf-clojure*")
+  (pop-to-buffer-same-window "*inf-clojure*"))
 
 ;;;###autoload
 (defalias 'run-clojure 'inf-clojure)
