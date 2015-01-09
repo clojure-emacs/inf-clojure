@@ -127,7 +127,7 @@ The following commands are available:
   :lighter "" :keymap inf-clojure-minor-mode-map
   (make-local-variable 'completion-at-point-functions)
   (add-to-list 'completion-at-point-functions
-               'inf-clojure-completion-at-point))
+               #'inf-clojure-completion-at-point))
 
 (defcustom inf-clojure-program "lein repl"
   "Program name for invoking an inferior Clojure in Inferior Clojure mode."
@@ -235,11 +235,11 @@ to continue it."
   (setq comint-prompt-regexp inf-clojure-prompt)
   (setq mode-line-process '(":%s"))
   (clojure-mode-variables)
-  (setq comint-get-old-input (function inf-clojure-get-old-input))
-  (setq comint-input-filter (function inf-clojure-input-filter))
+  (setq comint-get-old-input #'inf-clojure-get-old-input)
+  (setq comint-input-filter #'inf-clojure-input-filter)
   (set (make-local-variable 'comint-prompt-read-only) inf-clojure-prompt-read-only)
-  (add-hook 'comint-preoutput-filter-functions 'inf-clojure-preoutput-filter nil t)
-  (add-hook 'completion-at-point-functions 'inf-clojure-completion-at-point nil t))
+  (add-hook 'comint-preoutput-filter-functions #'inf-clojure-preoutput-filter nil t)
+  (add-hook 'completion-at-point-functions #'inf-clojure-completion-at-point nil t))
 
 (defun inf-clojure-get-old-input ()
   "Return a string containing the sexp ending at point."
@@ -297,7 +297,7 @@ of `inf-clojure-program').  Runs the hooks from
       ;; run the new process in the project's root when in a project folder
       (let ((default-directory (inf-clojure-project-root))
             (cmdlist (split-string cmd)))
-        (set-buffer (apply (function make-comint)
+        (set-buffer (apply #'make-comint
                            "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
         (inf-clojure-mode)))
   (setq inf-clojure-buffer "*inf-clojure*")

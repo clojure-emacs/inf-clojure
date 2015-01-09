@@ -36,7 +36,7 @@ Add the following to your Emacs config to enable
 `inf-clojure-minor-mode` for Clojure source buffers:
 
 ```el
-(add-hook 'clojure-mode-hook 'inf-clojure-minor-mode)
+(add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 ```
 
 ## Usage
