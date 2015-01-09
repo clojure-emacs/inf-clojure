@@ -426,7 +426,12 @@ Used by this command to determine defaults."
   "Command to query inferior Clojure for a var's source.")
 
 (defvar inf-clojure-arglist-command
-  "(:arglists (clojure.core/meta #'%s))\n"
+  "(try
+     (:arglists
+      (clojure.core/meta
+       (clojure.core/resolve
+        (clojure.core/read-string \"%s\"))))
+     (catch Throwable t nil))"
   "Command to query inferior Clojure for a function's arglist.")
 
 (defvar inf-clojure-completion-command
@@ -509,7 +514,25 @@ See variable `inf-clojure-var-source-command'."
   "Send a query to the inferior Clojure for the arglist for function FN.
 See variable `inf-clojure-arglist-command'."
   (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-arglist-command fn)))
+  (let* ((proc (inf-clojure-proc))
+         (line (buffer-substring (save-excursion (move-beginning-of-line 1)
+                                                 (point))
+                                 (point)))
+         (comint-filt (process-filter proc))
+         (kept "")
+         eldoc)
+    (set-process-filter proc (lambda (proc string) (setq kept (concat kept string))))
+    (unwind-protect
+        (let ((eldoc-snippet (format inf-clojure-arglist-command fn)))
+          (process-send-string proc eldoc-snippet)
+          (while (and (not (string-match inf-clojure-prompt kept))
+                      (accept-process-output proc 2)))
+          ; some nasty #_=> garbage appears in the output
+          (setq eldoc (and (string-match "(.+)" kept) (match-string 0 kept)))
+          )
+      (set-process-filter proc comint-filt))
+    (when eldoc
+      (message "%s: %s" fn eldoc))))
 
 (defun inf-clojure-show-ns-vars (ns)
   "Send a query to the inferior Clojure for the public vars in NS.
