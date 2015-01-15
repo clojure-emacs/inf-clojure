@@ -43,6 +43,19 @@ Add the following to your Emacs config to enable
 
 `M-x inf-clojure` or `C-c C-z` within a Clojure source file.
 
+## Troubleshooting
+
+### REPL not responsive in Windows OS
+
+In Windows, the repl not returning anything. For example, `(+ 1 1)` and `ENTER`, the cursor just drops to new line and nothing shown.
+
+The explanation of this problem and solution can be found here https://groups.google.com/forum/#!topic/leiningen/48M-xvcI2Ng . 
+
+The solution is to create file named `.jline.rc` in your $HOME directory and write this line in that file.
+
+`jline.terminal=unsupported`
+
+
 ## License
 
 Copyright © 2014 Bozhidar Batsov and [contributors][].
