@@ -61,6 +61,11 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
   :type 'regexp
   :group 'inf-clojure)
 
+(defcustom inf-clojure-minor-mode-completions t
+  "If non-nil, completions will be used in inf-clojure minor mode."
+  :type 'boolean
+  :group 'inf-clojure)
+
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
     (define-key map "\C-x\C-e" 'inf-clojure-eval-last-sexp)
@@ -126,8 +131,9 @@ The following commands are available:
 \\{inf-clojure-minor-mode-map}"
   :lighter "" :keymap inf-clojure-minor-mode-map
   (make-local-variable 'completion-at-point-functions)
-  (add-to-list 'completion-at-point-functions
-               #'inf-clojure-completion-at-point))
+  (when inf-clojure-minor-mode-completions
+    (add-to-list 'completion-at-point-functions
+                 'inf-clojure-completion-at-point)))
 
 (defcustom inf-clojure-program "lein repl"
   "Program name for invoking an inferior Clojure in Inferior Clojure mode."
