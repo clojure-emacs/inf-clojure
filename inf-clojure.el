@@ -63,12 +63,12 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
-    (define-key map "\C-x\C-e" 'inf-clojure-eval-last-sexp)
-    (define-key map "\C-c\C-l" 'inf-clojure-load-file)
-    (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
-    (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
-    (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
-    (define-key map "\C-c\M-o" 'inf-clojure-clear-repl-buffer)
+    (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp)
+    (define-key map "\C-c\C-l" #'inf-clojure-load-file)
+    (define-key map "\C-c\C-a" #'inf-clojure-show-arglist)
+    (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
+    (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
+    (define-key map "\C-c\M-o" #'inf-clojure-clear-repl-buffer)
     (easy-menu-define inf-clojure-mode-menu map
       "Inferior Clojure REPL Menu"
       '("Inf-Clojure REPL"
@@ -85,21 +85,21 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 
 (defvar inf-clojure-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\M-\C-x"  'inf-clojure-eval-defun)     ; Gnu convention
-    (define-key map "\C-x\C-e" 'inf-clojure-eval-last-sexp) ; Gnu convention
-    (define-key map "\C-c\C-e" 'inf-clojure-eval-defun)
-    (define-key map "\C-c\C-r" 'inf-clojure-eval-region)
-    (define-key map "\C-c\C-n" 'inf-clojure-eval-form-and-next)
-    (define-key map "\C-c\C-p" 'inf-clojure-eval-paragraph)
-    (define-key map "\C-c\C-z" 'inf-clojure-switch-to-repl)
-    (define-key map "\C-c\C-i" 'inf-clojure-show-ns-vars)
-    (define-key map "\C-c\C-A" 'inf-clojure-apropos)
-    (define-key map "\C-c\C-m" 'inf-clojure-macroexpand)
-    (define-key map "\C-c\C-l" 'inf-clojure-load-file)
-    (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
-    (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
-    (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
-    (define-key map "\C-c\M-n" 'inf-clojure-set-ns)
+    (define-key map "\M-\C-x"  #'inf-clojure-eval-defun)     ; Gnu convention
+    (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp) ; Gnu convention
+    (define-key map "\C-c\C-e" #'inf-clojure-eval-defun)
+    (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
+    (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
+    (define-key map "\C-c\C-p" #'inf-clojure-eval-paragraph)
+    (define-key map "\C-c\C-z" #'inf-clojure-switch-to-repl)
+    (define-key map "\C-c\C-i" #'inf-clojure-show-ns-vars)
+    (define-key map "\C-c\C-A" #'inf-clojure-apropos)
+    (define-key map "\C-c\C-m" #'inf-clojure-macroexpand)
+    (define-key map "\C-c\C-l" #'inf-clojure-load-file)
+    (define-key map "\C-c\C-a" #'inf-clojure-show-arglist)
+    (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
+    (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
+    (define-key map "\C-c\M-n" #'inf-clojure-set-ns)
     (easy-menu-define inf-clojure-minor-mode-menu map
       "Inferior Clojure Minor Mode Menu"
       '("Inf-Clojure"
