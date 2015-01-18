@@ -68,6 +68,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-a" 'inf-clojure-show-arglist)
     (define-key map "\C-c\C-v" 'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" 'inf-clojure-show-var-source)
+    (define-key map "\C-c\M-o" 'inf-clojure-clear-repl-buffer)
     (easy-menu-define inf-clojure-mode-menu map
       "Inferior Clojure REPL Menu"
       '("Inf-Clojure REPL"
@@ -77,7 +78,9 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         "--"
         ["Show arglist" inf-clojure-show-arglist t]
         ["Show documentation for var" inf-clojure-show-var-documentation t]
-        ["Show source for var" inf-clojure-show-var-source t]))
+        ["Show source for var" inf-clojure-show-var-source t]
+        "--"
+        ["Clear REPL" inf-clojure-clear-repl-buffer]))
     map))
 
 (defvar inf-clojure-minor-mode-map
@@ -280,6 +283,12 @@ Fallback to `default-directory.' if not within a project."
                              (locate-dominating-file default-directory file))
                            inf-clojure-project-root-files)))
       default-directory))
+
+(defun inf-clojure-clear-repl-buffer ()
+  "Clear the REPL buffer."
+  (interactive)
+  (let ((comint-buffer-maximum-size 0))
+    (comint-truncate-buffer)))
 
 ;;;###autoload
 (defun inf-clojure (cmd)
