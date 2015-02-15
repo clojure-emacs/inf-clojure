@@ -87,7 +87,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
   (let ((map (make-sparse-keymap)))
     (define-key map "\M-\C-x"  #'inf-clojure-eval-defun)     ; Gnu convention
     (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp) ; Gnu convention
-    (define-key map "\C-c\C-e" #'inf-clojure-eval-defun)
+    (define-key map "\C-c\C-c" #'inf-clojure-eval-defun)     ; SLIME/CIDER style
     (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
     (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
     (define-key map "\C-c\C-p" #'inf-clojure-eval-paragraph)
