@@ -151,7 +151,8 @@ to load that file.~"
   :type 'regexp
   :group 'inf-clojure)
 
-(defvar inf-clojure-buffer nil "The current inf-clojure process buffer.
+(defvar inf-clojure-buffer nil
+  "The current inf-clojure process buffer.
 
 MULTIPLE PROCESS SUPPORT
 ===========================================================================
@@ -163,8 +164,8 @@ named `*inf-clojure*'.  You can switch between the different process
 buffers with \\[switch-to-buffer].
 
 Commands that send text from source buffers to Clojure processes --
-like `inf-clojure-eval-defun' or `inf-clojure-show-arglist' -- have to choose a process
-to send to, when you have more than one Clojure process around.  This
+like `inf-clojure-eval-defun' or `inf-clojure-show-arglist' -- have to choose a
+process to send to, when you have more than one Clojure process around.  This
 is determined by the global variable `inf-clojure-buffer'.  Suppose you
 have three inferior Clojures running:
     Buffer              Process
