@@ -49,7 +49,7 @@ Add the following to your Emacs config to enable
 
 In Windows, the repl not returning anything. For example, `(+ 1 1)` and `ENTER`, the cursor just drops to new line and nothing shown.
 
-The explanation of this problem and solution can be found here https://groups.google.com/forum/#!topic/leiningen/48M-xvcI2Ng . 
+The explanation of this problem and solution can be found here https://groups.google.com/forum/#!topic/leiningen/48M-xvcI2Ng .
 
 The solution is to create file named `.jline.rc` in your $HOME directory and write this line in that file.
 
@@ -58,7 +58,7 @@ The solution is to create file named `.jline.rc` in your $HOME directory and wri
 
 ## License
 
-Copyright © 2014 Bozhidar Batsov and [contributors][].
+Copyright © 2014-2015 Bozhidar Batsov and [contributors][].
 
 Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to view it.
 
