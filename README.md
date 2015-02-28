@@ -47,14 +47,18 @@ Add the following to your Emacs config to enable
 
 ### REPL not responsive in Windows OS
 
-In Windows, the repl not returning anything. For example, `(+ 1 1)` and `ENTER`, the cursor just drops to new line and nothing shown.
+In Windows, the REPL is not returning anything. For example, type `(+
+1 1)` and press `ENTER`, the cursor just drops to a new line and
+nothing is shown.
 
-The explanation of this problem and solution can be found here https://groups.google.com/forum/#!topic/leiningen/48M-xvcI2Ng .
+The explanation of this problem and solution can be found [here](https://groups.google.com/forum/#!topic/leiningen/48M-xvcI2Ng).
 
-The solution is to create file named `.jline.rc` in your $HOME directory and write this line in that file.
+The solution is to create a file named `.jline.rc` in your `$HOME`
+directory and add this line to that file:
 
-`jline.terminal=unsupported`
-
+```
+jline.terminal=unsupported
+```
 
 ## License
 
