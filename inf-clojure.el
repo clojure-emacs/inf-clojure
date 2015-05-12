@@ -443,7 +443,7 @@ Used by this command to determine defaults."
       (clojure.core/meta
        (clojure.core/resolve
         (clojure.core/read-string \"%s\"))))
-     (catch Throwable t nil))"
+     (catch Throwable t nil))\n"
   "Command to query inferior Clojure for a function's arglist.")
 
 (defvar inf-clojure-completion-command
