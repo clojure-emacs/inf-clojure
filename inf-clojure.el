@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 ;;
-;; inf-lisp adapted for Clojure.
+;; inferior-lisp adapted for Clojure.
 ;;
 ;; If you're installing manually, you'll need to:
 ;;
@@ -34,7 +34,7 @@
 ;; * Add the following lines to your .emacs file:
 ;;
 ;;    (autoload 'inf-clojure "inf-clojure" "Run an inferior Clojure process" t)
-;;    (add-hook 'clojure-mode-hook 'inf-clojure-minor-mode)
+;;    (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 
 ;;; Code:
 
