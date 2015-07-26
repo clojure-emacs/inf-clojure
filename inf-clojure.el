@@ -143,7 +143,7 @@ The following commands are available:
   "Format-string for building a Clojure expression to load a file.
 This format string should use `%s' to substitute a file name
 and should result in a Clojure expression that will command the inferior Clojure
-to load that file.~"
+to load that file."
   :type 'string
   :group 'inf-clojure)
 
