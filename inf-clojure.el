@@ -43,7 +43,7 @@
 
 
 (defgroup inf-clojure nil
-  "Run an outside Clojure in an Emacs buffer."
+  "Run an external Clojure process (REPL) in an Emacs buffer."
   :group 'clojure)
 
 (defcustom inf-clojure-prompt-read-only t
