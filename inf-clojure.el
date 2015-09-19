@@ -132,7 +132,14 @@ The following commands are available:
   :lighter "" :keymap inf-clojure-minor-mode-map
   (make-local-variable 'completion-at-point-functions)
   (add-to-list 'completion-at-point-functions
-               #'inf-clojure-completion-at-point))
+               #'inf-clojure-completion-at-point)
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (unless (get-buffer-process "*inf-clojure*")
+                (inf-clojure)
+                (bury-buffer))
+              ))
+               )
 
 (defcustom inf-clojure-program "lein repl"
   "Program name for invoking an inferior Clojure in Inferior Clojure mode."
