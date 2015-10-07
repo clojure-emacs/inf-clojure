@@ -25,7 +25,8 @@ or if you'd rather keep it in your dotfiles:
 
 ```el
 (unless (package-installed-p 'inf-clojure)
-  (package-refresh-contents))
+  (package-refresh-contents)
+  (package-install 'inf-clojure))
 ```
 
 If the installation doesn't work try refreshing the package list:
