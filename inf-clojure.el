@@ -321,19 +321,19 @@ of `inf-clojure-program').  Runs the hooks from
 
 (defun inf-clojure-eval-region (start end &optional and-go)
   "Send the current region to the inferior Clojure process.
-Prefix argument means switch to the Clojure buffer afterwards."
+Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "r\nP")
   (comint-send-region (inf-clojure-proc) start end)
   (comint-send-string (inf-clojure-proc) "\n")
   (if and-go (inf-clojure-switch-to-repl t)))
 
-(defun inf-clojure-eval-string (string)
-  "Send the string to the inferior Clojure process to be executed."
-  (comint-send-string (inf-clojure-proc) (concat string "\n")))
+(defun inf-clojure-eval-string (code)
+  "Send the string CODE to the inferior Clojure process to be executed."
+  (comint-send-string (inf-clojure-proc) (concat code "\n")))
 
 (defun inf-clojure-eval-defun (&optional and-go)
   "Send the current defun to the inferior Clojure process.
-Prefix argument means switch to the Clojure buffer afterwards."
+Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "P")
   (save-excursion
     (end-of-defun)
@@ -344,7 +344,7 @@ Prefix argument means switch to the Clojure buffer afterwards."
 
 (defun inf-clojure-eval-buffer (&optional and-go)
   "Send the current buffer to the inferior Clojure process.
-Prefix argument means switch to the Clojure buffer afterwards."
+Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "P")
   (save-excursion
     (end-of-buffer)
@@ -355,7 +355,7 @@ Prefix argument means switch to the Clojure buffer afterwards."
 
 (defun inf-clojure-eval-last-sexp (&optional and-go)
   "Send the previous sexp to the inferior Clojure process.
-Prefix argument means switch to the Clojure buffer afterwards."
+Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "P")
   (inf-clojure-eval-region (save-excursion (backward-sexp) (point)) (point) and-go))
 
@@ -369,7 +369,7 @@ Prefix argument means switch to the Clojure buffer afterwards."
 
 (defun inf-clojure-switch-to-repl (eob-p)
   "Switch to the inferior Clojure process buffer.
-With argument, positions cursor at end of buffer."
+With prefix argument EOB-P, positions cursor at end of buffer."
   (interactive "P")
   (if (get-buffer-process inf-clojure-buffer)
       (let ((pop-up-frames
