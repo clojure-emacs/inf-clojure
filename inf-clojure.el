@@ -90,6 +90,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp) ; Gnu convention
     (define-key map "\C-c\C-e" #'inf-clojure-eval-last-sexp)
     (define-key map "\C-c\C-c" #'inf-clojure-eval-defun)     ; SLIME/CIDER style
+    (define-key map "\C-c\C-b" #'inf-clojure-eval-buffer)
     (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
     (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
     (define-key map "\C-c\C-p" #'inf-clojure-eval-paragraph)
@@ -108,6 +109,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Eval top-level sexp at point" inf-clojure-eval-defun t]
         ["Eval last sexp" inf-clojure-eval-last-sexp t]
         ["Eval region" inf-clojure-eval-region t]
+        ["Eval buffer" inf-clojure-eval-buffer t]
         "--"
         ["Load file..." inf-clojure-load-file t]
         "--"
@@ -347,6 +349,17 @@ Prefix argument means switch to the Clojure buffer afterwards."
     (skip-chars-backward " \t\n\r\f") ;  Makes allegro happy
     (let ((end (point)) (case-fold-search t))
       (beginning-of-defun)
+      (inf-clojure-eval-region (point) end)))
+  (if and-go (inf-clojure-switch-to-repl t)))
+
+(defun inf-clojure-eval-buffer (&optional and-go)
+  "Send the current buffer to the inferior Clojure process.
+Prefix argument means switch to the Clojure buffer afterwards."
+  (interactive "P")
+  (save-excursion
+    (end-of-buffer)
+    (let ((end (point)) (case-fold-search t))
+      (beginning-of-buffer)
       (inf-clojure-eval-region (point) end)))
   (if and-go (inf-clojure-switch-to-repl t)))
 
