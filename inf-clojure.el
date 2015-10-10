@@ -413,7 +413,7 @@ Used by this command to determine defaults."
   :group 'inf-clojure)
 
 (defun inf-clojure-load-file (file-name)
-  "Load a Clojure file into the inferior Clojure process."
+  "Load a Clojure file FILE-NAME into the inferior Clojure process."
   (interactive (comint-get-source "Load Clojure file: " inf-clojure-prev-l/c-dir/file
                                   inf-clojure-source-modes nil)) ; nil because LOAD
                                         ; doesn't need an exact name
