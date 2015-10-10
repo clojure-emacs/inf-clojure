@@ -93,7 +93,6 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-b" #'inf-clojure-eval-buffer)
     (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
     (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
-    (define-key map "\C-c\C-p" #'inf-clojure-eval-paragraph)
     (define-key map "\C-c\C-z" #'inf-clojure-switch-to-repl)
     (define-key map "\C-c\C-i" #'inf-clojure-show-ns-vars)
     (define-key map "\C-c\C-A" #'inf-clojure-apropos)
@@ -319,14 +318,6 @@ of `inf-clojure-program').  Runs the hooks from
 
 ;;;###autoload
 (defalias 'run-clojure 'inf-clojure)
-
-(defun inf-clojure-eval-paragraph (&optional and-go)
-  "Send the current paragraph to the inferior Clojure process.
-Prefix argument means switch to the Clojure buffer afterwards."
-  (interactive "P")
-  (save-excursion
-    (mark-paragraph)
-    (inf-clojure-eval-region (point) (mark) and-go)))
 
 (defun inf-clojure-eval-region (start end &optional and-go)
   "Send the current region to the inferior Clojure process.
