@@ -337,7 +337,6 @@ Prefix argument means switch to the Clojure buffer afterwards."
   (interactive "P")
   (save-excursion
     (end-of-defun)
-    (skip-chars-backward " \t\n\r\f") ;  Makes allegro happy
     (let ((end (point)) (case-fold-search t))
       (beginning-of-defun)
       (inf-clojure-eval-region (point) end)))
