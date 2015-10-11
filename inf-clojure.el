@@ -153,6 +153,11 @@ to load that file."
   :type 'regexp
   :group 'inf-clojure)
 
+(defcustom inf-clojure-subprompt " *#_=> *"
+  "Regexp to recognize subprompts in the Inferior Clojure mode."
+  :type 'regexp
+  :group 'inf-clojure)
+
 (defvar inf-clojure-buffer nil
   "The current inf-clojure process buffer.
 
@@ -265,12 +270,16 @@ to continue it."
       (replace-match "" t t string)
     string))
 
+(defun inf-clojure-remove-subprompts (string)
+  "Remove subprompts from STRING."
+  (replace-regexp-in-string inf-clojure-subprompt "" string))
+
 (defun inf-clojure-preoutput-filter (str)
   "Preprocess the output STR from interactive commands."
   (cond
    ((string-prefix-p "inf-clojure-" (symbol-name (or this-command last-command)))
-    ;; prepend a newline to the output string
-    (inf-clojure-chomp (concat "\n" str)))
+    ;; Remove subprompts and prepend a newline to the output string
+    (inf-clojure-chomp (concat "\n" (inf-clojure-remove-subprompts str))))
    (t str)))
 
 (defvar inf-clojure-project-root-files
