@@ -323,8 +323,12 @@ of `inf-clojure-program').  Runs the hooks from
   "Send the current region to the inferior Clojure process.
 Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "r\nP")
-  (comint-send-region (inf-clojure-proc) start end)
-  (comint-send-string (inf-clojure-proc) "\n")
+  ;; replace multiple newlines at the end of the region by a single one
+  ;; or add one if there was no newline
+  (let ((str (replace-regexp-in-string
+              "[\n]*\\'" "\n"
+              (buffer-substring-no-properties start end))))
+    (comint-send-string (inf-clojure-proc) str))
   (if and-go (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-eval-string (code)
