@@ -352,19 +352,16 @@ Prefix argument AND-GO means switch to the Clojure buffer afterwards."
     (end-of-defun)
     (let ((end (point)) (case-fold-search t))
       (beginning-of-defun)
-      (inf-clojure-eval-region (point) end)))
-  (if and-go (inf-clojure-switch-to-repl t)))
+      (inf-clojure-eval-region (point) end and-go))))
 
 (defun inf-clojure-eval-buffer (&optional and-go)
   "Send the current buffer to the inferior Clojure process.
 Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "P")
   (save-excursion
-    (end-of-buffer)
-    (let ((end (point)) (case-fold-search t))
-      (beginning-of-buffer)
-      (inf-clojure-eval-region (point) end)))
-  (if and-go (inf-clojure-switch-to-repl t)))
+    (widen)
+    (let ((case-fold-search t))
+      (inf-clojure-eval-region (point-min) (point-max) and-go))))
 
 (defun inf-clojure-eval-last-sexp (&optional and-go)
   "Send the previous sexp to the inferior Clojure process.
