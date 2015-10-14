@@ -543,13 +543,10 @@ See variable `inf-clojure-var-source-command'."
 See variable `inf-clojure-arglist-command'."
   (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
   (let* ((proc (inf-clojure-proc))
-         (line (buffer-substring (save-excursion (move-beginning-of-line 1)
-                                                 (point))
-                                 (point)))
          (comint-filt (process-filter proc))
          (kept "")
          eldoc)
-    (set-process-filter proc (lambda (proc string) (setq kept (concat kept string))))
+    (set-process-filter proc (lambda (_proc string) (setq kept (concat kept string))))
     (unwind-protect
         (let ((eldoc-snippet (format inf-clojure-arglist-command fn)))
           (process-send-string proc eldoc-snippet)
@@ -606,13 +603,10 @@ With a prefix arg MACRO-1 uses `inf-clojure-macroexpand-1-command'."
 (defun inf-clojure-completions (expr)
   "Return a list of completions for the Clojure expression starting with EXPR."
   (let* ((proc (inf-clojure-proc))
-         (line (buffer-substring (save-excursion (move-beginning-of-line 1)
-                                                 (point))
-                                 (point)))
          (comint-filt (process-filter proc))
          (kept "")
          completions)
-    (set-process-filter proc (lambda (proc string) (setq kept (concat kept string))))
+    (set-process-filter proc (lambda (_proc string) (setq kept (concat kept string))))
     (unwind-protect
         (let ((completion-snippet
                (format
