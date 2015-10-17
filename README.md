@@ -2,9 +2,15 @@
 [![MELPA][melpa-badge]][melpa-package]
 [![MELPA Stable][melpa-stable-badge]][melpa-stable-package]
 
-# Inf Clojure
+# inf-clojure
 
 This package provides basic interaction with a Clojure subprocess (REPL).
+It's based on ideas from the popular `inferior-lisp` package.
+
+`inf-clojure` has two components - a nice Clojure REPL with
+auto-completion and a minor mode (`inf-clojure-minor-mode`), which
+extends `clojure-mode` with commands to evaluate forms directly in the
+REPL.
 
 For a more powerful/full-featured solution see [CIDER][].
 
