@@ -46,6 +46,10 @@ Add the following to your Emacs config to enable
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 ```
 
+**Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same
+time.  They have overlapping functionality and keybindings and the
+result will be nothing short of havoc.**
+
 ## Usage
 
 `M-x inf-clojure` or `C-c C-z` within a Clojure source file.
