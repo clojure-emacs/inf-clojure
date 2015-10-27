@@ -40,6 +40,8 @@
 
 (require 'comint)
 (require 'clojure-mode)
+(require 'eldoc)
+(require 'thingatpt)
 
 
 (defgroup inf-clojure nil
@@ -131,6 +133,7 @@ The following commands are available:
 
 \\{inf-clojure-minor-mode-map}"
   :lighter "" :keymap inf-clojure-minor-mode-map
+  (inf-clojure-eldoc-setup)
   (make-local-variable 'completion-at-point-functions)
   (add-to-list 'completion-at-point-functions
                #'inf-clojure-completion-at-point))
@@ -247,6 +250,7 @@ to continue it."
   (setq comint-prompt-regexp inf-clojure-prompt)
   (setq mode-line-process '(":%s"))
   (clojure-mode-variables)
+  (inf-clojure-eldoc-setup)
   (setq comint-get-old-input #'inf-clojure-get-old-input)
   (setq comint-input-filter #'inf-clojure-input-filter)
   (set (make-local-variable 'comint-prompt-read-only) inf-clojure-prompt-read-only)
@@ -429,10 +433,14 @@ Used by this command to determine defaults."
                                         ; doesn't need an exact name
   (comint-check-source file-name) ; Check to see if buffer needs saved.
   (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
-                                        (file-name-nondirectory file-name)))
+                                            (file-name-nondirectory file-name)))
   (comint-send-string (inf-clojure-proc)
                       (format inf-clojure-load-command file-name))
   (inf-clojure-switch-to-repl t))
+
+(defun inf-clojure-connected-p ()
+  "Return t if inferior Clojure is currently connected, nil otherwise."
+  (not (null inf-clojure-buffer)))
 
 
 ;;; Documentation functions: function doc, var doc, arglist, and
@@ -519,6 +527,9 @@ The value is nil if it can't find one."
           (and (symbolp obj) obj)))
     (error nil)))
 
+(defun inf-clojure-symbol-at-point ()
+  "Return the name of the symbol at point, otherwise nil."
+  (or (thing-at-point 'symbol) ""))
 
 ;;; Documentation functions: var doc and arglist.
 ;;; ======================================================================
@@ -535,7 +546,7 @@ See variable `inf-clojure-var-source-command'."
   (interactive (inf-clojure-symprompt "Var source" (inf-clojure-var-at-pt)))
   (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-command var)))
 
-(defun inf-clojure-show-arglist (fn)
+(defun inf-clojure-arglist (fn)
   "Send a query to the inferior Clojure for the arglist for function FN.
 See variable `inf-clojure-arglist-command'."
   (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
@@ -549,12 +560,16 @@ See variable `inf-clojure-arglist-command'."
           (process-send-string proc eldoc-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
-          ; some nasty #_=> garbage appears in the output
           (setq eldoc (and (string-match "(.+)" kept) (match-string 0 kept)))
           )
       (set-process-filter proc comint-filt))
-    (when eldoc
-      (message "%s: %s" fn eldoc))))
+    eldoc))
+
+(defun inf-clojure-show-arglist (fn)
+  "Show the arglist for function FN in the mini-buffer."
+  (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
+  (if-let ((eldoc (inf-clojure-arglist fn)))
+      (message "%s: %s" fn eldoc)))
 
 (defun inf-clojure-show-ns-vars (ns)
   "Send a query to the inferior Clojure for the public vars in NS.
@@ -643,6 +658,88 @@ Returns the selected completion or nil."
             (if (fboundp 'completion-table-with-cache)
                 (completion-table-with-cache #'inf-clojure-completions)
               (completion-table-dynamic #'inf-clojure-completions))))))
+
+;;;; ElDoc
+;;;; =====
+
+(defvar inf-clojure-extra-eldoc-commands '("yas-expand")
+  "Extra commands to be added to eldoc's safe commands list.")
+
+(defvar-local inf-clojure-eldoc-last-symbol nil
+  "The eldoc information for the last symbol we checked.")
+
+(defun inf-clojure-eldoc-format-thing (thing)
+  "Format the eldoc THING."
+  (propertize thing 'face 'font-lock-function-name-face))
+
+(defun inf-clojure-eldoc-beginning-of-sexp ()
+  "Move to the beginning of current sexp.
+
+Return the number of nested sexp the point was over or after. "
+  (let ((parse-sexp-ignore-comments t)
+        (num-skipped-sexps 0))
+    (condition-case _
+        (progn
+          ;; First account for the case the point is directly over a
+          ;; beginning of a nested sexp.
+          (condition-case _
+              (let ((p (point)))
+                (forward-sexp -1)
+                (forward-sexp 1)
+                (when (< (point) p)
+                  (setq num-skipped-sexps 1)))
+            (error))
+          (while
+              (let ((p (point)))
+                (forward-sexp -1)
+                (when (< (point) p)
+                  (setq num-skipped-sexps (1+ num-skipped-sexps))))))
+      (error))
+    num-skipped-sexps))
+
+(defun inf-clojure-eldoc-info-in-current-sexp ()
+  "Return a list of the current sexp and the current argument index."
+  (save-excursion
+    (let ((argument-index (1- (inf-clojure-eldoc-beginning-of-sexp))))
+      ;; If we are at the beginning of function name, this will be -1.
+      (when (< argument-index 0)
+        (setq argument-index 0))
+      ;; Don't do anything if current word is inside a string, vector,
+      ;; hash or set literal.
+      (if (member (or (char-after (1- (point))) 0) '(?\" ?\{ ?\[))
+          nil
+        (list (inf-clojure-symbol-at-point) argument-index)))))
+
+(defun inf-clojure-eldoc-arglist (thing)
+  "Return the arglist for THING."
+  (when (and thing
+             (not (string= thing ""))
+             (not (string-prefix-p ":" thing)))
+    ;; check if we can used the cached eldoc info
+    (if (string= thing (car inf-clojure-eldoc-last-symbol))
+        (cdr inf-clojure-eldoc-last-symbol)
+      (let ((arglist (inf-clojure-arglist (substring-no-properties thing))))
+        (when arglist
+          (setq inf-clojure-eldoc-last-symbol (cons thing arglist))
+          arglist)))))
+
+(defun inf-clojure-eldoc ()
+  "Backend function for eldoc to show argument list in the echo area."
+  (when (and (inf-clojure-connected-p)
+             ;; don't clobber an error message in the minibuffer
+             (not (member last-command '(next-error previous-error))))
+    (let* ((info (inf-clojure-eldoc-info-in-current-sexp))
+           (thing (car info))
+           (value (inf-clojure-eldoc-arglist thing)))
+      (when value
+        (format "%s: %s"
+                (inf-clojure-eldoc-format-thing thing)
+                value)))))
+
+(defun inf-clojure-eldoc-setup ()
+  "Turn on eldoc mode in the current buffer."
+  (setq-local eldoc-documentation-function #'inf-clojure-eldoc)
+  (apply #'eldoc-add-command inf-clojure-extra-eldoc-commands))
 
 (provide 'inf-clojure)
 
