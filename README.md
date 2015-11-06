@@ -54,6 +54,26 @@ result will be nothing short of havoc.**
 
 `M-x inf-clojure` or `C-c C-z` within a Clojure source file.
 
+## ElDoc
+
+`eldoc-mode` is supported in Clojure source buffers and `*inferior-clojure*`
+buffers which are running a Clojure REPL.
+
+When ElDoc is enabled and there is an active REPL, it will show the
+argument list of the function call you are currently editing in the
+echo area.
+
+You can activate ElDoc with `M-x eldoc-mode` or by adding the
+following to you Emacs config:
+
+```el
+(add-hook 'clojure-mode-hook #'eldoc-mode)
+(add-hook 'inf-clojure-mode-hook #'eldoc-mode)
+```
+
+ElDoc currently doesn't work with ClojureScript buffers and REPL's.
+You can leave it enabled, it just won't show anything in the echo area.
+
 ## Troubleshooting
 
 ### REPL not responsive in Windows OS
