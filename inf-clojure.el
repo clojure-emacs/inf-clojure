@@ -568,8 +568,9 @@ See variable `inf-clojure-arglist-command'."
 (defun inf-clojure-show-arglist (fn)
   "Show the arglist for function FN in the mini-buffer."
   (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
-  (if-let ((eldoc (inf-clojure-arglist fn)))
-      (message "%s: %s" fn eldoc)))
+  (let ((eldoc (inf-clojure-arglist fn)))
+    (when eldoc
+      (message "%s: %s" fn eldoc))))
 
 (defun inf-clojure-show-ns-vars (ns)
   "Send a query to the inferior Clojure for the public vars in NS.
