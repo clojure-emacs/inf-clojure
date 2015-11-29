@@ -7,7 +7,7 @@
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, clojure
 ;; Version: 1.3.0
-;; Package-Requires: ((emacs "24.1") (clojure-mode "4.0"))
+;; Package-Requires: ((emacs "24.1") (clojure-mode "5.0"))
 
 ;; This file is part of GNU Emacs.
 
