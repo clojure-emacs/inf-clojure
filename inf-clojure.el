@@ -1,4 +1,4 @@
-;;; inf-clojure.el --- an inferior-clojure mode -*- lexical-binding: t; -*-
+;;; inf-clojure.el --- Run an external Clojure process in an Emacs buffer -*- lexical-binding: t; -*-
 
 ;; Copyright © 2014-2015 Bozhidar Batsov
 
