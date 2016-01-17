@@ -604,9 +604,9 @@ With a prefix arg MACRO-1 uses `inf-clojure-macroexpand-1-command'."
              last-sexp))))
 
 
-;;  "Returns the current inferior Clojure process.
-;; See variable `inf-clojure-buffer'."
 (defun inf-clojure-proc ()
+  "Return the current inferior Clojure process.
+See variable `inf-clojure-buffer'."
   (let ((proc (get-buffer-process (if (derived-mode-p 'inf-clojure-mode)
                                       (current-buffer)
                                     inf-clojure-buffer))))
