@@ -93,7 +93,7 @@ jline.terminal=unsupported
 
 ## License
 
-Copyright © 2014-2015 Bozhidar Batsov and [contributors][].
+Copyright © 2014-2016 Bozhidar Batsov and [contributors][].
 
 Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to view it.
 
