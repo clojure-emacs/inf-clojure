@@ -504,7 +504,7 @@ Used by this command to determine defaults."
 
 ;;; Adapted from function-called-at-point in help.el.
 (defun inf-clojure-fn-called-at-pt ()
-  "Returns the name of the function called in the current call.
+  "Return the name of the function called in the current call.
 The value is nil if it can't find one."
   (condition-case nil
       (save-excursion
