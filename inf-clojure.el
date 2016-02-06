@@ -500,11 +500,13 @@ Used by this command to determine defaults."
 
 (defcustom inf-clojure-macroexpand-command
   "(clojure.core/macroexpand '%s)\n"
+  "Command to invoke macroexpand."
   :type 'string
   :group 'inf-clojure)
 
 (defcustom inf-clojure-macroexpand-1-command
   "(clojure.core/macroexpand-1 '%s)\n"
+  "Command to invoke macroexpand-1."
   :type 'string
   :group 'inf-clojure)
 
