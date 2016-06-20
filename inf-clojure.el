@@ -139,8 +139,11 @@ The following commands are available:
                #'inf-clojure-completion-at-point))
 
 (defcustom inf-clojure-program "lein repl"
-  "Program name for invoking an inferior Clojure in Inferior Clojure mode."
-  :type 'string
+  "Either a program name or a connection cons pair consisting of a host
+and port number (e.g. (\"localhost\" . 5555)), for invoking an inferior Clojure
+in Inferior Clojure mode."
+  :type '(choice (string)
+                 (cons string integer))
   :group 'inf-clojure)
 
 (defcustom inf-clojure-load-command "(clojure.core/load-file \"%s\")\n"
@@ -322,7 +325,9 @@ of `inf-clojure-program').  Runs the hooks from
   (if (not (comint-check-proc "*inf-clojure*"))
       ;; run the new process in the project's root when in a project folder
       (let ((default-directory (inf-clojure-project-root))
-            (cmdlist (split-string cmd)))
+            (cmdlist (if (consp cmd)
+                         (list cmd)
+                       (split-string cmd))))
         (set-buffer (apply #'make-comint
                            "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
         (inf-clojure-mode)))
