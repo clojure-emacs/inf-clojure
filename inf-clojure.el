@@ -167,6 +167,13 @@ to load that file."
   :type 'regexp
   :group 'inf-clojure)
 
+(defcustom inf-clojure-comint-prompt-regexp "^\\( *#_\\|[^=> \n]+\\)=> *"
+  "Regexp to recognize both main prompt and subprompt for comint.
+This should usually be a combination of `inf-clojure-prompt' and
+`inf-clojure-subprompt'."
+  :type 'regexp
+  :group 'inf-clojure)
+
 (defvar inf-clojure-buffer nil
   "The current inf-clojure process buffer.
 
@@ -253,7 +260,7 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on o
 Paragraphs are separated only by blank lines.  Semicolons start comments.
 If you accidentally suspend your process, use \\[comint-continue-subjob]
 to continue it."
-  (setq comint-prompt-regexp inf-clojure-prompt)
+  (setq comint-prompt-regexp inf-clojure-comint-prompt-regexp)
   (setq mode-line-process '(":%s"))
   (clojure-mode-variables)
   (inf-clojure-eldoc-setup)
@@ -268,7 +275,7 @@ to continue it."
   (save-excursion
     (let ((end (point)))
       (backward-sexp)
-      (buffer-substring (point) end))))
+      (buffer-substring (max (point) (comint-line-beginning-position)) end))))
 
 (defun inf-clojure-input-filter (str)
   "Return t if STR does not match `inf-clojure-filter-regexp'."
