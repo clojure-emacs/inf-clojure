@@ -139,9 +139,12 @@ The following commands are available:
                #'inf-clojure-completion-at-point))
 
 (defcustom inf-clojure-program "lein repl"
-  "Either a program name or a connection cons pair consisting of a host
-and port number (e.g. (\"localhost\" . 5555)), for invoking an inferior Clojure
-in Inferior Clojure mode."
+  "The command used to start an inferior Clojure process in `inf-clojure-mode'.
+
+Alternative you can specify a TCP connection cons pair, instead
+of command, consisting of a host and port
+number (e.g. (\"localhost\" . 5555)).  That's useful if you're
+often connecting to a remote REPL process."
   :type '(choice (string)
                  (cons string integer))
   :group 'inf-clojure)
