@@ -46,6 +46,13 @@ Add the following to your Emacs config to enable
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 ```
 
+`inf-clojure-program` is a custom variable that defines a program to run
+or the tcp socket to connect to when starting `inf-clojure`. By default
+this var is set to `lein repl`, which will start a repl via leiningen.
+However, it is possible to use a cons pair like `("localhost" . 5555)` to
+connect to a socket repl like the one provided with [planck](http://planck-repl.org/),
+which can be started from the command line with `planck -n 5555`.
+
 **Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same
 time.  They have overlapping functionality and keybindings and the
 result will be nothing short of havoc.**
