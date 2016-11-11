@@ -62,7 +62,7 @@ connect to a socket REPL like the one provided with [planck](http://planck-repl.
 which can be started from the command line with `planck -n 5555`.
 
 Use `C-u C-c C-z` to start a REPL with a different command/cons pair than
-the default specified in `info-clojure-program`.
+the default specified in `inf-clojure-program`.
 
 ## ElDoc
 
