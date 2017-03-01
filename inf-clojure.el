@@ -44,6 +44,7 @@
 (require 'thingatpt)
 (require 'ansi-color)
 (require 'cl-lib)
+(require 'subr-x)
 
 
 (defgroup inf-clojure nil
@@ -148,6 +149,7 @@ The following commands are available:
 
 \\{inf-clojure-minor-mode-map}"
   :lighter "" :keymap inf-clojure-minor-mode-map
+  (setq comint-input-sender 'inf-clojure--send-string)
   (inf-clojure-eldoc-setup)
   (make-local-variable 'completion-at-point-functions)
   (add-to-list 'completion-at-point-functions
@@ -182,6 +184,30 @@ number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
                  (cons string integer)))
+
+(defvar-local inf-clojure-repl-type nil
+  "Symbol to define your REPL type.
+Its root binding is nil and it can be further customized using
+either `setq-local` or an entry in `.dir-locals.el`." )
+
+(defun inf-clojure--detect-type (proc)
+  "Identifies the current REPL type for PROC."
+  (cond
+   ((inf-clojure--lumo-p proc) 'lumo)
+   (t 'clojure)))
+
+(defun inf-clojure--set-repl-type (proc)
+  "Set the REPL type if has not already been set."
+  (when (not inf-clojure-repl-type)
+    (setq inf-clojure-repl-type (inf-clojure--detect-type proc))))
+
+(defun inf-clojure--send-string (proc string)
+  "A custom `comint-input-sender` / `comint-send-string`.
+Perform the required side effects on every send for PROC and
+STRING (for example set the buffer local REPL type).  It should
+be used instead of `comint-send-string`."
+  (inf-clojure--set-repl-type proc)
+  (comint-simple-send proc string))
 
 (defcustom inf-clojure-load-command "(clojure.core/load-file \"%s\")\n"
   "Format-string for building a Clojure expression to load a file.
@@ -296,6 +322,7 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on o
 Paragraphs are separated only by blank lines.  Semicolons start comments.
 If you accidentally suspend your process, use \\[comint-continue-subjob]
 to continue it."
+  (setq comint-input-sender 'inf-clojure--send-string)
   (setq comint-prompt-regexp inf-clojure-comint-prompt-regexp)
   (setq mode-line-process '(":%s"))
   (clojure-mode-variables)
@@ -408,12 +435,12 @@ Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (let ((str (replace-regexp-in-string
               "[\n]*\\'" "\n"
               (buffer-substring-no-properties start end))))
-    (comint-send-string (inf-clojure-proc) str))
+    (inf-clojure--send-string (inf-clojure-proc) str))
   (if and-go (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-eval-string (code)
   "Send the string CODE to the inferior Clojure process to be executed."
-  (comint-send-string (inf-clojure-proc) (concat code "\n")))
+  (inf-clojure--send-string (inf-clojure-proc) (concat code "\n")))
 
 (defun inf-clojure-eval-defun (&optional and-go)
   "Send the current defun to the inferior Clojure process.
@@ -504,8 +531,8 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
     (comint-check-source file-name) ; Check to see if buffer needs saved.
     (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
                                               (file-name-nondirectory file-name)))
-    (comint-send-string (inf-clojure-proc)
-                        (format inf-clojure-load-command file-name))
+    (inf-clojure--send-string (inf-clojure-proc)
+                              (format inf-clojure-load-command file-name))
     (when switch-to-repl
       (inf-clojure-switch-to-repl t))))
 
@@ -521,10 +548,23 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
 ;;; Command strings
 ;;; ===============
 
-(defcustom inf-clojure-var-doc-command
+(defcustom inf-clojure-var-doc-form
   "(clojure.repl/doc %s)\n"
   "Command to query inferior Clojure for a var's documentation."
   :type 'string)
+
+(defcustom inf-clojure-var-doc-form-lumo
+  "(lumo.repl/doc %s)\n"
+  "Lumo command to query inferior Clojure for a var's documentation."
+  :type 'string)
+
+(defun inf-clojure-var-doc-form ()
+  "Return the form to query inferior Clojure for a var's documentation.
+If you are using REPL types, it will pickup the most approapriate
+`inf-clojure-var-doc-form` variant."
+  (pcase inf-clojure-repl-type
+    (lumo inf-clojure-var-doc-form-lumo)
+    (_ inf-clojure-var-doc-form)))
 
 (defcustom inf-clojure-var-source-command
   "(clojure.repl/source %s)\n"
@@ -541,10 +581,23 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
   "Command to query inferior Clojure for a function's arglist."
   :type 'string)
 
-(defcustom inf-clojure-completion-command
+(defcustom inf-clojure-completion-form
   "(complete.core/completions \"%s\")\n"
   "Command to query inferior Clojure for completion candidates."
   :type 'string)
+
+(defcustom inf-clojure-completion-form-lumo
+  "(doall (map str (lumo.repl/get-completions \"%s\")))\n"
+  "Lumo form to query inferior Clojure for completion candidates."
+  :type 'string)
+
+(defun inf-clojure-completion-form ()
+  "Return the form to query inferior Clojure for a var's documentation.
+If you are using REPL types, it will pickup the most approapriate
+`inf-clojure-completion-form` variant."
+  (pcase inf-clojure-repl-type
+    (lumo inf-clojure-completion-form-lumo)
+    (_ inf-clojure-completion-form)))
 
 (defcustom inf-clojure-ns-vars-command
   "(clojure.repl/dir %s)\n"
@@ -618,9 +671,9 @@ The value is nil if it can't find one."
 
 (defun inf-clojure-show-var-documentation (var)
   "Send a command to the inferior Clojure to give documentation for VAR.
-See variable `inf-clojure-var-doc-command'."
+See function `inf-clojure-var-doc-form'."
   (interactive (inf-clojure-symprompt "Var doc" (inf-clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-doc-command var)))
+  (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-doc-form) var)))
 
 (defun inf-clojure-show-var-source (var)
   "Send a command to the inferior Clojure to give source for VAR.
@@ -683,7 +736,7 @@ See variable `inf-clojure-macroexpand-command'.
 With a prefix arg MACRO-1 uses `inf-clojure-macroexpand-1-command'."
   (interactive "P")
   (let ((last-sexp (buffer-substring-no-properties (save-excursion (backward-sexp) (point)) (point))))
-    (comint-send-string
+    (inf-clojure--send-string
      (inf-clojure-proc)
      (format (if macro-1
                  inf-clojure-macroexpand-1-command
@@ -710,7 +763,7 @@ See variable `inf-clojure-buffer'."
     (unwind-protect
         (let ((completion-snippet
                (format
-                inf-clojure-completion-command (substring-no-properties expr))))
+                (inf-clojure-completion-form) (substring-no-properties expr))))
           (process-send-string proc completion-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
@@ -876,6 +929,39 @@ to suppress the usage of the target buffer discovery logic."
     (inf-clojure (inf-clojure-cmd (inf-clojure-project-type)))
     (rename-buffer target-buffer-name)))
 
-(provide 'inf-clojure)
+(defun inf-clojure--response-match-p (form match-p proc)
+  "Return MATCH-P on the result of sending FORM to PROC.
+Note that this function will add a \n to the end of the string
+for evaluation, therefore FORM should not include it."
+  (let* ((kept "")
+         (is-matching nil)
+         (prev-filter (process-filter proc)))
+    (set-process-filter proc (lambda (_ string) (setq kept (concat kept string))))
+    (unwind-protect
+        ;; use the real comind-send-string in order to avoid stack overflows
+        (comint-send-string proc (concat form "\n"))
+      ;; yey, loads of procedural code again
+      (while (and (not is-matching)
+                  (not (string-match inf-clojure-prompt kept))
+                  (accept-process-output proc 2))
+        (setq is-matching (funcall match-p kept)))
+      (set-process-filter proc prev-filter))
+    is-matching))
 
+;;;; Lumo
+;;;; ====
+
+(defcustom inf-clojure--lumo-repl-form
+  "(js/global.hasOwnProperty \"$$LUMO_GLOBALS\")"
+  "Form to invoke in order to verify that we launched a Lumo REPL."
+  :type 'string)
+
+(defalias 'inf-clojure--lumo-p
+  (apply-partially 'inf-clojure--response-match-p
+                   inf-clojure--lumo-repl-form
+                   (lambda (string)
+                     (string-match-p (concat inf-clojure--lumo-repl-form "\\Ca*true\\Ca*") string)))
+  "Ascertain that PROC is a Lumo REPL.")
+
+(provide 'inf-clojure)
 ;;; inf-clojure.el ends here
