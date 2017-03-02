@@ -271,7 +271,7 @@ to continue it."
   (inf-clojure-eldoc-setup)
   (setq comint-get-old-input #'inf-clojure-get-old-input)
   (setq comint-input-filter #'inf-clojure-input-filter)
-  (set (make-local-variable 'comint-prompt-read-only) inf-clojure-prompt-read-only)
+  (setq-local comint-prompt-read-only inf-clojure-prompt-read-only)
   (add-hook 'comint-preoutput-filter-functions #'inf-clojure-preoutput-filter nil t)
   (add-hook 'completion-at-point-functions #'inf-clojure-completion-at-point nil t))
 
