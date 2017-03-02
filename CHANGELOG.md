@@ -5,6 +5,7 @@
 ### New Features
 
 * [#34](https://github.com/clojure-emacs/inf-clojure/pull/34): Add support for socket REPL connections.
+* New interactive command `inf-clojure-display-version`.
 
 ### Bugs Fixed
 

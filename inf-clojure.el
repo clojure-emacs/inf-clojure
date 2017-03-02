@@ -48,6 +48,9 @@
   "Run an external Clojure process (REPL) in an Emacs buffer."
   :group 'clojure)
 
+(defconst inf-clojure-version "1.5.0-snapshot"
+  "The current version of `inf-clojure'.")
+
 (defcustom inf-clojure-prompt-read-only t
   "If non-nil, the prompt will be read-only.
 
@@ -83,7 +86,9 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Show documentation for var" inf-clojure-show-var-documentation t]
         ["Show source for var" inf-clojure-show-var-source t]
         "--"
-        ["Clear REPL" inf-clojure-clear-repl-buffer]))
+        ["Clear REPL" inf-clojure-clear-repl-buffer]
+        "--"
+        ["Version" inf-clojure-display-version]))
     map))
 
 (defvar inf-clojure-minor-mode-map
@@ -776,6 +781,11 @@ Return the number of nested sexp the point was over or after."
   "Turn on eldoc mode in the current buffer."
   (setq-local eldoc-documentation-function #'inf-clojure-eldoc)
   (apply #'eldoc-add-command inf-clojure-extra-eldoc-commands))
+
+(defun inf-clojure-display-version ()
+  "Display the current `inf-clojure' in the minibuffer."
+  (interactive)
+  (message "inf-clojure (version %s)" inf-clojure-version))
 
 (provide 'inf-clojure)
 
