@@ -456,7 +456,8 @@ Used by this command to determine defaults."
                                             (file-name-nondirectory file-name)))
   (comint-send-string (inf-clojure-proc)
                       (format inf-clojure-load-command file-name))
-  (inf-clojure-switch-to-repl t))
+  (when current-prefix-arg
+    (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-connected-p ()
   "Return t if inferior Clojure is currently connected, nil otherwise."
