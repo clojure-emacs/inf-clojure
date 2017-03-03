@@ -5,6 +5,7 @@
 ### New Features
 
 * [#34](https://github.com/clojure-emacs/inf-clojure/pull/34): Add support for socket REPL connections.
+* [#46](https://github.com/clojure-emacs/inf-clojure/pull/46): Make it possible to disable prompt on `inf-clojure-set-ns`.
 * New interactive command `inf-clojure-display-version`.
 
 ### Bugs Fixed

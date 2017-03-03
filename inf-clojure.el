@@ -179,6 +179,12 @@ This should usually be a combination of `inf-clojure-prompt' and
   :type 'regexp
   :group 'inf-clojure)
 
+(defcustom inf-clojure-prompt-on-set-ns t
+  "Controls whether to prompt when switching namespace."
+  :type '(choice (const :tag "always" t)
+                 (const :tag "never" nil))
+  :group 'inf-clojure)
+
 (defvar inf-clojure-buffer nil
   "The current inf-clojure process buffer.
 
@@ -620,8 +626,13 @@ See variable `inf-clojure-ns-vars-command'."
 
 (defun inf-clojure-set-ns (ns)
   "Set the ns of the inferior Clojure process to NS.
-Defaults to the ns of the current buffer."
-  (interactive (inf-clojure-symprompt "Set ns to" (clojure-find-ns)))
+Defaults to the ns of the current buffer, always prompting before
+setting, unless `inf-clojure-prompt-on-set-ns` is nil."
+  (interactive (list (if inf-clojure-prompt-on-set-ns
+                         (inf-clojure-symprompt "Set ns to" (clojure-find-ns))
+                       (clojure-find-ns))))
+  (when (or (not ns) (equal ns ""))
+    (user-error "No namespace selected"))
   (comint-proc-query (inf-clojure-proc) (format inf-clojure-set-ns-command ns)))
 
 (defun inf-clojure-apropos (var)
