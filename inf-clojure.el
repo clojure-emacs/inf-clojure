@@ -185,6 +185,12 @@ This should usually be a combination of `inf-clojure-prompt' and
                  (const :tag "never" nil))
   :group 'inf-clojure)
 
+(defcustom inf-clojure-repl-use-same-window nil
+  "Controls whether to display the REPL buffer in the current window or not."
+  :type '(choice (const :tag "same" t)
+                 (const :tag "different" nil))
+  :group 'inf-clojure)
+
 (defvar inf-clojure-buffer nil
   "The current inf-clojure process buffer.
 
@@ -348,7 +354,9 @@ of `inf-clojure-program').  Runs the hooks from
                            "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
         (inf-clojure-mode)))
   (setq inf-clojure-buffer "*inf-clojure*")
-  (pop-to-buffer-same-window "*inf-clojure*"))
+  (if inf-clojure-repl-use-same-window
+      (pop-to-buffer-same-window "*inf-clojure*")
+    (pop-to-buffer "*inf-clojure*")))
 
 ;;;###autoload
 (defalias 'run-clojure 'inf-clojure)
