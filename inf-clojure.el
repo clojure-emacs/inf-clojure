@@ -221,11 +221,6 @@ one process, this does the right thing.  If you run multiple
 processes, you might need to change `inf-clojure-buffer' to
 whichever process buffer you want to use.")
 
-(defvar inf-clojure-mode-hook '()
-  "Hook for customizing Inferior Clojure mode.")
-
-(put 'inf-clojure-mode 'mode-class 'special)
-
 (define-derived-mode inf-clojure-mode comint-mode "Inferior Clojure"
   "Major mode for interacting with an inferior Clojure process.
 Runs a Clojure interpreter as a subprocess of Emacs, with Clojure I/O through an
