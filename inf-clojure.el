@@ -42,6 +42,7 @@
 (require 'clojure-mode)
 (require 'eldoc)
 (require 'thingatpt)
+(require 'ansi-color)
 
 
 (defgroup inf-clojure nil
@@ -281,7 +282,8 @@ to continue it."
   (setq comint-input-filter #'inf-clojure-input-filter)
   (setq-local comint-prompt-read-only inf-clojure-prompt-read-only)
   (add-hook 'comint-preoutput-filter-functions #'inf-clojure-preoutput-filter nil t)
-  (add-hook 'completion-at-point-functions #'inf-clojure-completion-at-point nil t))
+  (add-hook 'completion-at-point-functions #'inf-clojure-completion-at-point nil t)
+  (ansi-color-for-comint-mode-on))
 
 (defun inf-clojure-get-old-input ()
   "Return a string containing the sexp ending at point."
