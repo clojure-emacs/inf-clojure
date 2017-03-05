@@ -158,7 +158,7 @@ The following commands are available:
 (defcustom inf-clojure-lein-cmd "lein repl"
   "The command used to start a Clojure REPL for Leiningen projects.
 
-Alternative you can specify a TCP connection cons pair, instead
+Alternatively you can specify a TCP connection cons pair, instead
 of command, consisting of a host and port
 number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
@@ -168,7 +168,7 @@ often connecting to a remote REPL process."
 (defcustom inf-clojure-boot-cmd "boot repl"
   "The command used to start a Clojure REPL for Boot projects.
 
-Alternative you can specify a TCP connection cons pair, instead
+Alternatively you can specify a TCP connection cons pair, instead
 of command, consisting of a host and port
 number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
@@ -178,7 +178,7 @@ often connecting to a remote REPL process."
 (defcustom inf-clojure-generic-cmd "lein repl"
   "The command used to start a Clojure REPL outside Lein/Boot projects.
 
-Alternative you can specify a TCP connection cons pair, instead
+Alternatively you can specify a TCP connection cons pair, instead
 of command, consisting of a host and port
 number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
