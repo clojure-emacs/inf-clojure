@@ -16,6 +16,7 @@
 ### Changes
 
 * Display the REPL in a different window by default (it used to be displayed in the current window).
+* [#26](https://github.com/clojure-emacs/inf-clojure/issues/26): Make switching to the REPL optional on `inf-clojure-load-file` (it's now controlled via a prefix argument).
 
 ### Bugs Fixed
 

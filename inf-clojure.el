@@ -466,17 +466,22 @@ Used by this command to determine defaults."
   :type '(repeat symbol)
   :group 'inf-clojure)
 
-(defun inf-clojure-load-file (file-name)
-  "Load a Clojure file FILE-NAME into the inferior Clojure process."
-  (interactive (comint-get-source "Load Clojure file: " inf-clojure-prev-l/c-dir/file
-                                  inf-clojure-source-modes nil)) ; nil because LOAD
-                                        ; doesn't need an exact name
-  (comint-check-source file-name) ; Check to see if buffer needs saved.
-  (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
-                                            (file-name-nondirectory file-name)))
-  (comint-send-string (inf-clojure-proc)
-                      (format inf-clojure-load-command file-name))
-  (inf-clojure-switch-to-repl t))
+(defun inf-clojure-load-file (&optional switch-to-repl file-name)
+  "Load a Clojure file FILE-NAME into the inferior Clojure process.
+
+The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the file is loaded or not."
+  (interactive "P")
+  (let ((file-name (or file-name
+                       (car (comint-get-source "Load Clojure file: " inf-clojure-prev-l/c-dir/file
+                                               ;; nil because doesn't need an exact name
+                                               inf-clojure-source-modes nil)))))
+    (comint-check-source file-name) ; Check to see if buffer needs saved.
+    (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
+                                              (file-name-nondirectory file-name)))
+    (comint-send-string (inf-clojure-proc)
+                        (format inf-clojure-load-command file-name))
+    (when switch-to-repl
+      (inf-clojure-switch-to-repl t))))
 
 (defun inf-clojure-connected-p ()
   "Return t if inferior Clojure is currently connected, nil otherwise."
