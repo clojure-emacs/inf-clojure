@@ -48,7 +48,10 @@
 
 (defgroup inf-clojure nil
   "Run an external Clojure process (REPL) in an Emacs buffer."
-  :group 'clojure)
+  :prefix "inf-clojure-"
+  :group 'clojure
+  :link '(url-link :tag "GitHub" "https://github.com/clojure-emacs/inf-clojure")
+  :link '(emacs-commentary-link :tag "Commentary" "inf-clojure"))
 
 (defconst inf-clojure-version "1.5.0-snapshot"
   "The current version of `inf-clojure'.")
@@ -57,8 +60,7 @@
   "If non-nil, the prompt will be read-only.
 
 Also see the description of `ielm-prompt-read-only'."
-  :type 'boolean
-  :group 'inf-clojure)
+  :type 'boolean)
 
 (defcustom inf-clojure-filter-regexp
   "\\`\\s *\\(:\\(\\w\\|\\s_\\)\\)?\\s *\\'"
@@ -66,8 +68,7 @@ Also see the description of `ielm-prompt-read-only'."
 Input matching this regexp is not saved on the input history in Inferior Clojure
 mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 \(as in :a, :c, etc.)"
-  :type 'regexp
-  :group 'inf-clojure)
+  :type 'regexp)
 
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
@@ -160,45 +161,38 @@ of command, consisting of a host and port
 number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
-                 (cons string integer))
-  :group 'inf-clojure)
+                 (cons string integer)))
 
 (defcustom inf-clojure-load-command "(clojure.core/load-file \"%s\")\n"
   "Format-string for building a Clojure expression to load a file.
 This format string should use `%s' to substitute a file name
 and should result in a Clojure expression that will command the inferior Clojure
 to load that file."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-prompt "^[^=> \n]+=> *"
   "Regexp to recognize prompts in the Inferior Clojure mode."
-  :type 'regexp
-  :group 'inf-clojure)
+  :type 'regexp)
 
 (defcustom inf-clojure-subprompt " *#_=> *"
   "Regexp to recognize subprompts in the Inferior Clojure mode."
-  :type 'regexp
-  :group 'inf-clojure)
+  :type 'regexp)
 
 (defcustom inf-clojure-comint-prompt-regexp "^\\( *#_\\|[^=> \n]+\\)=> *"
   "Regexp to recognize both main prompt and subprompt for comint.
 This should usually be a combination of `inf-clojure-prompt' and
 `inf-clojure-subprompt'."
-  :type 'regexp
-  :group 'inf-clojure)
+  :type 'regexp)
 
 (defcustom inf-clojure-prompt-on-set-ns t
   "Controls whether to prompt when switching namespace."
   :type '(choice (const :tag "always" t)
-                 (const :tag "never" nil))
-  :group 'inf-clojure)
+                 (const :tag "never" nil)))
 
 (defcustom inf-clojure-repl-use-same-window nil
   "Controls whether to display the REPL buffer in the current window or not."
   :type '(choice (const :tag "same" t)
-                 (const :tag "different" nil))
-  :group 'inf-clojure)
+                 (const :tag "different" nil)))
 
 (defvar inf-clojure-buffer nil
   "The current inf-clojure process buffer.
@@ -463,8 +457,7 @@ describing the last `inf-clojure-load-file' command.")
 If it's loaded into a buffer that is in one of these major modes, it's
 considered a Clojure source file by `inf-clojure-load-file'.
 Used by this command to determine defaults."
-  :type '(repeat symbol)
-  :group 'inf-clojure)
+  :type '(repeat symbol))
 
 (defun inf-clojure-load-file (&optional switch-to-repl file-name)
   "Load a Clojure file FILE-NAME into the inferior Clojure process.
@@ -498,14 +491,12 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
 (defcustom inf-clojure-var-doc-command
   "(clojure.repl/doc %s)\n"
   "Command to query inferior Clojure for a var's documentation."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-var-source-command
   "(clojure.repl/source %s)\n"
   "Command to query inferior Clojure for a var's source."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-arglist-command
   "(try
@@ -515,45 +506,38 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
         (clojure.core/read-string \"%s\"))))
      (catch Throwable t nil))\n"
   "Command to query inferior Clojure for a function's arglist."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-completion-command
   "(complete.core/completions \"%s\")\n"
   "Command to query inferior Clojure for completion candidates."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-ns-vars-command
   "(clojure.repl/dir %s)\n"
   "Command to show the public vars in a namespace."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-set-ns-command
   "(clojure.core/in-ns '%s)\n"
   "Command to set the namespace of the inferior Clojure process."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-apropos-command
   "(doseq [var (sort (clojure.repl/apropos \"%s\"))]
      (println (str var)))\n"
   "Command to invoke apropos."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-macroexpand-command
   "(clojure.core/macroexpand '%s)\n"
   "Command to invoke macroexpand."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 (defcustom inf-clojure-macroexpand-1-command
   "(clojure.core/macroexpand-1 '%s)\n"
   "Command to invoke macroexpand-1."
-  :type 'string
-  :group 'inf-clojure)
+  :type 'string)
 
 ;;; Ancillary functions
 ;;; ===================
