@@ -43,6 +43,7 @@
 (require 'eldoc)
 (require 'thingatpt)
 (require 'ansi-color)
+(require 'cl-lib)
 
 
 (defgroup inf-clojure nil
