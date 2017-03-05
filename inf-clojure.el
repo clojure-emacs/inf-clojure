@@ -153,8 +153,28 @@ The following commands are available:
   (add-to-list 'completion-at-point-functions
                #'inf-clojure-completion-at-point))
 
-(defcustom inf-clojure-program "lein repl"
-  "The command used to start an inferior Clojure process in `inf-clojure-mode'.
+(defcustom inf-clojure-lein-cmd "lein repl"
+  "The command used to start a Clojure REPL for Leiningen projects.
+
+Alternative you can specify a TCP connection cons pair, instead
+of command, consisting of a host and port
+number (e.g. (\"localhost\" . 5555)).  That's useful if you're
+often connecting to a remote REPL process."
+  :type '(choice (string)
+                 (cons string integer)))
+
+(defcustom inf-clojure-boot-cmd "boot repl"
+  "The command used to start a Clojure REPL for Boot projects.
+
+Alternative you can specify a TCP connection cons pair, instead
+of command, consisting of a host and port
+number (e.g. (\"localhost\" . 5555)).  That's useful if you're
+often connecting to a remote REPL process."
+  :type '(choice (string)
+                 (cons string integer)))
+
+(defcustom inf-clojure-generic-cmd "lein repl"
+  "The command used to start a Clojure REPL outside Lein/Boot projects.
 
 Alternative you can specify a TCP connection cons pair, instead
 of command, consisting of a host and port
@@ -232,11 +252,12 @@ whichever process buffer you want to use.")
 
 (define-derived-mode inf-clojure-mode comint-mode "Inferior Clojure"
   "Major mode for interacting with an inferior Clojure process.
-Runs a Clojure interpreter as a subprocess of Emacs, with Clojure I/O through an
-Emacs buffer.  Variable `inf-clojure-program' controls which Clojure interpreter
-is run.  Variables `inf-clojure-prompt', `inf-clojure-filter-regexp' and
-`inf-clojure-load-command' can customize this mode for different Clojure
-interpreters.
+Runs a Clojure interpreter as a subprocess of Emacs, with Clojure
+I/O through an Emacs buffer.  Variables of the type
+`inf-clojure-*-cmd' combined with the project type controls how
+a Clojure REPL is started.  Variables `inf-clojure-prompt',
+`inf-clojure-filter-regexp' and `inf-clojure-load-command' can
+customize this mode for different Clojure REPLs.
 
 For information on running multiple processes in multiple buffers, see
 documentation for variable `inf-clojure-buffer'.
@@ -331,6 +352,20 @@ Fallback to `default-directory.' if not within a project."
                            inf-clojure-project-root-files)))
       default-directory))
 
+(defun inf-clojure-project-type ()
+  "Determine the type, either leiningen or boot of the current project."
+  (let ((default-directory (inf-clojure-project-root)))
+    (cond ((file-exists-p "project.clj") "lein")
+          ((file-exists-p "build.boot") "boot")
+          (t nil))))
+
+(defun inf-clojure-cmd (project-type)
+  "Determine the command `inf-clojure' needs to invoke for the PROJECT-TYPE."
+  (pcase project-type
+    ("lein" inf-clojure-lein-cmd)
+    ("boot" inf-clojure-boot-cmd)
+    (_ inf-clojure-generic-cmd)))
+
 (defun inf-clojure-clear-repl-buffer ()
   "Clear the REPL buffer."
   (interactive)
@@ -343,18 +378,19 @@ Fallback to `default-directory.' if not within a project."
 If there is a process already running in `*inf-clojure*', just switch
 to that buffer.
 With argument, allows you to edit the command line (default is value
-of `inf-clojure-program').  Runs the hooks from
+of `inf-clojure-*-cmd').  Runs the hooks from
 `inf-clojure-mode-hook' (after the `comint-mode-hook' is run).
 \(Type \\[describe-mode] in the process buffer for a list of commands.)"
   (interactive (list (if current-prefix-arg
-                         (read-string "Run Clojure: " inf-clojure-program)
-                       inf-clojure-program)))
+                         (read-string "Run Clojure: " (inf-clojure-cmd (inf-clojure-project-type)))
+                       (inf-clojure-cmd (inf-clojure-project-type)))))
   (if (not (comint-check-proc "*inf-clojure*"))
       ;; run the new process in the project's root when in a project folder
       (let ((default-directory (inf-clojure-project-root))
             (cmdlist (if (consp cmd)
                          (list cmd)
                        (split-string cmd))))
+        (message "Starting Clojure REPL via `%s'..." cmd)
         (set-buffer (apply #'make-comint
                            "inf-clojure" (car cmdlist) nil (cdr cmdlist)))
         (inf-clojure-mode)))
@@ -362,9 +398,6 @@ of `inf-clojure-program').  Runs the hooks from
   (if inf-clojure-repl-use-same-window
       (pop-to-buffer-same-window "*inf-clojure*")
     (pop-to-buffer "*inf-clojure*")))
-
-;;;###autoload
-(defalias 'run-clojure 'inf-clojure)
 
 (defun inf-clojure-eval-region (start end &optional and-go)
   "Send the current region to the inferior Clojure process.
@@ -426,7 +459,7 @@ With prefix argument EOB-P, positions cursor at end of buffer."
              (or pop-up-frames
                  (get-buffer-window inf-clojure-buffer t))))
         (pop-to-buffer inf-clojure-buffer))
-    (run-clojure inf-clojure-program))
+    (inf-clojure (inf-clojure-cmd (inf-clojure-project-type))))
   (when eob-p
     (push-mark)
     (goto-char (point-max))))
@@ -840,7 +873,7 @@ to suppress the usage of the target buffer discovery logic."
          (target-buffer-name (buffer-name target-buffer)))
     ;; TODO: Try to recycle the old buffer instead of killing and recreating it
     (inf-clojure-quit target-buffer)
-    (inf-clojure inf-clojure-program)
+    (inf-clojure (inf-clojure-cmd (inf-clojure-project-type)))
     (rename-buffer target-buffer-name)))
 
 (provide 'inf-clojure)

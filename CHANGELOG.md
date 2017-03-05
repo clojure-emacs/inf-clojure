@@ -12,11 +12,13 @@
 * Handle properly ANSI color escape sequences in the REPL.
 * [#41](https://github.com/clojure-emacs/inf-clojure/issues/41): Add a command to quit the REPL (it's bound to `C-c C-q`).
 * [#29](https://github.com/clojure-emacs/inf-clojure/issues/29): Add a command to restart the REPL.
+* [#31](https://github.com/clojure-emacs/inf-clojure/issues/31): Invoke different init command based on the project type (boot, lein or generic).
 
 ### Changes
 
 * Display the REPL in a different window by default (it used to be displayed in the current window).
 * [#26](https://github.com/clojure-emacs/inf-clojure/issues/26): Make switching to the REPL optional on `inf-clojure-load-file` (it's now controlled via a prefix argument).
+* Removed the `inf-clojure` alias `run-clojure`.
 
 ### Bugs Fixed
 
