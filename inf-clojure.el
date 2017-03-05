@@ -90,6 +90,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Show source for var" inf-clojure-show-var-source t]
         "--"
         ["Clear REPL" inf-clojure-clear-repl-buffer]
+        ["Restart" inf-clojure-restart]
         ["Quit" inf-clojure-quit]
         "--"
         ["Version" inf-clojure-display-version]))
@@ -134,6 +135,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Apropos" inf-clojure-apropos t]
         ["Macroexpand" inf-clojure-macroexpand t]
         "--"
+        ["Restart REPL" inf-clojure-restart]
         ["Quit REPL" inf-clojure-quit]))
     map))
 
@@ -828,12 +830,29 @@ Useful for commands that can invoked outside of an inf-clojure buffer
        ((= (length repl-buffers) 1) (car repl-buffers))
        (t (get-buffer (completing-read "Select target inf-clojure buffer: " (mapcar #'buffer-name repl-buffers))))))))
 
-(defun inf-clojure-quit ()
-  "Kill the REPL buffer and its underlying process."
+(defun inf-clojure-quit (&optional buffer)
+  "Kill the REPL buffer and its underlying process.
+
+You can pass the target BUFFER as an optional parameter
+to suppress the usage of the target buffer discovery logic."
   (interactive)
-  (let ((target-buffer (inf-clojure-select-target-repl)))
-    (delete-process target-buffer)
+  (let ((target-buffer (or buffer (inf-clojure-select-target-repl))))
+    (when (get-buffer-process target-buffer)
+      (delete-process target-buffer))
     (kill-buffer target-buffer)))
+
+(defun inf-clojure-restart (&optional buffer)
+  "Restart the REPL buffer and its underlying process.
+
+You can pass the target BUFFER as an optional parameter
+to suppress the usage of the target buffer discovery logic."
+  (interactive)
+  (let* ((target-buffer (or buffer (inf-clojure-select-target-repl)))
+         (target-buffer-name (buffer-name target-buffer)))
+    ;; TODO: Try to recycle the old buffer instead of killing and recreating it
+    (inf-clojure-quit target-buffer)
+    (inf-clojure inf-clojure-program)
+    (rename-buffer target-buffer-name)))
 
 (provide 'inf-clojure)
 

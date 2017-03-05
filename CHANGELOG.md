@@ -11,6 +11,7 @@
 * Font-lock the code in the REPL.
 * Handle properly ANSI color escape sequences in the REPL.
 * [#41](https://github.com/clojure-emacs/inf-clojure/issues/41): Add a command to quit the REPL (it's bound to `C-c C-q`).
+* [#29](https://github.com/clojure-emacs/inf-clojure/issues/29): Add a command to restart the REPL.
 
 ### Changes
 
