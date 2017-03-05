@@ -76,6 +76,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
     (define-key map "\C-c\M-o" #'inf-clojure-clear-repl-buffer)
+    (define-key map "\C-c\C-q" #'inf-clojure-quit)
     (easy-menu-define inf-clojure-mode-menu map
       "Inferior Clojure REPL Menu"
       '("Inf-Clojure REPL"
@@ -88,6 +89,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Show source for var" inf-clojure-show-var-source t]
         "--"
         ["Clear REPL" inf-clojure-clear-repl-buffer]
+        ["Quit" inf-clojure-quit]
         "--"
         ["Version" inf-clojure-display-version]))
     map))
@@ -110,6 +112,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
     (define-key map "\C-c\M-n" #'inf-clojure-set-ns)
+    (define-key map "\C-c\C-q" #'inf-clojure-quit)
     (easy-menu-define inf-clojure-minor-mode-menu map
       "Inferior Clojure Minor Mode Menu"
       '("Inf-Clojure"
@@ -128,7 +131,9 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Show source for var" inf-clojure-show-var-source t]
         ["Show vars in ns" inf-clojure-show-ns-varst]
         ["Apropos" inf-clojure-apropos t]
-        ["Macroexpand" inf-clojure-macroexpand t]))
+        ["Macroexpand" inf-clojure-macroexpand t]
+        "--"
+        ["Quit REPL" inf-clojure-quit]))
     map))
 
 ;;;###autoload
@@ -803,6 +808,31 @@ Return the number of nested sexp the point was over or after."
   "Display the current `inf-clojure' in the minibuffer."
   (interactive)
   (message "inf-clojure (version %s)" inf-clojure-version))
+
+(defun inf-clojure-select-target-repl ()
+  "Find or select an inf-clojure buffer to operate on.
+
+Useful for commands that can invoked outside of an inf-clojure buffer
+\\(e.g. from a Clojure buffer\\)."
+  ;; if we're in a inf-clojure buffer we simply return in
+  (if (eq major-mode 'inf-clojure-mode)
+      (current-buffer)
+    ;; otherwise we sift through all the inf-clojure buffers that are available
+    (let ((repl-buffers (cl-remove-if-not (lambda (buf)
+                                            (with-current-buffer buf
+                                              (eq major-mode 'inf-clojure-mode)))
+                                          (buffer-list))))
+      (cond
+       ((null repl-buffers) (user-error "No inf-clojure buffers found"))
+       ((= (length repl-buffers) 1) (car repl-buffers))
+       (t (get-buffer (completing-read "Select target inf-clojure buffer: " (mapcar #'buffer-name repl-buffers))))))))
+
+(defun inf-clojure-quit ()
+  "Kill the REPL buffer and its underlying process."
+  (interactive)
+  (let ((target-buffer (inf-clojure-select-target-repl)))
+    (delete-process target-buffer)
+    (kill-buffer target-buffer)))
 
 (provide 'inf-clojure)
 
