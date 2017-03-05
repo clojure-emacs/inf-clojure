@@ -8,6 +8,7 @@
 * [#46](https://github.com/clojure-emacs/inf-clojure/pull/46): Make it possible to disable prompt on `inf-clojure-set-ns`.
 * New interactive command `inf-clojure-display-version`.
 * [#42](https://github.com/clojure-emacs/inf-clojure/issues/42): Add a defcustom controlling the window in which the REPL buffer is displayed (`inf-clojure-repl-use-same-window`).
+* Font-lock the code in the REPL.
 
 ### Changes
 

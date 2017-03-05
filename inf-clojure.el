@@ -275,6 +275,7 @@ to continue it."
   (setq comint-prompt-regexp inf-clojure-comint-prompt-regexp)
   (setq mode-line-process '(":%s"))
   (clojure-mode-variables)
+  (clojure-font-lock-setup)
   (inf-clojure-eldoc-setup)
   (setq comint-get-old-input #'inf-clojure-get-old-input)
   (setq comint-input-filter #'inf-clojure-input-filter)
