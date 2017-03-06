@@ -209,11 +209,11 @@ be used instead of `comint-send-string`."
   (inf-clojure--set-repl-type proc)
   (comint-simple-send proc string))
 
-(defcustom inf-clojure-load-command "(clojure.core/load-file \"%s\")\n"
+(defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")\n"
   "Format-string for building a Clojure expression to load a file.
-This format string should use `%s' to substitute a file name
-and should result in a Clojure expression that will command the inferior Clojure
-to load that file."
+This format string should use `%s' to substitute a file name and
+should result in a Clojure form that will be sent to the inferior
+Clojure to load that file."
   :type 'string)
 
 (defcustom inf-clojure-prompt "^[^=> \n]+=> *"
@@ -282,7 +282,7 @@ Runs a Clojure interpreter as a subprocess of Emacs, with Clojure
 I/O through an Emacs buffer.  Variables of the type
 `inf-clojure-*-cmd' combined with the project type controls how
 a Clojure REPL is started.  Variables `inf-clojure-prompt',
-`inf-clojure-filter-regexp' and `inf-clojure-load-command' can
+`inf-clojure-filter-regexp' and `inf-clojure-load-form' can
 customize this mode for different Clojure REPLs.
 
 For information on running multiple processes in multiple buffers, see
@@ -546,7 +546,7 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
     (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
                                               (file-name-nondirectory file-name)))
     (inf-clojure--send-string (inf-clojure-proc)
-                              (format inf-clojure-load-command file-name))
+                              (format inf-clojure-load-form file-name))
     (when switch-to-repl
       (inf-clojure-switch-to-repl t))))
 
@@ -559,17 +559,17 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
 ;;; describe symbol.
 ;;; ===========================================================================
 
-;;; Command strings
-;;; ===============
+;;; Command forms
+;;; =============
 
 (defcustom inf-clojure-var-doc-form
   "(clojure.repl/doc %s)\n"
-  "Command to query inferior Clojure for a var's documentation."
+  "Form to query inferior Clojure for a var's documentation."
   :type 'string)
 
 (defcustom inf-clojure-var-doc-form-lumo
   "(lumo.repl/doc %s)\n"
-  "Lumo command to query inferior Clojure for a var's documentation."
+  "Lumo form to query inferior Clojure for a var's documentation."
   :type 'string)
 
 (defun inf-clojure-var-doc-form ()
@@ -580,24 +580,24 @@ If you are using REPL types, it will pickup the most approapriate
     (lumo inf-clojure-var-doc-form-lumo)
     (_ inf-clojure-var-doc-form)))
 
-(defcustom inf-clojure-var-source-command
+(defcustom inf-clojure-var-source-form
   "(clojure.repl/source %s)\n"
-  "Command to query inferior Clojure for a var's source."
+  "Form to query inferior Clojure for a var's source."
   :type 'string)
 
-(defcustom inf-clojure-arglist-command
+(defcustom inf-clojure-arglist-form
   "(try
      (:arglists
       (clojure.core/meta
        (clojure.core/resolve
         (clojure.core/read-string \"%s\"))))
      (catch Throwable t nil))\n"
-  "Command to query inferior Clojure for a function's arglist."
+  "Form to query inferior Clojure for a function's arglist."
   :type 'string)
 
 (defcustom inf-clojure-completion-form
   "(complete.core/completions \"%s\")\n"
-  "Command to query inferior Clojure for completion candidates."
+  "Form to query inferior Clojure for completion candidates."
   :type 'string)
 
 (defcustom inf-clojure-completion-form-lumo
@@ -613,30 +613,30 @@ If you are using REPL types, it will pickup the most approapriate
     (lumo inf-clojure-completion-form-lumo)
     (_ inf-clojure-completion-form)))
 
-(defcustom inf-clojure-ns-vars-command
+(defcustom inf-clojure-ns-vars-form
   "(clojure.repl/dir %s)\n"
-  "Command to show the public vars in a namespace."
+  "Form to show the public vars in a namespace."
   :type 'string)
 
-(defcustom inf-clojure-set-ns-command
+(defcustom inf-clojure-set-ns-form
   "(clojure.core/in-ns '%s)\n"
-  "Command to set the namespace of the inferior Clojure process."
+  "Form to set the namespace of the inferior Clojure process."
   :type 'string)
 
-(defcustom inf-clojure-apropos-command
+(defcustom inf-clojure-apropos-form
   "(doseq [var (sort (clojure.repl/apropos \"%s\"))]
      (println (str var)))\n"
-  "Command to invoke apropos."
+  "Form to invoke apropos."
   :type 'string)
 
-(defcustom inf-clojure-macroexpand-command
+(defcustom inf-clojure-macroexpand-form
   "(clojure.core/macroexpand '%s)\n"
-  "Command to invoke macroexpand."
+  "Form to invoke macroexpand."
   :type 'string)
 
-(defcustom inf-clojure-macroexpand-1-command
+(defcustom inf-clojure-macroexpand-1-form
   "(clojure.core/macroexpand-1 '%s)\n"
-  "Command to invoke macroexpand-1."
+  "Form to invoke macroexpand-1."
   :type 'string)
 
 ;;; Ancillary functions
@@ -684,20 +684,20 @@ The value is nil if it can't find one."
 ;;; ======================================================================
 
 (defun inf-clojure-show-var-documentation (var)
-  "Send a command to the inferior Clojure to give documentation for VAR.
+  "Send a form to the inferior Clojure to give documentation for VAR.
 See function `inf-clojure-var-doc-form'."
   (interactive (inf-clojure-symprompt "Var doc" (inf-clojure-var-at-pt)))
   (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-doc-form) var)))
 
 (defun inf-clojure-show-var-source (var)
-  "Send a command to the inferior Clojure to give source for VAR.
-See variable `inf-clojure-var-source-command'."
+  "Send a form to the inferior Clojure to give source for VAR.
+See variable `inf-clojure-var-source-form'."
   (interactive (inf-clojure-symprompt "Var source" (inf-clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-command var)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-form var)))
 
 (defun inf-clojure-arglist (fn)
   "Send a query to the inferior Clojure for the arglist for function FN.
-See variable `inf-clojure-arglist-command'."
+See variable `inf-clojure-arglist-form'."
   (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
   (let* ((proc (inf-clojure-proc))
          (comint-filt (process-filter proc))
@@ -705,7 +705,7 @@ See variable `inf-clojure-arglist-command'."
          eldoc)
     (set-process-filter proc (lambda (_proc string) (setq kept (concat kept string))))
     (unwind-protect
-        (let ((eldoc-snippet (format inf-clojure-arglist-command fn)))
+        (let ((eldoc-snippet (format inf-clojure-arglist-form fn)))
           (process-send-string proc eldoc-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
@@ -723,9 +723,9 @@ See variable `inf-clojure-arglist-command'."
 
 (defun inf-clojure-show-ns-vars (ns)
   "Send a query to the inferior Clojure for the public vars in NS.
-See variable `inf-clojure-ns-vars-command'."
+See variable `inf-clojure-ns-vars-form'."
   (interactive (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-ns-vars-command ns)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-ns-vars-form ns)))
 
 (defun inf-clojure-set-ns (ns)
   "Set the ns of the inferior Clojure process to NS.
@@ -736,25 +736,25 @@ setting, unless `inf-clojure-prompt-on-set-ns` is nil."
                        (clojure-find-ns))))
   (when (or (not ns) (equal ns ""))
     (user-error "No namespace selected"))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-set-ns-command ns)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-set-ns-form ns)))
 
 (defun inf-clojure-apropos (var)
-  "Send a command to the inferior Clojure to give apropos for VAR.
-See variable `inf-clojure-apropos-command'."
+  "Send a form to the inferior Clojure to give apropos for VAR.
+See variable `inf-clojure-apropos-form'."
   (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-apropos-command var)))
+  (comint-proc-query (inf-clojure-proc) (format inf-clojure-apropos-form var)))
 
 (defun inf-clojure-macroexpand (&optional macro-1)
-  "Send a command to the inferior Clojure to give apropos for VAR.
-See variable `inf-clojure-macroexpand-command'.
-With a prefix arg MACRO-1 uses `inf-clojure-macroexpand-1-command'."
+  "Send a form to the inferior Clojure to give apropos for VAR.
+See variable `inf-clojure-macroexpand-form'.
+With a prefix arg MACRO-1 uses `inf-clojure-macroexpand-1-form'."
   (interactive "P")
   (let ((last-sexp (buffer-substring-no-properties (save-excursion (backward-sexp) (point)) (point))))
     (inf-clojure--send-string
      (inf-clojure-proc)
      (format (if macro-1
-                 inf-clojure-macroexpand-1-command
-               inf-clojure-macroexpand-command)
+                 inf-clojure-macroexpand-1-form
+               inf-clojure-macroexpand-form)
              last-sexp))))
 
 
