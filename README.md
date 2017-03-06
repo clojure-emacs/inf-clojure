@@ -70,6 +70,16 @@ the default specified in `inf-clojure-program`.
 You can set custom values to `inf-clojure` variables on a per-project basis using [directory
 variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
 
+## REPL Type
+
+An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo and Planck are all potentially valid options.
+At the moment, the default Clojure REPL and the Lumo REPL (though partially, see https://github.com/clojure-emacs/inf-clojure/pull/44) are supported.
+
+To hook up a custom REPL type, just use the right launch command (or connect through socket).
+For example, for Lumo just add the following in your `.dir-locals.el`:
+
+    ((nil . ((inf-clojure-boot-cmd . "lumo")))) ;; inf-clojure-lein-cmd if you are using Leiningen
+
 ## ElDoc
 
 `eldoc-mode` is supported in Clojure source buffers and `*inferior-clojure*`
