@@ -591,7 +591,7 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-var-doc-form` variant."
   (pcase inf-clojure-repl-type
-    (lumo inf-clojure-var-doc-form-lumo)
+    (`lumo inf-clojure-var-doc-form-lumo)
     (_ inf-clojure-var-doc-form)))
 
 (defcustom inf-clojure-var-source-form
@@ -634,7 +634,7 @@ If you are using REPL types, it will pickup the most approapriate
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-completion-form` variant."
   (pcase inf-clojure-repl-type
-    (lumo inf-clojure-completion-form-lumo)
+    (`lumo inf-clojure-completion-form-lumo)
     (_ inf-clojure-completion-form)))
 
 (defcustom inf-clojure-ns-vars-form
