@@ -6,7 +6,7 @@
 ;;       Olin Shivers <shivers@cs.cmu.edu>
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, clojure
-;; Version: 1.5.0-snapshot
+;; Version: 2.0.0-snapshot
 ;; Package-Requires: ((emacs "24.4") (clojure-mode "5.6"))
 
 ;; This file is part of GNU Emacs.
@@ -54,7 +54,7 @@
   :link '(url-link :tag "GitHub" "https://github.com/clojure-emacs/inf-clojure")
   :link '(emacs-commentary-link :tag "Commentary" "inf-clojure"))
 
-(defconst inf-clojure-version "1.5.0-snapshot"
+(defconst inf-clojure-version "2.0.0-snapshot"
   "The current version of `inf-clojure'.")
 
 (defcustom inf-clojure-prompt-read-only t
@@ -163,7 +163,10 @@ of command, consisting of a host and port
 number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
-                 (cons string integer)))
+                 (cons string integer))
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-program 'inf-clojure-lein-cmd "2.0.0")
 
 (defcustom inf-clojure-boot-cmd "boot repl"
   "The command used to start a Clojure REPL for Boot projects.
@@ -173,7 +176,8 @@ of command, consisting of a host and port
 number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
-                 (cons string integer)))
+                 (cons string integer))
+  :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-generic-cmd "lein repl"
   "The command used to start a Clojure REPL outside Lein/Boot projects.
@@ -183,7 +187,8 @@ of command, consisting of a host and port
 number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
-                 (cons string integer)))
+                 (cons string integer))
+  :package-version '(inf-clojure . "2.0.0"))
 
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
@@ -214,7 +219,10 @@ be used instead of `comint-send-string`."
 This format string should use `%s' to substitute a file name and
 should result in a Clojure form that will be sent to the inferior
 Clojure to load that file."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-load-command 'inf-clojure-load-form "2.0.0")
 
 (defcustom inf-clojure-prompt "^[^=> \n]+=> *"
   "Regexp to recognize prompts in the Inferior Clojure mode."
@@ -233,12 +241,14 @@ This should usually be a combination of `inf-clojure-prompt' and
 (defcustom inf-clojure-prompt-on-set-ns t
   "Controls whether to prompt when switching namespace."
   :type '(choice (const :tag "always" t)
-                 (const :tag "never" nil)))
+                 (const :tag "never" nil))
+  :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-repl-use-same-window nil
   "Controls whether to display the REPL buffer in the current window or not."
   :type '(choice (const :tag "same" t)
-                 (const :tag "different" nil)))
+                 (const :tag "different" nil))
+  :package-version '(inf-clojure . "2.0.0"))
 
 (defvar inf-clojure-buffer nil
   "The current inf-clojure process buffer.
@@ -565,12 +575,16 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
 (defcustom inf-clojure-var-doc-form
   "(clojure.repl/doc %s)\n"
   "Form to query inferior Clojure for a var's documentation."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-var-doc-command 'inf-clojure-var-doc-form "2.0.0")
 
 (defcustom inf-clojure-var-doc-form-lumo
   "(lumo.repl/doc %s)\n"
   "Lumo form to query inferior Clojure for a var's documentation."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-var-doc-form ()
   "Return the form to query inferior Clojure for a var's documentation.
@@ -583,7 +597,10 @@ If you are using REPL types, it will pickup the most approapriate
 (defcustom inf-clojure-var-source-form
   "(clojure.repl/source %s)\n"
   "Form to query inferior Clojure for a var's source."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-var-source-command 'inf-clojure-var-source-form "2.0.0")
 
 (defcustom inf-clojure-arglist-form
   "(try
@@ -593,17 +610,24 @@ If you are using REPL types, it will pickup the most approapriate
         (clojure.core/read-string \"%s\"))))
      (catch Throwable t nil))\n"
   "Form to query inferior Clojure for a function's arglist."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-arglist-command 'inf-clojure-arglist-form "2.0.0")
 
 (defcustom inf-clojure-completion-form
   "(complete.core/completions \"%s\")\n"
   "Form to query inferior Clojure for completion candidates."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-completion-command 'inf-clojure-completion-form "2.0.0")
 
 (defcustom inf-clojure-completion-form-lumo
   "(doall (map str (lumo.repl/get-completions \"%s\")))\n"
   "Lumo form to query inferior Clojure for completion candidates."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-completion-form ()
   "Return the form to query inferior Clojure for a var's documentation.
@@ -616,28 +640,43 @@ If you are using REPL types, it will pickup the most approapriate
 (defcustom inf-clojure-ns-vars-form
   "(clojure.repl/dir %s)\n"
   "Form to show the public vars in a namespace."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-ns-vars-command 'inf-clojure-ns-vars-form "2.0.0")
 
 (defcustom inf-clojure-set-ns-form
   "(clojure.core/in-ns '%s)\n"
   "Form to set the namespace of the inferior Clojure process."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-set-ns-command 'inf-clojure-set-ns-form "2.0.0")
 
 (defcustom inf-clojure-apropos-form
   "(doseq [var (sort (clojure.repl/apropos \"%s\"))]
      (println (str var)))\n"
   "Form to invoke apropos."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-apropos-command 'inf-clojure-apropos-form "2.0.0")
 
 (defcustom inf-clojure-macroexpand-form
   "(clojure.core/macroexpand '%s)\n"
   "Form to invoke macroexpand."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-macroexpand-command 'inf-clojure-macroexpand-form "2.0.0")
 
 (defcustom inf-clojure-macroexpand-1-form
   "(clojure.core/macroexpand-1 '%s)\n"
   "Form to invoke macroexpand-1."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(define-obsolete-variable-alias 'inf-clojure-macroexpand-1-command 'inf-clojure-macroexpand-1-form "2.0.0")
 
 ;;; Ancillary functions
 ;;; ===================
@@ -968,7 +1007,8 @@ for evaluation, therefore FORM should not include it."
 (defcustom inf-clojure--lumo-repl-form
   "(js/global.hasOwnProperty \"$$LUMO_GLOBALS\")"
   "Form to invoke in order to verify that we launched a Lumo REPL."
-  :type 'string)
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
 
 (defalias 'inf-clojure--lumo-p
   (apply-partially 'inf-clojure--response-match-p
