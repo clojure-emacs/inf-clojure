@@ -70,6 +70,10 @@ the default specified in `inf-clojure-program`.
 You can set custom values to `inf-clojure` variables on a per-project basis using [directory
 variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
 
+The REPL commands don't prompt by default but a prefix argument will invert
+this. For instance: `C-u C-c C-v` will ask for the symbol you want to show the
+docstring for.
+
 ## REPL Type
 
 An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo and Planck are all potentially valid options.

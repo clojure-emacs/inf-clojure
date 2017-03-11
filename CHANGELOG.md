@@ -4,10 +4,10 @@
 
 ### New Features
 
+* [#51](https://github.com/clojure-emacs/inf-clojure/pull/51): Commands do not prompt by default anymore, unless they receive a non-nil prefix argument.
 * [#44](https://github.com/clojure-emacs/inf-clojure/pull/44): Add REPL types and Lumo support.
 * [#50](https://github.com/clojure-emacs/inf-clojure/pull/50): Rename defcustoms to `inf-clojure-*-form` where appropriate.
 * [#34](https://github.com/clojure-emacs/inf-clojure/pull/34): Add support for socket REPL connections.
-* [#46](https://github.com/clojure-emacs/inf-clojure/pull/46): Make it possible to disable prompt on `inf-clojure-set-ns`.
 * New interactive command `inf-clojure-display-version`.
 * [#42](https://github.com/clojure-emacs/inf-clojure/issues/42): Add a defcustom controlling the window in which the REPL buffer is displayed (`inf-clojure-repl-use-same-window`).
 * Font-lock the code in the REPL.

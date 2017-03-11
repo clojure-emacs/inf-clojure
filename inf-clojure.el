@@ -238,12 +238,6 @@ This should usually be a combination of `inf-clojure-prompt' and
 `inf-clojure-subprompt'."
   :type 'regexp)
 
-(defcustom inf-clojure-prompt-on-set-ns t
-  "Controls whether to prompt when switching namespace."
-  :type '(choice (const :tag "always" t)
-                 (const :tag "never" nil))
-  :package-version '(inf-clojure . "2.0.0"))
-
 (defcustom inf-clojure-repl-use-same-window nil
   "Controls whether to display the REPL buffer in the current window or not."
   :type '(choice (const :tag "same" t)
@@ -722,22 +716,29 @@ The value is nil if it can't find one."
 ;;; Documentation functions: var doc and arglist.
 ;;; ======================================================================
 
-(defun inf-clojure-show-var-documentation (var)
+(defun inf-clojure-show-var-documentation (prompt-for-symbol)
   "Send a form to the inferior Clojure to give documentation for VAR.
-See function `inf-clojure-var-doc-form'."
-  (interactive (inf-clojure-symprompt "Var doc" (inf-clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-doc-form) var)))
+See function `inf-clojure-var-doc-form'.  When invoked with a
+prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
+  (interactive "P")
+  (let ((var (if prompt-for-symbol
+                 (car (inf-clojure-symprompt "Var doc" (inf-clojure-var-at-pt)))
+               (inf-clojure-var-at-pt))))
+    (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-doc-form) var))))
 
-(defun inf-clojure-show-var-source (var)
-  "Send a form to the inferior Clojure to give source for VAR.
-See variable `inf-clojure-var-source-form'."
-  (interactive (inf-clojure-symprompt "Var source" (inf-clojure-var-at-pt)))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-form var)))
+(defun inf-clojure-show-var-source (prompt-for-symbol)
+  "Send a command to the inferior Clojure to give source for VAR.
+See variable `inf-clojure-var-source-form'.  When invoked with a
+prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
+  (interactive "P")
+  (let ((var (if prompt-for-symbol
+                 (car (inf-clojure-symprompt "Var source" (inf-clojure-var-at-pt)))
+               (inf-clojure-var-at-pt))))
+    (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-form var))))
 
 (defun inf-clojure-arglist (fn)
   "Send a query to the inferior Clojure for the arglist for function FN.
 See variable `inf-clojure-arglist-form'."
-  (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
   (let* ((proc (inf-clojure-proc))
          (comint-filt (process-filter proc))
          (kept "")
@@ -748,34 +749,44 @@ See variable `inf-clojure-arglist-form'."
           (process-send-string proc eldoc-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
-          (setq eldoc (and (string-match "(.+)" kept) (match-string 0 kept)))
-          )
+          (setq eldoc (and (string-match "(.+)" kept) (match-string 0 kept))))
       (set-process-filter proc comint-filt))
     eldoc))
 
-(defun inf-clojure-show-arglist (fn)
-  "Show the arglist for function FN in the mini-buffer."
-  (interactive (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
-  (let ((eldoc (inf-clojure-arglist fn)))
+(defun inf-clojure-show-arglist (prompt-for-symbol)
+  "Show the arglist for function FN in the mini-buffer.
+See variable `inf-clojure-arglist-form'.  When invoked with a
+prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
+  (interactive "P")
+  (let* ((fn (if prompt-for-symbol
+                 (car (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
+               (inf-clojure-fn-called-at-pt)))
+         (eldoc (inf-clojure-arglist fn)))
     (when eldoc
       (message "%s: %s" fn eldoc))))
 
-(defun inf-clojure-show-ns-vars (ns)
+(defun inf-clojure-show-ns-vars (prompt-for-ns)
   "Send a query to the inferior Clojure for the public vars in NS.
-See variable `inf-clojure-ns-vars-form'."
-  (interactive (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-ns-vars-form ns)))
+See variable `inf-clojure-ns-vars-form'.  When invoked with a
+prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
+  (interactive "P")
+  (let ((ns (if prompt-for-ns
+                (car (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
+              (clojure-find-ns))))
+    (comint-proc-query (inf-clojure-proc) (format inf-clojure-ns-vars-form ns))))
 
-(defun inf-clojure-set-ns (ns)
+(defun inf-clojure-set-ns (prompt-for-ns)
   "Set the ns of the inferior Clojure process to NS.
-Defaults to the ns of the current buffer, always prompting before
-setting, unless `inf-clojure-prompt-on-set-ns` is nil."
-  (interactive (list (if inf-clojure-prompt-on-set-ns
-                         (inf-clojure-symprompt "Set ns to" (clojure-find-ns))
-                       (clojure-find-ns))))
-  (when (or (not ns) (equal ns ""))
-    (user-error "No namespace selected"))
-  (comint-proc-query (inf-clojure-proc) (format inf-clojure-set-ns-form ns)))
+See variable `inf-clojure-set-ns-form`.  It defaults to the ns of
+the current buffer.  When invoked with a prefix argument
+PROMPT-FOR-NS, it prompts for a namespace name."
+  (interactive "P")
+  (let ((ns (if prompt-for-ns
+                (car (inf-clojure-symprompt "Set ns to" (clojure-find-ns)))
+              (clojure-find-ns))))
+    (when (or (not ns) (equal ns ""))
+      (user-error "No namespace selected"))
+    (comint-proc-query (inf-clojure-proc) (format inf-clojure-set-ns-form ns))))
 
 (defun inf-clojure-apropos (var)
   "Send a form to the inferior Clojure to give apropos for VAR.
