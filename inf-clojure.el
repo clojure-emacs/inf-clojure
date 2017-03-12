@@ -698,17 +698,6 @@ The value is nil if it can't find one."
             (and (symbolp obj) obj))))
     (error nil)))
 
-
-;;; Adapted from variable-at-point in help.el.
-(defun inf-clojure-var-at-pt ()
-  (condition-case ()
-      (save-excursion
-        (forward-sexp -1)
-        (skip-chars-forward "'")
-        (let ((obj (read (current-buffer))))
-          (and (symbolp obj) obj)))
-    (error nil)))
-
 (defun inf-clojure-symbol-at-point ()
   "Return the name of the symbol at point, otherwise nil."
   (or (thing-at-point 'symbol) ""))
@@ -722,8 +711,8 @@ See function `inf-clojure-var-doc-form'.  When invoked with a
 prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
   (interactive "P")
   (let ((var (if prompt-for-symbol
-                 (car (inf-clojure-symprompt "Var doc" (inf-clojure-var-at-pt)))
-               (inf-clojure-var-at-pt))))
+                 (car (inf-clojure-symprompt "Var doc" (inf-clojure-symbol-at-point)))
+               (inf-clojure-symbol-at-point))))
     (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-doc-form) var))))
 
 (defun inf-clojure-show-var-source (prompt-for-symbol)
@@ -732,8 +721,8 @@ See variable `inf-clojure-var-source-form'.  When invoked with a
 prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
   (interactive "P")
   (let ((var (if prompt-for-symbol
-                 (car (inf-clojure-symprompt "Var source" (inf-clojure-var-at-pt)))
-               (inf-clojure-var-at-pt))))
+                 (car (inf-clojure-symprompt "Var source" (inf-clojure-symbol-at-point)))
+               (inf-clojure-symbol-at-point))))
     (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-form var))))
 
 (defun inf-clojure-arglist (fn)
@@ -791,7 +780,7 @@ PROMPT-FOR-NS, it prompts for a namespace name."
 (defun inf-clojure-apropos (var)
   "Send a form to the inferior Clojure to give apropos for VAR.
 See variable `inf-clojure-apropos-form'."
-  (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-var-at-pt)))
+  (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-symbol-at-point)))
   (comint-proc-query (inf-clojure-proc) (format inf-clojure-apropos-form var)))
 
 (defun inf-clojure-macroexpand (&optional macro-1)
