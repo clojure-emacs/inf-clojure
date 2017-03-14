@@ -596,7 +596,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (define-obsolete-variable-alias 'inf-clojure-var-source-command 'inf-clojure-var-source-form "2.0.0")
 
-(defcustom inf-clojure-arglist-form
+(defcustom inf-clojure-arglists-form
   "(try
      (:arglists
       (clojure.core/meta
@@ -607,7 +607,21 @@ If you are using REPL types, it will pickup the most approapriate
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
 
-(define-obsolete-variable-alias 'inf-clojure-arglist-command 'inf-clojure-arglist-form "2.0.0")
+(define-obsolete-variable-alias 'inf-clojure-arglist-command 'inf-clojure-arglists-form "2.0.0")
+
+(defcustom inf-clojure-arglists-form-lumo
+  "(lumo.repl/get-arglists \"%s\")"
+  "Lumo form to query inferior Clojure for a function's arglist."
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(defun inf-clojure-arglists-form ()
+  "Return the form to query inferior Clojure for arglists of a var.
+If you are using REPL types, it will pickup the most approapriate
+`inf-clojure-arglist-form` variant."
+  (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
+    (`lumo inf-clojure-arglists-form-lumo)
+    (_ inf-clojure-arglists-form)))
 
 (defcustom inf-clojure-completion-form
   "(complete.core/completions \"%s\")\n"
@@ -736,6 +750,16 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
                (inf-clojure-var-at-pt))))
     (comint-proc-query (inf-clojure-proc) (format inf-clojure-var-source-form var))))
 
+(defun inf-clojure-match-arglists (input-form string)
+  "Return the arglists match from INPUT-FORM and STRING.
+The output depends on the correct REPL type.  We assume the
+`inf-clojure-repl-type` var is already set, therefore this is
+safe to call only from inside `inf-clojure-arglist`."
+  (pcase inf-clojure-repl-type
+    (`lumo (let ((input-end (and (string-match input-form string) (match-end 0))))
+             (and (string-match "(.+)" string input-end) (match-string 0 string))))
+    (_ (and (string-match "(.+)" string) (match-string 0 string)))))
+
 (defun inf-clojure-arglist (fn)
   "Send a query to the inferior Clojure for the arglist for function FN.
 See variable `inf-clojure-arglist-form'."
@@ -745,11 +769,11 @@ See variable `inf-clojure-arglist-form'."
          eldoc)
     (set-process-filter proc (lambda (_proc string) (setq kept (concat kept string))))
     (unwind-protect
-        (let ((eldoc-snippet (format inf-clojure-arglist-form fn)))
-          (process-send-string proc eldoc-snippet)
+        (let ((eldoc-snippet (format (inf-clojure-arglists-form) fn)))
+          (inf-clojure--send-string proc eldoc-snippet)
           (while (and (not (string-match inf-clojure-prompt kept))
                       (accept-process-output proc 2)))
-          (setq eldoc (and (string-match "(.+)" kept) (match-string 0 kept))))
+          (setq eldoc (inf-clojure-match-arglists eldoc-snippet kept)))
       (set-process-filter proc comint-filt))
     eldoc))
 
