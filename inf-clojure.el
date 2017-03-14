@@ -133,7 +133,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Show arglist" inf-clojure-show-arglist t]
         ["Show documentation for var" inf-clojure-show-var-documentation t]
         ["Show source for var" inf-clojure-show-var-source t]
-        ["Show vars in ns" inf-clojure-show-ns-varst]
+        ["Show vars in ns" inf-clojure-show-ns-vars t]
         ["Apropos" inf-clojure-apropos t]
         ["Macroexpand" inf-clojure-macroexpand t]
         "--"
@@ -637,6 +637,20 @@ If you are using REPL types, it will pickup the most approapriate
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-ns-vars-form-lumo
+  "(lumo.repl/dir %s)\n"
+  "Lumo form to show the public vars in a namespace."
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(defun inf-clojure-ns-vars-form ()
+  "Return the form to query inferior Clojure for public vars in a namespace.
+If you are using REPL types, it will pickup the most approapriate
+`inf-clojure-ns-vars-form` variant."
+  (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
+    (`lumo inf-clojure-ns-vars-form-lumo)
+    (_ inf-clojure-ns-vars-form)))
+
 (define-obsolete-variable-alias 'inf-clojure-ns-vars-command 'inf-clojure-ns-vars-form "2.0.0")
 
 (defcustom inf-clojure-set-ns-form
@@ -773,7 +787,7 @@ prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
   (let ((ns (if prompt-for-ns
                 (car (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
               (clojure-find-ns))))
-    (comint-proc-query (inf-clojure-proc) (format inf-clojure-ns-vars-form ns))))
+    (comint-proc-query (inf-clojure-proc) (format (inf-clojure-ns-vars-form) ns))))
 
 (defun inf-clojure-set-ns (prompt-for-ns)
   "Set the ns of the inferior Clojure process to NS.
