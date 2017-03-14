@@ -202,9 +202,11 @@ either `setq-local` or an entry in `.dir-locals.el`." )
    (t 'clojure)))
 
 (defun inf-clojure--set-repl-type (proc)
-  "Set the REPL type if has not already been set."
-  (when (not inf-clojure-repl-type)
-    (setq inf-clojure-repl-type (inf-clojure--detect-type proc))))
+  "Set the REPL type if has not already been set.
+It requires a REPL PROC for inspecting the correct type."
+  (if (not inf-clojure-repl-type)
+      (setq inf-clojure-repl-type (inf-clojure--detect-type proc))
+    inf-clojure-repl-type))
 
 (defun inf-clojure--send-string (proc string)
   "A custom `comint-input-sender` / `comint-send-string`.
@@ -584,7 +586,7 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
   "Return the form to query inferior Clojure for a var's documentation.
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-var-doc-form` variant."
-  (pcase inf-clojure-repl-type
+  (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
     (`lumo inf-clojure-var-doc-form-lumo)
     (_ inf-clojure-var-doc-form)))
 
@@ -641,7 +643,7 @@ If you are using REPL types, it will pickup the most approapriate
   "Return the form to query inferior Clojure for a var's documentation.
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-completion-form` variant."
-  (pcase inf-clojure-repl-type
+  (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
     (`lumo inf-clojure-completion-form-lumo)
     (_ inf-clojure-completion-form)))
 
