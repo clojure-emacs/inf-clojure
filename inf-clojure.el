@@ -195,17 +195,23 @@ often connecting to a remote REPL process."
 Its root binding is nil and it can be further customized using
 either `setq-local` or an entry in `.dir-locals.el`." )
 
-(defun inf-clojure--detect-type (proc)
+(defvar inf-clojure--repl-type-lock nil
+  "Global lock for protecting against proc filter race conditions.
+See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filter.html")
+
+(defun inf-clojure--detect-repl-type (proc)
   "Identifies the current REPL type for PROC."
-  (cond
-   ((inf-clojure--lumo-p proc) 'lumo)
-   (t 'clojure)))
+  (when (not inf-clojure--repl-type-lock)
+    (let ((inf-clojure--repl-type-lock t))
+      (cond
+       ((inf-clojure--lumo-p proc) 'lumo)
+       (t 'clojure)))))
 
 (defun inf-clojure--set-repl-type (proc)
   "Set the REPL type if has not already been set.
 It requires a REPL PROC for inspecting the correct type."
   (if (not inf-clojure-repl-type)
-      (setq inf-clojure-repl-type (inf-clojure--detect-type proc))
+      (setq inf-clojure-repl-type (inf-clojure--detect-repl-type proc))
     inf-clojure-repl-type))
 
 (defun inf-clojure--send-string (proc string)
