@@ -1025,7 +1025,7 @@ for evaluation, therefore FORM should not include it."
   (apply-partially 'inf-clojure--response-match-p
                    inf-clojure--lumo-repl-form
                    (lambda (string)
-                     (string-match-p (concat inf-clojure--lumo-repl-form "\\Ca*true\\Ca*") string)))
+                     (string-match-p "\\Ca*true\\Ca*" string)))
   "Ascertain that PROC is a Lumo REPL.")
 
 (provide 'inf-clojure)

@@ -82,7 +82,7 @@ At the moment, the default Clojure REPL and the Lumo REPL (though partially, see
 To hook up a custom REPL type, just use the right launch command (or connect through socket).
 For example, for Lumo just add the following in your `.dir-locals.el`:
 
-    ((nil . ((inf-clojure-boot-cmd . "lumo")))) ;; inf-clojure-lein-cmd if you are using Leiningen
+    ((nil . ((inf-clojure-boot-cmd . "lumo -d")))) ;; inf-clojure-lein-cmd if you are using Leiningen
 
 ## ElDoc
 
@@ -103,6 +103,15 @@ following to you Emacs config:
 
 ElDoc currently doesn't work with ClojureScript buffers and REPL's.
 You can leave it enabled, it just won't show anything in the echo area.
+
+## Lumo Setup
+
+For an optimal Lumo experience the `-d` needs to be passed to Lumo when launched from the command line. This disable `readline` support in order to play nicely with emacs.
+
+For example, you can use the following command (assuming `cp` contains the classpath) in your `.dir-locals.el`:
+
+((nil . (eval . (setq inf-clojure-boot-cmd (concat "lumo -d -c "
+                                                    (f-read (concat (inf-clojure-project-root) "cp")))))))
 
 ## Troubleshooting
 
