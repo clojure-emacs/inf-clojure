@@ -344,7 +344,6 @@ to continue it."
   (setq comint-input-filter #'inf-clojure-input-filter)
   (setq-local comint-prompt-read-only inf-clojure-prompt-read-only)
   (add-hook 'comint-preoutput-filter-functions #'inf-clojure-preoutput-filter nil t)
-  (add-hook 'comint-output-filter-functions 'inf-clojure--ansi-filter)
   (add-hook 'completion-at-point-functions #'inf-clojure-completion-at-point nil t)
   (ansi-color-for-comint-mode-on))
 
@@ -368,19 +367,6 @@ to continue it."
 (defun inf-clojure-remove-subprompts (string)
   "Remove subprompts from STRING."
   (replace-regexp-in-string inf-clojure-subprompt "" string))
-
-(defconst inf-clojure--ansi-clear-line "\\[1G\\|\\[0J\\|\\[13G"
-  "Ansi codes sent by the lumo repl that we need to clear." )
-
-(defun inf-clojure--ansi-filter (string)
-  "Filter unwanted ansi character from STRING."
-  (save-excursion
-    ;; go to start of first line just inserted
-    (comint-goto-process-mark)
-    (goto-char (max (point-min) (- (point) (string-width string))))
-    (forward-line 0)
-    (while (re-search-forward inf-clojure--ansi-clear-line nil t)
-      (replace-match ""))))
 
 (defun inf-clojure-preoutput-filter (str)
   "Preprocess the output STR from interactive commands."
