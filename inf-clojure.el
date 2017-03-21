@@ -216,13 +216,16 @@ It requires a REPL PROC for inspecting the correct type."
 
 (defun inf-clojure--send-string (proc string)
   "A custom `comint-input-sender` / `comint-send-string`.
-Perform the required side effects on every send for PROC and
+It performs the required side effects on every send for PROC and
 STRING (for example set the buffer local REPL type).  It should
-be used instead of `comint-send-string`."
+always be preferred over `comint-send-string`.  It delegates to
+`comint-simple-send` so it always appends a newline at the end of
+the string for evaluation.  Refer to `comint-simple-send` for
+customizations. "
   (inf-clojure--set-repl-type proc)
   (comint-simple-send proc string))
 
-(defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")\n"
+(defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")"
   "Format-string for building a Clojure expression to load a file.
 This format string should use `%s' to substitute a file name and
 should result in a Clojure form that will be sent to the inferior
@@ -458,17 +461,16 @@ of `inf-clojure-*-cmd').  Runs the hooks from
   "Send the current region to the inferior Clojure process.
 Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "r\nP")
-  ;; replace multiple newlines at the end of the region by a single one
-  ;; or add one if there was no newline
+  ;; drops newlines at the end of the region
   (let ((str (replace-regexp-in-string
-              "[\n]*\\'" "\n"
+              "[\n]+\\'" ""
               (buffer-substring-no-properties start end))))
     (inf-clojure--send-string (inf-clojure-proc) str))
-  (if and-go (inf-clojure-switch-to-repl t)))
+  (when and-go (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-eval-string (code)
   "Send the string CODE to the inferior Clojure process to be executed."
-  (inf-clojure--send-string (inf-clojure-proc) (concat code "\n")))
+  (inf-clojure--send-string (inf-clojure-proc) code))
 
 (defun inf-clojure-eval-defun (&optional and-go)
   "Send the current defun to the inferior Clojure process.
