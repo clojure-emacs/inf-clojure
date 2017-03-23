@@ -232,6 +232,22 @@ Clojure to load that file."
 
 (define-obsolete-variable-alias 'inf-clojure-load-command 'inf-clojure-load-form "2.0.0")
 
+(defcustom inf-clojure-load-form-lumo "(clojure.core/load-file \"%s\")"
+  "Format-string for building a Clojure expression to load a file.
+This format string should use `%s' to substitute a file name and
+should result in a Clojure form that will be sent to the inferior
+Clojure to load that file."
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
+(defun inf-clojure-load-form ()
+  "Return the form to query inferior Clojure for a var's documentation.
+If you are using REPL types, it will pickup the most approapriate
+`inf-clojure-var-doc-form` variant."
+  (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
+    (`lumo inf-clojure-load-form-lumo)
+    (_ inf-clojure-load-form)))
+
 (defcustom inf-clojure-prompt "^[^=> \n]+=> *"
   "Regexp to recognize prompts in the Inferior Clojure mode."
   :type 'regexp)
@@ -544,7 +560,7 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
     (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
                                               (file-name-nondirectory file-name)))
     (inf-clojure--send-string (inf-clojure-proc)
-                              (format inf-clojure-load-form file-name))
+                              (format (inf-clojure-load-form) file-name))
     (when switch-to-repl
       (inf-clojure-switch-to-repl t))))
 
