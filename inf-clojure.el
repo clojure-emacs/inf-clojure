@@ -237,7 +237,7 @@ Clojure to load that file."
 (define-obsolete-variable-alias 'inf-clojure-load-command 'inf-clojure-load-form "2.0.0")
 
 (defcustom inf-clojure-load-form-lumo "(clojure.core/load-file \"%s\")"
-  "Planck format-string for building a Clojure expression to load a file.
+  "Lumo format-string for building a Clojure expression to load a file.
 This format string should use `%s' to substitute a file name and
 should result in a Clojure form that will be sent to the inferior
 Clojure to load that file."
@@ -282,7 +282,7 @@ This should usually be a combination of `inf-clojure-prompt' and
   :package-version '(inf-clojure . "2.0.0"))
 
 (defvar inf-clojure-buffer nil
-  "The current ‘inf-clojure’ process buffer.
+  "The current inf-clojure process buffer.
 
 MULTIPLE PROCESS SUPPORT
 ===========================================================================
@@ -681,7 +681,7 @@ If you are using REPL types, it will pickup the most approapriate
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-completion-form-planck
-  "(doall (map str (planck.repl/get-completions \"%s\")))\n"
+  "(planck.repl/get-completions \"%s\")\n"
   "Planck form to query inferior Clojure for completion candidates."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
