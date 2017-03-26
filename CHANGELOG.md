@@ -4,6 +4,7 @@
 
 ### New Features
 
+* [#66](https://github.com/clojure-emacs/inf-clojure/pull/56): Add Planck support.
 * [#51](https://github.com/clojure-emacs/inf-clojure/pull/51): Commands do not prompt by default anymore, unless they receive a non-nil prefix argument.
 * [#44](https://github.com/clojure-emacs/inf-clojure/pull/44): Add REPL types and Lumo support.
 * [#50](https://github.com/clojure-emacs/inf-clojure/pull/50): Rename defcustoms to `inf-clojure-*-form` where appropriate.

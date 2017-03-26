@@ -77,7 +77,7 @@ docstring for.
 ## REPL Type
 
 An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo and Planck are all potentially valid options.
-At the moment, the default Clojure REPL and the Lumo REPL (though partially, see https://github.com/clojure-emacs/inf-clojure/pull/44) are supported.
+At the moment, the default Clojure REPL, the Lumo REPL (though partially, see https://github.com/clojure-emacs/inf-clojure/pull/44), and the Planck REPL are supported.
 
 To hook up a custom REPL type, just use the right launch command (or connect through socket).
 For example, for Lumo just add the following in your `.dir-locals.el`:
