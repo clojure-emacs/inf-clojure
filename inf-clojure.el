@@ -719,7 +719,7 @@ If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-ns-vars-form` variant."
   (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
     (`lumo inf-clojure-ns-vars-form-lumo)
-    (`planck inf-clojure-ns-vars-form-lumo)
+    (`planck inf-clojure-ns-vars-form-planck)
     (_ inf-clojure-ns-vars-form)))
 
 (define-obsolete-variable-alias 'inf-clojure-ns-vars-command 'inf-clojure-ns-vars-form "2.0.0")
@@ -742,7 +742,7 @@ If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-set-ns-form` variant."
   (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
     (`planck inf-clojure-set-ns-form-planck)
-    (_ inf-clojure-ns-form)))
+    (_ inf-clojure-set-ns-form)))
 
 (define-obsolete-variable-alias 'inf-clojure-set-ns-command 'inf-clojure-set-ns-form "2.0.0")
 
@@ -809,7 +809,7 @@ If you are using REPL types, it will pickup the most approapriate
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-macroexpand-1-form` variant."
   (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
-    (`planck inf-clojure-macroexpand-1-planck)
+    (`planck inf-clojure-macroexpand-1-form-planck)
     (_ inf-clojure-macroexpand-1-form)))
 
 (define-obsolete-variable-alias 'inf-clojure-macroexpand-1-command 'inf-clojure-macroexpand-1-form "2.0.0")
