@@ -3,7 +3,7 @@
 ## master (unreleased)
 
 ### New Features
-
+* [#57](https://github.com/clojure-emacs/inf-clojure/pull/68): Add `inf-clojure-connect`
 * [#66](https://github.com/clojure-emacs/inf-clojure/pull/56): Add Planck support.
 * [#51](https://github.com/clojure-emacs/inf-clojure/pull/51): Commands do not prompt by default anymore, unless they receive a non-nil prefix argument.
 * [#44](https://github.com/clojure-emacs/inf-clojure/pull/44): Add REPL types and Lumo support.

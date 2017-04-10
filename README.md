@@ -74,6 +74,9 @@ The REPL commands don't prompt by default but a prefix argument will invert
 this. For instance: `C-u C-c C-v` will ask for the symbol you want to show the
 docstring for.
 
+You can use `M-x inf-clojure-connect` to connect to a running socket-repl.
+You will be prompted for host and port.
+
 ## REPL Type
 
 An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo and Planck are all potentially valid options.
