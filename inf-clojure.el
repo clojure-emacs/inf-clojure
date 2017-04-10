@@ -467,6 +467,13 @@ of `inf-clojure-*-cmd').  Runs the hooks from
       (pop-to-buffer-same-window "*inf-clojure*")
     (pop-to-buffer "*inf-clojure*")))
 
+;;;###autoload
+(defun inf-clojure-connect (host port)
+  "Connect to a running socket-repl via `inf-clojure'.
+HOST is the host the process is running on, PORT is where it's listening."
+  (interactive "shost: \nnport: ")
+  (inf-clojure (cons host port)))
+
 (defun inf-clojure-eval-region (start end &optional and-go)
   "Send the current region to the inferior Clojure process.
 Prefix argument AND-GO means switch to the Clojure buffer afterwards."
