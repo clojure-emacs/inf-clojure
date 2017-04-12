@@ -215,6 +215,12 @@ It requires a REPL PROC for inspecting the correct type."
       (setq inf-clojure-repl-type (inf-clojure--detect-repl-type proc))
     inf-clojure-repl-type))
 
+(defun inf-clojure--sanitize-command (command)
+  "Sanitize COMMAND for sending it to a process.
+An example of things that this function does is to add a final
+newline at the end of the form."
+  (concat (string-trim-right command) "\n"))
+
 (defun inf-clojure--send-string (proc string)
   "A custom `comint-input-sender` / `comint-send-string`.
 It performs the required side effects on every send for PROC and
@@ -884,22 +890,47 @@ safe to call only from inside `inf-clojure-arglist`."
              (and (string-match "(.+)" string input-end) (match-string 0 string))))
     (_ (and (string-match "(.+)" string) (match-string 0 string)))))
 
+;; Originally from:
+;;   https://github.com/glycerine/lush2/blob/master/lush2/etc/lush.el#L287
+(defun inf-clojure-results-from-process (process command &optional beg-string end-string)
+  "Send COMMAND to PROCESS.
+Return the result of COMMAND starting with BEG-STRING and ending
+with END-STRING if non-nil.  If BEG-STRING is nil, the result
+string will start from (point) in the results buffer.  If
+END-STRING is nil, the result string will end at (point-max) in
+the results buffer.  It cuts out the output from
+`inf-clojure-prompt` onwards unconditionally."
+  (let ((work-buffer " *Inf-Clojure Redirect Work Buffer*"))
+    (save-excursion
+      (set-buffer (get-buffer-create work-buffer))
+      (erase-buffer)
+      (comint-redirect-send-command-to-process
+       (inf-clojure--sanitize-command command) work-buffer process nil t)
+      ;; Wait for the process to complete
+      (set-buffer (process-buffer process))
+      (while (null comint-redirect-completed)
+        (accept-process-output nil 1))
+      ;; Collect the output
+      (set-buffer work-buffer)
+      (goto-char (point-min))
+      ;; Skip past the command, if it was echoed
+      (and (looking-at command)
+           (forward-line))
+      (let* ((beg (if beg-string
+                      (progn (search-forward beg-string nil t) (match-beginning 0))
+                    (point)))
+             (end (if end-string
+                      (search-forward end-string nil t)
+                    (point-max)))
+             (buffer-string (buffer-substring-no-properties beg end)))
+        (when (and buffer-string (string-match inf-clojure-prompt buffer-string))
+          (substring buffer-string 0 (match-beginning 0)))))))
+
 (defun inf-clojure-arglist (fn)
   "Send a query to the inferior Clojure for the arglist for function FN.
 See variable `inf-clojure-arglist-form'."
-  (let* ((proc (inf-clojure-proc))
-         (comint-filt (process-filter proc))
-         (kept "")
-         eldoc)
-    (set-process-filter proc (lambda (_proc string) (setq kept (concat kept string))))
-    (unwind-protect
-        (let ((eldoc-snippet (format (inf-clojure-arglists-form) fn)))
-          (inf-clojure--send-string proc eldoc-snippet)
-          (while (and (not (string-match inf-clojure-prompt kept))
-                      (accept-process-output proc 2)))
-          (setq eldoc (inf-clojure-match-arglists eldoc-snippet kept)))
-      (set-process-filter proc comint-filt))
-    eldoc))
+  (let ((eldoc-snippet (format (inf-clojure-arglists-form) fn)))
+    (inf-clojure-results-from-process (inf-clojure-proc) eldoc-snippet)))
 
 (defun inf-clojure-show-arglist (prompt-for-symbol)
   "Show the arglist for function FN in the mini-buffer.
@@ -1145,20 +1176,7 @@ to suppress the usage of the target buffer discovery logic."
   "Return MATCH-P on the result of sending FORM to PROC.
 Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
-  (let* ((kept "")
-         (is-matching nil)
-         (prev-filter (process-filter proc)))
-    (set-process-filter proc (lambda (_ string) (setq kept (concat kept string))))
-    (unwind-protect
-        ;; use the real comind-send-string in order to avoid stack overflows
-        (comint-send-string proc (concat form "\n"))
-      ;; yey, loads of procedural code again
-      (while (and (not is-matching)
-                  (not (string-match inf-clojure-prompt kept))
-                  (accept-process-output proc 2))
-        (setq is-matching (funcall match-p kept)))
-      (set-process-filter proc prev-filter))
-    is-matching))
+  (funcall match-p (inf-clojure-results-from-process proc form nil)))
 
 ;;;; Lumo
 ;;;; ====
