@@ -75,7 +75,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
   (let ((map (copy-keymap comint-mode-map)))
     (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp)
     (define-key map "\C-c\C-l" #'inf-clojure-load-file)
-    (define-key map "\C-c\C-a" #'inf-clojure-show-arglist)
+    (define-key map "\C-c\C-a" #'inf-clojure-show-arglists)
     (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
     (define-key map "\C-c\M-o" #'inf-clojure-clear-repl-buffer)
@@ -87,7 +87,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         "--"
         ["Load file" inf-clojure-load-file t]
         "--"
-        ["Show arglist" inf-clojure-show-arglist t]
+        ["Show arglists" inf-clojure-show-arglists t]
         ["Show documentation for var" inf-clojure-show-var-documentation t]
         ["Show source for var" inf-clojure-show-var-source t]
         "--"
@@ -112,7 +112,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-A" #'inf-clojure-apropos)
     (define-key map "\C-c\C-m" #'inf-clojure-macroexpand)
     (define-key map "\C-c\C-l" #'inf-clojure-load-file)
-    (define-key map "\C-c\C-a" #'inf-clojure-show-arglist)
+    (define-key map "\C-c\C-a" #'inf-clojure-show-arglists)
     (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
     (define-key map "\C-c\M-n" #'inf-clojure-set-ns)
@@ -130,7 +130,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Switch to REPL" inf-clojure-switch-to-repl t]
         ["Set REPL ns" inf-clojure-set-ns t]
         "--"
-        ["Show arglist" inf-clojure-show-arglist t]
+        ["Show arglists" inf-clojure-show-arglists t]
         ["Show documentation for var" inf-clojure-show-var-documentation t]
         ["Show source for var" inf-clojure-show-var-source t]
         ["Show vars in ns" inf-clojure-show-ns-vars t]
@@ -300,7 +300,7 @@ named `*inf-clojure*'.  You can switch between the different process
 buffers with \\[switch-to-buffer].
 
 Commands that send text from source buffers to Clojure processes --
-like `inf-clojure-eval-defun' or `inf-clojure-show-arglist' -- have to choose a
+like `inf-clojure-eval-defun' or `inf-clojure-show-arglists' -- have to choose a
 process to send to, when you have more than one Clojure process around.  This
 is determined by the global variable `inf-clojure-buffer'.  Suppose you
 have three inferior Clojures running:
@@ -594,7 +594,7 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
   (not (null inf-clojure-buffer)))
 
 
-;;; Documentation functions: function doc, var doc, arglist, and
+;;; Documentation functions: function doc, var doc, arglists, and
 ;;; describe symbol.
 ;;; ===========================================================================
 
@@ -659,7 +659,7 @@ If you are using REPL types, it will pickup the most approapriate
        (clojure.core/resolve
         (clojure.core/read-string \"%s\"))))
      (catch Throwable t nil))\n"
-  "Form to query inferior Clojure for a function's arglist."
+  "Form to query inferior Clojure for a function's arglists."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
 
@@ -667,14 +667,14 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defcustom inf-clojure-arglists-form-lumo
   "(lumo.repl/get-arglists \"%s\")"
-  "Lumo form to query inferior Clojure for a function's arglist."
+  "Lumo form to query inferior Clojure for a function's arglists."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-arglists-form ()
   "Return the form to query inferior Clojure for arglists of a var.
 If you are using REPL types, it will pickup the most approapriate
-`inf-clojure-arglist-form` variant."
+`inf-clojure-arglists-form` variant."
   (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
     (`lumo inf-clojure-arglists-form-lumo)
     (_ inf-clojure-arglists-form)))
@@ -857,7 +857,7 @@ The value is nil if it can't find one."
   "Return the name of the symbol at point, otherwise nil."
   (or (thing-at-point 'symbol) ""))
 
-;;; Documentation functions: var doc and arglist.
+;;; Documentation functions: var doc and arglists.
 ;;; ======================================================================
 
 (defun inf-clojure-show-var-documentation (prompt-for-symbol)
@@ -884,7 +884,7 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
   "Return the arglists match from INPUT-FORM and STRING.
 The output depends on the correct REPL type.  We assume the
 `inf-clojure-repl-type` var is already set, therefore this is
-safe to call only from inside `inf-clojure-arglist`."
+safe to call only from inside `inf-clojure-arglists`."
   (pcase inf-clojure-repl-type
     (`lumo (let ((input-end (and (string-match input-form string) (match-end 0))))
              (and (string-match "(.+)" string input-end) (match-string 0 string))))
@@ -926,21 +926,21 @@ the results buffer.  It cuts out the output from
         (when (and buffer-string (string-match inf-clojure-prompt buffer-string))
           (substring buffer-string 0 (match-beginning 0)))))))
 
-(defun inf-clojure-arglist (fn)
-  "Send a query to the inferior Clojure for the arglist for function FN.
-See variable `inf-clojure-arglist-form'."
+(defun inf-clojure-arglists (fn)
+  "Send a query to the inferior Clojure for the arglists for function FN.
+See variable `inf-clojure-arglists-form'."
   (let ((eldoc-snippet (format (inf-clojure-arglists-form) fn)))
     (inf-clojure-results-from-process (inf-clojure-proc) eldoc-snippet)))
 
-(defun inf-clojure-show-arglist (prompt-for-symbol)
-  "Show the arglist for function FN in the mini-buffer.
-See variable `inf-clojure-arglist-form'.  When invoked with a
+(defun inf-clojure-show-arglists (prompt-for-symbol)
+  "Show the arglists for function FN in the mini-buffer.
+See variable `inf-clojure-arglists-form'.  When invoked with a
 prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
   (interactive "P")
   (let* ((fn (if prompt-for-symbol
-                 (car (inf-clojure-symprompt "Arglist" (inf-clojure-fn-called-at-pt)))
+                 (car (inf-clojure-symprompt "Arglists" (inf-clojure-fn-called-at-pt)))
                (inf-clojure-fn-called-at-pt)))
-         (eldoc (inf-clojure-arglist fn)))
+         (eldoc (inf-clojure-arglists fn)))
     (when eldoc
       (message "%s: %s" fn eldoc))))
 
@@ -1094,18 +1094,18 @@ Return the number of nested sexp the point was over or after."
           nil
         (list (inf-clojure-symbol-at-point) argument-index)))))
 
-(defun inf-clojure-eldoc-arglist (thing)
-  "Return the arglist for THING."
+(defun inf-clojure-eldoc-arglists (thing)
+  "Return the arglists for THING."
   (when (and thing
              (not (string= thing ""))
              (not (string-prefix-p ":" thing)))
     ;; check if we can used the cached eldoc info
     (if (string= thing (car inf-clojure-eldoc-last-symbol))
         (cdr inf-clojure-eldoc-last-symbol)
-      (let ((arglist (inf-clojure-arglist (substring-no-properties thing))))
-        (when arglist
-          (setq inf-clojure-eldoc-last-symbol (cons thing arglist))
-          arglist)))))
+      (let ((arglists (inf-clojure-arglists (substring-no-properties thing))))
+        (when arglists
+          (setq inf-clojure-eldoc-last-symbol (cons thing arglists))
+          arglists)))))
 
 (defun inf-clojure-eldoc ()
   "Backend function for eldoc to show argument list in the echo area."
@@ -1114,7 +1114,7 @@ Return the number of nested sexp the point was over or after."
              (not (member last-command '(next-error previous-error))))
     (let* ((info (inf-clojure-eldoc-info-in-current-sexp))
            (thing (car info))
-           (value (inf-clojure-eldoc-arglist thing)))
+           (value (inf-clojure-eldoc-arglists thing)))
       (when value
         (format "%s: %s"
                 (inf-clojure-eldoc-format-thing thing)
