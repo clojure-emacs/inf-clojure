@@ -215,11 +215,16 @@ It requires a REPL PROC for inspecting the correct type."
       (setq inf-clojure-repl-type (inf-clojure--detect-repl-type proc))
     inf-clojure-repl-type))
 
+(defun inf-clojure--single-linify (string)
+  "Convert a multi-line STRING in a single-line STRING."
+  (replace-regexp-in-string "[[:space:]\\|\n]+" " " string))
+
 (defun inf-clojure--sanitize-command (command)
   "Sanitize COMMAND for sending it to a process.
 An example of things that this function does is to add a final
 newline at the end of the form."
-  (concat (string-trim-right command) "\n"))
+  (concat (string-trim-right (inf-clojure--single-linify command))
+          "\n"))
 
 (defun inf-clojure--send-string (proc string)
   "A custom `comint-input-sender` / `comint-send-string`.
