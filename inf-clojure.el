@@ -929,8 +929,12 @@ the results buffer.  It cuts out the output from
 (defun inf-clojure-arglists (fn)
   "Send a query to the inferior Clojure for the arglists for function FN.
 See variable `inf-clojure-arglists-form'."
-  (let ((eldoc-snippet (format (inf-clojure-arglists-form) fn)))
-    (inf-clojure-results-from-process (inf-clojure-proc) eldoc-snippet)))
+  (let* ((arglists-snippet (format (inf-clojure-arglists-form) fn))
+         (arglists-result (inf-clojure-results-from-process (inf-clojure-proc) arglists-snippet))
+         (arglists-data (read arglists-result)))
+    (cond
+     ((null arglists-data) nil)
+     ((listp arglists-data) (string-trim (inf-clojure--single-linify arglists-result))))))
 
 (defun inf-clojure-show-arglists (prompt-for-symbol)
   "Show the arglists for function FN in the mini-buffer.
