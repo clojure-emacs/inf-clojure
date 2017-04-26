@@ -648,12 +648,19 @@ If you are using REPL types, it will pickup the most approapriate
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-var-source-form-lumo
+  "(lumo.repl/source %s)"
+  "Lumo form to query inferior Clojure for a var's source."
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
 (defun inf-clojure-var-source-form ()
   "Return the form to query inferior Clojure for a var's source.
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-var-source-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
+     (`lumo inf-clojure-var-source-form-lumo)
      (`planck inf-clojure-var-source-form-planck)
      (_ inf-clojure-var-source-form))))
 
