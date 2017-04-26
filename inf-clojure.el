@@ -759,14 +759,20 @@ If you are using REPL types, it will pickup the most approapriate
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-set-ns-form-lumo
+  "(in-ns '%s)"
+  "Lumo form to set the namespace of the inferior Clojure process."
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
 (defun inf-clojure-set-ns-form ()
   "Return the form to set the ns of the inferior Clojure process.
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-set-ns-form` variant."
-  (inf-clojure--sanitize-command
-   (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
-     (`planck inf-clojure-set-ns-form-planck)
-     (_ inf-clojure-set-ns-form))))
+  (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
+    (`planck inf-clojure-set-ns-form-planck)
+    (`lumo inf-clojure-set-ns-form-lumo)
+    (_ inf-clojure-set-ns-form)))
 
 (define-obsolete-variable-alias 'inf-clojure-set-ns-command 'inf-clojure-set-ns-form "2.0.0")
 
