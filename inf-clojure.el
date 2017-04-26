@@ -783,6 +783,12 @@ If you are using REPL types, it will pickup the most approapriate
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-apropos-form-lumo
+  "(lumo.repl/apropos \"%s\")"
+  "Planck form to invoke apropos."
+  :type 'string
+  :package-version '(inf-clojure . "2.0.0"))
+
 (defcustom inf-clojure-apropos-form-planck
   "(doseq [var (sort (planck.repl/apropos \"%s\"))]
      (println (str var)))"
@@ -796,6 +802,7 @@ If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-ns-vars-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
+     (`lumo inf-clojure-apropos-form-lumo)
      (`planck inf-clojure-apropos-form-planck)
      (_ inf-clojure-apropos-form))))
 
