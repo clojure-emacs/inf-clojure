@@ -113,8 +113,10 @@ For an optimal Lumo experience the `-d` needs to be passed to Lumo when launched
 
 For example, you can use the following command (assuming `cp` contains the classpath) in your `.dir-locals.el`:
 
+```el
 ((nil . (eval . (setq inf-clojure-boot-cmd (concat "lumo -d -c "
                                                     (f-read (concat (inf-clojure-project-root) "cp")))))))
+```
 
 ## Troubleshooting
 
