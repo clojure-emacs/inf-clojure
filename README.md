@@ -67,7 +67,9 @@ result will be nothing short of havoc.**
 
 ## Usage
 
-`M-x inf-clojure` or `C-c C-z` within a Clojure source file.
+Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure source file.
+This will start a REPL process for the current project and you can start
+interacting with it.
 
 `inf-clojure` has several custom variables which control the command
 used to start a REPL for particular project type - `inf-clojure-lein-cmd`,
@@ -82,25 +84,31 @@ command line with `planck -n 5555`.
 Use `C-u C-c C-z` to start a REPL with a different command/cons pair than
 the default specified in `inf-clojure-program`.
 
-You can set custom values to `inf-clojure` variables on a per-project basis using [directory
-variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
-
-The REPL commands don't prompt by default but a prefix argument will invert
-this. For instance: `C-u C-c C-v` will ask for the symbol you want to show the
-docstring for.
-
 You can use `M-x inf-clojure-connect` to connect to a running socket-repl.
 You will be prompted for host and port.
 
+You can set custom values to `inf-clojure` variables on a per-project basis using [directory
+variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
+
+Many `inf-clojure-minor-mode` commands by default act on the symbol at
+point. You can, however, change this behaviour by invoking such
+commands with a prefix argument. For instance: `C-u C-c C-v` will ask
+for the symbol you want to show the docstring for.
+
 ## REPL Type
 
-An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo and Planck are all potentially valid options.
-At the moment, the default Clojure REPL, the Lumo REPL (though partially, see https://github.com/clojure-emacs/inf-clojure/pull/44), and the Planck REPL are supported.
+An `inf-clojure` REPL can be of different types: Clojure,
+ClojureScript, Lumo and Planck are all potentially valid options.  At
+the moment, the default Clojure REPL, the Lumo REPL (though partially,
+see https://github.com/clojure-emacs/inf-clojure/pull/44), and the
+Planck REPL are supported.
 
 To hook up a custom REPL type, just use the right launch command (or connect through socket).
 For example, for Lumo just add the following in your `.dir-locals.el`:
 
-    ((nil . ((inf-clojure-boot-cmd . "lumo -d")))) ;; inf-clojure-lein-cmd if you are using Leiningen
+```el
+((nil . ((inf-clojure-boot-cmd . "lumo -d")))) ;; inf-clojure-lein-cmd if you are using Leiningen
+```
 
 ## ElDoc
 
@@ -124,9 +132,12 @@ You can leave it enabled, it just won't show anything in the echo area.
 
 ## Lumo Setup
 
-For an optimal Lumo experience the `-d` needs to be passed to Lumo when launched from the command line. This disable `readline` support in order to play nicely with emacs.
+For an optimal Lumo experience the `-d` needs to be passed to Lumo
+when launched from the command line. This disable `readline` support
+in order to play nicely with emacs.
 
-For example, you can use the following command (assuming `cp` contains the classpath) in your `.dir-locals.el`:
+For example, you can use the following command (assuming `cp` contains
+the classpath) in your `.dir-locals.el`:
 
 ```el
 ((nil . (eval . (setq inf-clojure-boot-cmd (concat "lumo -d -c "
