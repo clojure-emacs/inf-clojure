@@ -115,8 +115,16 @@ the moment, the default Clojure REPL, the Lumo REPL (though partially,
 see https://github.com/clojure-emacs/inf-clojure/pull/44), and the
 Planck REPL are supported.
 
-To hook up a custom REPL type, just use the right launch command (or connect through socket).
-For example, for Lumo just add the following in your `.dir-locals.el`:
+What does it mean that a REPL type is supported - well it means that `inf-clojure`
+would use the proper code internally to power commands like definition lookup and friends.
+Those differ from REPL to REPL and can't be implemented in a REPL-independent way. At
+boot type `inf-clojure` tries to detect the type of the REPL that was started and uses
+this type to dispatch the proper code for the respective REPL type.
+
+By default `inf-clojure` would start a standard Clojure REPL using
+`lein` or `boot` but you can easily change this.  To boot some other REPL just use the
+right launch command (or connect to the REPL via a socket).  For example, for
+Lumo just add the following in your `.dir-locals.el`:
 
 ```el
 ((nil . ((inf-clojure-boot-cmd . "lumo -d")))) ;; inf-clojure-lein-cmd if you are using Leiningen
