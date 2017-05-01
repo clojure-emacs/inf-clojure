@@ -90,10 +90,22 @@ You will be prompted for host and port.
 You can set custom values to `inf-clojure` variables on a per-project basis using [directory
 variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
 
+For a list of all available commands in `inf-clojure-mode` (a.k.a. the REPL) and
+`inf-clojure-minor-mode` you can either invoke `C-h f RET inf-clojure-mode` and
+`C-h f RET inf-clojure-minor-mode` or simply browse their menus.
+
 Many `inf-clojure-minor-mode` commands by default act on the symbol at
 point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
+
+## Configuration options
+
+In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
+configurable.
+
+You can see all the configuration options available using the command
+`M-x customize-group RET inf-clojure`.
 
 ## REPL Type
 
