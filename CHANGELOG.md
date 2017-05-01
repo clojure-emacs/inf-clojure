@@ -2,7 +2,10 @@
 
 ## master (unreleased)
 
+## 2.0.0 (2017-05-01)
+
 ### New Features
+
 * [#63](https://github.com/clojure-emacs/inf-clojure/pull/69): Fix spurious process output on init.
 * [#57](https://github.com/clojure-emacs/inf-clojure/pull/68): Add `inf-clojure-connect`.
 * [#66](https://github.com/clojure-emacs/inf-clojure/pull/56): Add Planck support.
