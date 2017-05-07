@@ -1241,4 +1241,10 @@ for evaluation, therefore FORM should not include it."
   "Ascertain that PROC is a Planck REPL.")
 
 (provide 'inf-clojure)
+
+;; Local variables:
+;; coding: utf-8
+;; indent-tabs-mode: nil
+;; End:
+
 ;;; inf-clojure.el ends here
