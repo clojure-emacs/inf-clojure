@@ -978,7 +978,7 @@ the results buffer.  It cuts out the output from
 See variable `inf-clojure-arglists-form'."
   (let* ((arglists-snippet (format (inf-clojure-arglists-form) fn))
          (arglists-result (inf-clojure-results-from-process (inf-clojure-proc) arglists-snippet))
-         (arglists-data (read arglists-result)))
+         (arglists-data (when arglists-result (read arglists-result))))
     (cond
      ((null arglists-data) nil)
      ((stringp arglists-data) arglists-data)
