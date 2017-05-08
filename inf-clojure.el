@@ -288,7 +288,7 @@ Clojure to load that file."
 
 (defun inf-clojure-load-form ()
   "Return the form to query inferior Clojure for a var's documentation.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-var-doc-form` variant."
   (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
     (`lumo inf-clojure-load-form-lumo)
