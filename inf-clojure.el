@@ -1198,7 +1198,8 @@ Useful for commands that can invoked outside of an inf-clojure buffer
       (cond
        ((null repl-buffers) (user-error "No inf-clojure buffers found"))
        ((= (length repl-buffers) 1) (car repl-buffers))
-       (t (get-buffer (completing-read "Select target inf-clojure buffer: " (mapcar #'buffer-name repl-buffers))))))))
+       (t (get-buffer (completing-read "Select target inf-clojure buffer: "
+                                       (mapcar #'buffer-name repl-buffers))))))))
 
 (defun inf-clojure-quit (&optional buffer)
   "Kill the REPL buffer and its underlying process.
