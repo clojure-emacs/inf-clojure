@@ -94,6 +94,11 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 \(as in :a, :c, etc.)"
   :type 'regexp)
 
+(defcustom inf-clojure-minor-mode-completions t
+  "If non-nil, completions will be used in inf-clojure minor mode."
+  :type 'boolean
+  :group 'inf-clojure)
+
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
     (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp)
@@ -175,8 +180,9 @@ The following commands are available:
   (setq comint-input-sender 'inf-clojure--send-string)
   (inf-clojure-eldoc-setup)
   (make-local-variable 'completion-at-point-functions)
-  (add-to-list 'completion-at-point-functions
-               #'inf-clojure-completion-at-point))
+  (when inf-clojure-minor-mode-completions
+    (add-to-list 'completion-at-point-functions
+                 'inf-clojure-completion-at-point)))
 
 (defcustom inf-clojure-lein-cmd "lein repl"
   "The command used to start a Clojure REPL for Leiningen projects.
