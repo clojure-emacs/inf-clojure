@@ -176,7 +176,14 @@ The following commands are available:
   (inf-clojure-eldoc-setup)
   (make-local-variable 'completion-at-point-functions)
   (add-to-list 'completion-at-point-functions
-               #'inf-clojure-completion-at-point))
+               #'inf-clojure-completion-at-point)
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (unless (get-buffer-process "*inf-clojure*")
+                (inf-clojure)
+                (bury-buffer))
+              ))
+               )
 
 (defcustom inf-clojure-lein-cmd "lein repl"
   "The command used to start a Clojure REPL for Leiningen projects.
