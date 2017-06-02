@@ -703,7 +703,8 @@ If you are using REPL types, it will pickup the most approapriate
 (define-obsolete-variable-alias 'inf-clojure-arglist-command 'inf-clojure-arglists-form "2.0.0")
 
 (defcustom inf-clojure-arglists-form-lumo
-  "(pr-str (lumo.repl/get-arglists \"%s\"))"
+  "(when-let [res (lumo.repl/get-arglists \"%s\")] 
+       (-> res str clojure.string/trim))"
   "Lumo form to query inferior Clojure for a function's arglists."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
@@ -981,9 +982,10 @@ See variable `inf-clojure-arglists-form'."
          (arglists-data (when arglists-result (read arglists-result))))
     (cond
      ((null arglists-data) nil)
-     ((string-equal arglists-data "nil") nil)
      ((stringp arglists-data) arglists-data)
-     ((listp arglists-data) arglists-result))))
+     ((and (listp arglists-data)
+           (not (string-equal inf-clojure-repl-type "lumo")))
+      arglists-result))))
 
 (defun inf-clojure-show-arglists (prompt-for-symbol)
   "Show the arglists for function FN in the mini-buffer.
