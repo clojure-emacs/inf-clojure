@@ -981,6 +981,7 @@ See variable `inf-clojure-arglists-form'."
          (arglists-data (when arglists-result (read arglists-result))))
     (cond
      ((null arglists-data) nil)
+     ((string-equal arglists-data "nil") nil)
      ((stringp arglists-data) arglists-data)
      ((listp arglists-data) arglists-result))))
 
