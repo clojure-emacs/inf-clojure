@@ -7,6 +7,7 @@
 ### Bugs Fixed
 
 * [#77](https://github.com/clojure-emacs/inf-clojure/pull/77): Fix request "Eval expression:" if arglists return is `nil`.
+* [#79](https://github.com/clojure-emacs/inf-clojure/pull/82): Eldoc error when running boot repl.
 
 ## 2.0.0 (2017-05-01)
 
