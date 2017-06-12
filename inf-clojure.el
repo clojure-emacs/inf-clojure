@@ -726,7 +726,10 @@ If you are using REPL types, it will pickup the most approapriate
 (define-obsolete-variable-alias 'inf-clojure-completion-command 'inf-clojure-completion-form "2.0.0")
 
 (defcustom inf-clojure-completion-form-lumo
-  "(doall (map str (lumo.repl/get-completions \"%s\")))"
+  "(let [ret (atom)]
+     (lumo.repl/get-completions \"%s\"
+       (fn [res] (reset! ret (map str res))))
+     @ret)"
   "Lumo form to query inferior Clojure for completion candidates."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
