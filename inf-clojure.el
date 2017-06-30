@@ -228,8 +228,8 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
   (when (not inf-clojure--repl-type-lock)
     (let ((inf-clojure--repl-type-lock t))
       (cond
-       ((inf-clojure--lumo-p proc) 'lumo)
-       ((inf-clojure--planck-p proc) 'planck)
+       ((inf-clojure--some-response-p proc inf-clojure--lumo-repl-form) 'lumo)
+       ((inf-clojure--some-response-p proc inf-clojure--planck-repl-form) 'planck)
        (t 'clojure)))))
 
 (defun inf-clojure--set-repl-type (proc)
@@ -1307,34 +1307,19 @@ for evaluation, therefore FORM should not include it."
 ;;;; ====
 
 (defcustom inf-clojure--lumo-repl-form
-  "(js/global.hasOwnProperty \"$$LUMO_GLOBALS\")"
+  "(find-ns 'lumo.repl)"
   "Form to invoke in order to verify that we launched a Lumo REPL."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
-
-(defalias 'inf-clojure--lumo-p
-  (apply-partially 'inf-clojure--response-match-p
-                   inf-clojure--lumo-repl-form
-                   (lambda (string)
-                     (string-match-p "\\Ca*true\\Ca*" string)))
-  "Ascertain that PROC is a Lumo REPL.")
-
 
 ;;;; Planck
 ;;;; ====
 
 (defcustom inf-clojure--planck-repl-form
-  "(js/global.hasOwnProperty \"PLANCK_VERSION\")"
+  "(find-ns 'planck.repl)"
   "Form to invoke in order to verify that we launched a Planck REPL."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
-
-(defalias 'inf-clojure--planck-p
-  (apply-partially 'inf-clojure--response-match-p
-                   inf-clojure--planck-repl-form
-                   (lambda (string)
-                     (string-match-p "\\Ca*true\\Ca*" string)))
-  "Ascertain that PROC is a Planck REPL.")
 
 (provide 'inf-clojure)
 
