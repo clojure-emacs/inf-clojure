@@ -940,6 +940,25 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
                (inf-clojure-symbol-at-point))))
     (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-source-form) var))))
 
+(defvar inf-clojure--dump-file-name ".inf-clojure.dump"
+  "The name of the file used to dump process activity.")
+
+(defvar inf-clojure-dump-activity nil
+  "If non-nil dump process activity.
+Inf-Clojure will create a file in the project root folder named
+`inf-clojure--dump-file-name' and dump the process activity in
+it in case this is not nil." )
+
+(defun inf-clojure--dump-string (string)
+  "Dump STRING to file, according to `inf-clojure-dump-response'."
+  (when inf-clojure-dump-activity
+    (write-region string
+                  nil
+                  (expand-file-name inf-clojure--dump-file-name
+                                    (inf-clojure-project-root))
+                  'append
+                  'no-annoying-write-file-in-minibuffer)))
+
 ;; Originally from:
 ;;   https://github.com/glycerine/lush2/blob/master/lush2/etc/lush.el#L287
 (defun inf-clojure-results-from-process (process command &optional beg-string end-string)
@@ -950,6 +969,7 @@ string will start from (point) in the results buffer.  If
 END-STRING is nil, the result string will end at (point-max) in
 the results buffer.  It cuts out the output from
 `inf-clojure-prompt` onwards unconditionally."
+  (inf-clojure--dump-string (concat "\n----CMD->\n" command))
   (let ((work-buffer " *Inf-Clojure Redirect Work Buffer*"))
     (save-excursion
       (set-buffer (get-buffer-create work-buffer))
@@ -973,6 +993,7 @@ the results buffer.  It cuts out the output from
                       (search-forward end-string nil t)
                     (point-max)))
              (buffer-string (buffer-substring-no-properties beg end)))
+        (inf-clojure--dump-string (concat "\n<-RES----\n" buffer-string))
         (when (and buffer-string (string-match inf-clojure-prompt buffer-string))
           (substring buffer-string 0 (match-beginning 0)))))))
 
