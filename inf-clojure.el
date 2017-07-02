@@ -703,7 +703,10 @@ If you are using REPL types, it will pickup the most approapriate
 (define-obsolete-variable-alias 'inf-clojure-arglist-command 'inf-clojure-arglists-form "2.0.0")
 
 (defcustom inf-clojure-arglists-form-lumo
-  "(pr-str (lumo.repl/get-arglists \"%s\"))"
+  "(let [old-value lumo.repl/*pprint-results*]
+     (set! lumo.repl/*pprint-results* false)
+     (js/setTimeout #(set! lumo.repl/*pprint-results* old-value) 0)
+     (lumo.repl/get-arglists \"%s\"))"
   "Lumo form to query inferior Clojure for a function's arglists."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
