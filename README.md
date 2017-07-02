@@ -201,6 +201,16 @@ directory and add this line to that file:
 jline.terminal=unsupported
 ```
 
+### Log process activity
+
+Standard Emacs debugging turns out to be difficult when an asynchronous process is involved. In this case try to enable logging:
+
+```el
+(setq inf-clojure-log-activity t)
+```
+
+This creates `.inf-clojure.log` in the process root for you to `tail -f` on.
+
 ## License
 
 Copyright © 2014-2017 Bozhidar Batsov and [contributors][].

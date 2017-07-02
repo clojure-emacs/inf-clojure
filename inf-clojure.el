@@ -946,7 +946,33 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
 ;;;; Response parsing
 ;;;; ================
 
-(defvar inf-clojure--redirect-buffer-name " *Inf-Clojure Redirect Buffer*")
+(defvar inf-clojure--redirect-buffer-name " *Inf-Clojure Redirect Buffer*"
+  "The name of the buffer used for process output redirection.")
+
+(defvar inf-clojure--log-file-name ".inf-clojure.log"
+  "The name of the file used to log process activity.")
+
+(defvar inf-clojure-log-activity nil
+  "Log process activity?.
+Inf-Clojure will create a log file in the project folder named
+`inf-clojure--log-file-name' and dump the process activity in it
+in case this is not nil." )
+
+(defun inf-clojure--log-string (string &optional type)
+  "Log STRING to file, according to `inf-clojure-log-response'.
+The optional TYPE will be converted to string and printed before
+STRING if present."
+  (when inf-clojure-log-activity
+    (write-region (concat "\n"
+                          (when type
+                            (concat (prin1-to-string type) " | "))
+                          (let ((print-escape-newlines t))
+                            (prin1-to-string string)))
+                  nil
+                  (expand-file-name inf-clojure--log-file-name
+                                    (inf-clojure-project-root))
+                  'append
+                  'no-annoying-write-file-in-minibuffer)))
 
 ;; Originally from:
 ;;   https://github.com/glycerine/lush2/blob/master/lush2/etc/lush.el#L287
@@ -958,6 +984,7 @@ string will start from (point) in the results buffer.  If
 END-STRING is nil, the result string will end at (point-max) in
 the results buffer.  It cuts out the output from and including
 the `inf-clojure-prompt`."
+  (inf-clojure--log-string command :cmd)
   (let ((work-buffer inf-clojure--redirect-buffer-name))
     (save-excursion
       (set-buffer (get-buffer-create work-buffer))
@@ -978,8 +1005,10 @@ the `inf-clojure-prompt`."
                         (search-forward end-string nil t))
                       (point-max)))
              (prompt (when (search-forward inf-clojure-prompt nil t)
-                       (match-beginning 0))))
-        (buffer-substring-no-properties beg (or prompt end))))))
+                       (match-beginning 0)))
+             (buffer-string (buffer-substring-no-properties beg (or prompt end))))
+        (inf-clojure--log-string buffer-string :res)
+        buffer-string))))
 
 (defun inf-clojure--nil-string-match-p (string)
   "Return true iff STRING is not nil.
