@@ -726,7 +726,7 @@ If you are using REPL types, it will pickup the most approapriate
 (define-obsolete-variable-alias 'inf-clojure-completion-command 'inf-clojure-completion-form "2.0.0")
 
 (defcustom inf-clojure-completion-form-lumo
-  "(let [ret (atom)]
+  "(let [ret (atom nil)]
      (lumo.repl/get-completions \"%s\"
        (fn [res] (reset! ret (map str res))))
      @ret)"
