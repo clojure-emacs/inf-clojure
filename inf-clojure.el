@@ -191,7 +191,7 @@ often connecting to a remote REPL process."
 
 (define-obsolete-variable-alias 'inf-clojure-program 'inf-clojure-lein-cmd "2.0.0")
 
-(defcustom inf-clojure-boot-cmd "boot repl"
+(defcustom inf-clojure-boot-cmd "boot repl -C"
   "The command used to start a Clojure REPL for Boot projects.
 
 Alternatively you can specify a TCP connection cons pair, instead

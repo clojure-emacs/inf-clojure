@@ -99,6 +99,26 @@ point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
 
+#### Caveats
+
+Note that if you decide _NOT_ to use the socket repl, it is highly recommended
+you disable output coloring and/or readline facilities: `inf-clojure` does not
+filter out ASCII escape characters at the moment and will not behave correctly.
+
+You can disable coloring the following way for `boot`:
+
+```el
+((nil . ((inf-clojure-boot-cmd . "boot repl -C"))))
+```
+
+For leiningen, there are no command line switches and you need to add a custom [`project.clj` option](https://github.com/technomancy/leiningen/blob/master/sample.project.clj):
+
+```clojure
+...
+  :repl-options {:color false}
+...
+```
+
 ## Configuration options
 
 In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
