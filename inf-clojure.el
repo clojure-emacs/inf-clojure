@@ -703,7 +703,10 @@ If you are using REPL types, it will pickup the most approapriate
 (define-obsolete-variable-alias 'inf-clojure-arglist-command 'inf-clojure-arglists-form "2.0.0")
 
 (defcustom inf-clojure-arglists-form-lumo
-  "(pr-str (lumo.repl/get-arglists \"%s\"))"
+  "(let [old-value lumo.repl/*pprint-results*]
+     (set! lumo.repl/*pprint-results* false)
+     (js/setTimeout #(set! lumo.repl/*pprint-results* old-value) 0)
+     (lumo.repl/get-arglists \"%s\"))"
   "Lumo form to query inferior Clojure for a function's arglists."
   :type 'string
   :package-version '(inf-clojure . "2.0.0"))
@@ -726,7 +729,7 @@ If you are using REPL types, it will pickup the most approapriate
 (define-obsolete-variable-alias 'inf-clojure-completion-command 'inf-clojure-completion-form "2.0.0")
 
 (defcustom inf-clojure-completion-form-lumo
-  "(let [ret (atom)]
+  "(let [ret (atom nil)]
      (lumo.repl/get-completions \"%s\"
        (fn [res] (reset! ret (map str res))))
      @ret)"
@@ -940,17 +943,22 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
                (inf-clojure-symbol-at-point))))
     (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-source-form) var))))
 
+;;;; Response parsing
+;;;; ================
+
+(defvar inf-clojure--redirect-buffer-name " *Inf-Clojure Redirect Buffer*")
+
 ;; Originally from:
 ;;   https://github.com/glycerine/lush2/blob/master/lush2/etc/lush.el#L287
-(defun inf-clojure-results-from-process (process command &optional beg-string end-string)
-  "Send COMMAND to PROCESS.
+(defun inf-clojure--process-response (command process &optional beg-string end-string)
+  "Send COMMAND to PROCESS and return the response.
 Return the result of COMMAND starting with BEG-STRING and ending
 with END-STRING if non-nil.  If BEG-STRING is nil, the result
 string will start from (point) in the results buffer.  If
 END-STRING is nil, the result string will end at (point-max) in
-the results buffer.  It cuts out the output from
-`inf-clojure-prompt` onwards unconditionally."
-  (let ((work-buffer " *Inf-Clojure Redirect Work Buffer*"))
+the results buffer.  It cuts out the output from and including
+the `inf-clojure-prompt`."
+  (let ((work-buffer inf-clojure--redirect-buffer-name))
     (save-excursion
       (set-buffer (get-buffer-create work-buffer))
       (erase-buffer)
@@ -963,29 +971,68 @@ the results buffer.  It cuts out the output from
       ;; Collect the output
       (set-buffer work-buffer)
       (goto-char (point-min))
-      ;; Skip past the command, if it was echoed
-      (and (looking-at command)
-           (forward-line))
-      (let* ((beg (if beg-string
-                      (progn (search-forward beg-string nil t) (match-beginning 0))
-                    (point)))
-             (end (if end-string
-                      (search-forward end-string nil t)
-                    (point-max)))
-             (buffer-string (buffer-substring-no-properties beg end)))
-        (when (and buffer-string (string-match inf-clojure-prompt buffer-string))
-          (substring buffer-string 0 (match-beginning 0)))))))
+      (let* ((beg (or (when (and beg-string (search-forward beg-string nil t))
+                        (match-beginning 0))
+                      (point-min)))
+             (end (or (when end-string
+                        (search-forward end-string nil t))
+                      (point-max)))
+             (prompt (when (search-forward inf-clojure-prompt nil t)
+                       (match-beginning 0))))
+        (buffer-substring-no-properties beg (or prompt end))))))
+
+(defun inf-clojure--nil-string-match-p (string)
+  "Return true iff STRING is not nil.
+This function also takes into consideration weird escape
+character and matches if nil is anywhere within the input
+string."
+  (string-match-p "\\Ca*nil\\Ca*" string))
+
+(defun inf-clojure--some (data)
+  "Return DATA unless nil or includes \"nil\" as string."
+  (cond
+   ((null data) nil)
+   ((and (stringp data)
+         (inf-clojure--nil-string-match-p data)) nil)
+   (t data)))
+
+(defun inf-clojure--read-or-nil (response)
+  "Read RESPONSE and return it as data.
+
+If response is nil or includes the \"nil\" string return nil
+instead.
+
+Note that the read operation will always return the first
+readable sexp only."
+  ;; The following reads the first LISP expression
+  (inf-clojure--some
+   (when response
+     (ignore-errors (read response)))))
+
+(defun inf-clojure--process-response-match-p (match-p proc form)
+  "Eval MATCH-P on the response of sending to PROC the input FORM.
+Note that this function will add a \n to the end (or  )f the string
+for evaluation, therefore FORM should not include it."
+  (when-let ((response (inf-clojure--process-response form proc)))
+    (funcall match-p response)))
+
+(defun inf-clojure--some-response-p (proc form)
+  "Return true iff PROC's response after evaluating FORM is not nil."
+  (inf-clojure--process-response-match-p
+                  (lambda (string)
+                    (not (inf-clojure--nil-string-match-p string)))
+                  proc form))
+
+;;;; Commands
+;;;; ========
 
 (defun inf-clojure-arglists (fn)
   "Send a query to the inferior Clojure for the arglists for function FN.
 See variable `inf-clojure-arglists-form'."
-  (let* ((arglists-snippet (format (inf-clojure-arglists-form) fn))
-         (arglists-result (inf-clojure-results-from-process (inf-clojure-proc) arglists-snippet))
-         (arglists-data (when arglists-result (read arglists-result))))
-    (cond
-     ((null arglists-data) nil)
-     ((stringp arglists-data) arglists-data)
-     ((listp arglists-data) arglists-result))))
+  (thread-first
+      (format (inf-clojure-arglists-form) fn)
+    (inf-clojure--process-response (inf-clojure-proc) "(" ")")
+    (inf-clojure--some)))
 
 (defun inf-clojure-show-arglists (prompt-for-symbol)
   "Show the arglists for function FN in the mini-buffer.
@@ -1051,26 +1098,18 @@ See variable `inf-clojure-buffer'."
     (or proc
         (error "No Clojure subprocess; see variable `inf-clojure-buffer'"))))
 
+(defun inf-clojure--list-or-nil (data)
+  "Return DATA if and only if it is a list."
+  (when (listp data) data))
+
 (defun inf-clojure-completions (expr)
   "Return a list of completions for the Clojure expression starting with EXPR."
-  (let* ((proc (inf-clojure-proc))
-         (comint-filt (process-filter proc))
-         (kept "")
-         completions)
-    (set-process-filter proc (lambda (_proc string) (setq kept (concat kept string))))
-    (unwind-protect
-        (let ((completion-snippet
-               (format
-                (inf-clojure-completion-form) (substring-no-properties expr))))
-          (process-send-string proc completion-snippet)
-          (while (and (not (string-match inf-clojure-prompt kept))
-                      (accept-process-output proc 2)))
-          (setq completions (read kept))
-          ;; Subprocess echoes output on Windows and OS X.
-          (when (and completions (string= (concat (car completions) "\n") completion-snippet))
-            (setq completions (cdr completions))))
-      (set-process-filter proc comint-filt))
-    completions))
+  (when (not (string-blank-p expr))
+    (thread-first
+        (format (inf-clojure-completion-form) (substring-no-properties expr))
+      (inf-clojure--process-response (inf-clojure-proc) "(" ")")
+      (inf-clojure--read-or-nil)
+      (inf-clojure--list-or-nil))))
 
 (defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{(")
 
@@ -1232,7 +1271,7 @@ to suppress the usage of the target buffer discovery logic."
   "Return MATCH-P on the result of sending FORM to PROC.
 Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
-  (funcall match-p (inf-clojure-results-from-process proc form nil)))
+  (funcall match-p (inf-clojure--process-response form proc nil)))
 
 ;;;; Lumo
 ;;;; ====

@@ -8,6 +8,7 @@
 
 * [#77](https://github.com/clojure-emacs/inf-clojure/pull/77): Fix request "Eval expression:" if arglists return is `nil`.
 * [#79](https://github.com/clojure-emacs/inf-clojure/pull/82): Eldoc error when running boot repl.
+* [#83](https://github.com/clojure-emacs/inf-clojure/pull/85): No such namespace: complete.core in lumo REPL.
 
 ## 2.0.0 (2017-05-01)
 
