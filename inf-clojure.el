@@ -140,6 +140,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
     (define-key map "\C-c\M-n" #'inf-clojure-set-ns)
     (define-key map "\C-c\C-q" #'inf-clojure-quit)
+    (define-key map "\C-c\M-c" #'inf-clojure-connect)
     (easy-menu-define inf-clojure-minor-mode-menu map
       "Inferior Clojure Minor Mode Menu"
       '("Inf-Clojure"

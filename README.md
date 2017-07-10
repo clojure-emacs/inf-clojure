@@ -84,8 +84,8 @@ command line with `planck -n 5555`.
 Use `C-u C-c C-z` to start a REPL with a different command/cons pair than
 the default specified in `inf-clojure-program`.
 
-You can use `M-x inf-clojure-connect` to connect to a running socket-repl.
-You will be prompted for host and port.
+You can use `M-x inf-clojure-connect` (`C-c M-c`) to connect to a running
+socket-repl.  You will be prompted for host and port.
 
 You can set custom values to `inf-clojure` variables on a per-project basis using [directory
 variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
