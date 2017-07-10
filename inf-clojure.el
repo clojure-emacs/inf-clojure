@@ -996,8 +996,9 @@ the `inf-clojure-prompt`."
        (inf-clojure--sanitize-command command) work-buffer process nil t)
       ;; Wait for the process to complete
       (set-buffer (process-buffer process))
-      (while (null comint-redirect-completed)
-        (accept-process-output nil 1))
+      (while (and (null comint-redirect-completed)
+                  (accept-process-output process 1 0 t))
+        (sleep-for 0.01))
       ;; Collect the output
       (set-buffer work-buffer)
       (goto-char (point-min))
