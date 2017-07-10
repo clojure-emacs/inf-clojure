@@ -958,14 +958,16 @@ Inf-Clojure will create a log file in the project folder named
 `inf-clojure--log-file-name' and dump the process activity in it
 in case this is not nil." )
 
-(defun inf-clojure--log-string (string &optional type)
+(defun inf-clojure--log-string (string &optional tag)
   "Log STRING to file, according to `inf-clojure-log-response'.
 The optional TYPE will be converted to string and printed before
 STRING if present."
   (when inf-clojure-log-activity
     (write-region (concat "\n"
-                          (when type
-                            (concat (prin1-to-string type) " | "))
+                          (when tag
+                            (if (stringp tag)
+                              (concat tag "\n")
+                              (concat (prin1-to-string tag) "\n")))
                           (let ((print-escape-newlines t))
                             (prin1-to-string string)))
                   nil
@@ -984,7 +986,7 @@ string will start from (point) in the results buffer.  If
 END-STRING is nil, the result string will end at (point-max) in
 the results buffer.  It cuts out the output from and including
 the `inf-clojure-prompt`."
-  (inf-clojure--log-string command :cmd)
+  (inf-clojure--log-string command "----CMD->")
   (let ((work-buffer inf-clojure--redirect-buffer-name))
     (save-excursion
       (set-buffer (get-buffer-create work-buffer))
@@ -1007,7 +1009,7 @@ the `inf-clojure-prompt`."
              (prompt (when (search-forward inf-clojure-prompt nil t)
                        (match-beginning 0)))
              (buffer-string (buffer-substring-no-properties beg (or prompt end))))
-        (inf-clojure--log-string buffer-string :res)
+        (inf-clojure--log-string buffer-string "<-RES----")
         buffer-string))))
 
 (defun inf-clojure--nil-string-match-p (string)
