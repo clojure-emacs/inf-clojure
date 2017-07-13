@@ -977,16 +977,27 @@ STRING if present."
                   'append
                   'no-annoying-write-file-in-minibuffer)))
 
+(defun inf-clojure--string-boundaries (string prompt &optional beg-regexp end-regexp)
+  "Calculate the STRING boundaries, including PROMPT.
+Return a list of positions (beginning end prompt).  If the
+optional BEG-REGEXP and END-REGEXP are present, the boundaries
+are going to match those."
+  (list (or (and beg-regexp (string-match beg-regexp string)) 0)
+        (or (and end-regexp (when (string-match end-regexp string)
+                              (match-end 0)))
+            (length string))
+        (or (string-match prompt string) (length string))))
+
 ;; Originally from:
 ;;   https://github.com/glycerine/lush2/blob/master/lush2/etc/lush.el#L287
-(defun inf-clojure--process-response (command process &optional beg-string end-string)
+(defun inf-clojure--process-response (command process &optional beg-regexp end-regexp)
   "Send COMMAND to PROCESS and return the response.
-Return the result of COMMAND starting with BEG-STRING and ending
-with END-STRING if non-nil.  If BEG-STRING is nil, the result
-string will start from (point) in the results buffer.  If
-END-STRING is nil, the result string will end at (point-max) in
-the results buffer.  It cuts out the output from and including
-the `inf-clojure-prompt`."
+Return the result of COMMAND, filtering it from BEG-REGEXP to the
+end of the matching END-REGEXP if non-nil.
+If BEG-REGEXP is nil, the result string will start from (point)
+in the results buffer.  If END-REGEXP is nil, the result string
+will end at (point-max) in the results buffer.  It cuts out the
+output from and including the `inf-clojure-prompt`."
   (inf-clojure--log-string command "----CMD->")
   (let ((work-buffer inf-clojure--redirect-buffer-name))
     (save-excursion
@@ -1002,17 +1013,16 @@ the `inf-clojure-prompt`."
       ;; Collect the output
       (set-buffer work-buffer)
       (goto-char (point-min))
-      (let* ((beg (or (when (and beg-string (search-forward beg-string nil t))
-                        (match-beginning 0))
-                      (point-min)))
-             (end (or (when end-string
-                        (search-forward end-string nil t))
-                      (point-max)))
-             (prompt (when (search-forward inf-clojure-prompt nil t)
-                       (match-beginning 0)))
-             (buffer-string (buffer-substring-no-properties beg (or prompt end))))
-        (inf-clojure--log-string buffer-string "<-RES----")
-        buffer-string))))
+      (let* ((buffer-string (buffer-substring-no-properties (point-min) (point-max)))
+             (boundaries (inf-clojure--string-boundaries buffer-string inf-clojure-prompt beg-regexp end-regexp))
+             (beg-pos (car boundaries))
+             (end-pos (car (cdr boundaries)))
+             (prompt-pos (car (cdr (cdr boundaries))))
+             (response-string (substring buffer-string beg-pos (min end-pos prompt-pos))))
+        (inf-clojure--log-string buffer-string "<-BUF----")
+        (inf-clojure--log-string boundaries "<-BND----")
+        (inf-clojure--log-string response-string "<-RES----")
+        response-string))))
 
 (defun inf-clojure--nil-string-match-p (string)
   "Return true iff STRING is not nil.
@@ -1044,7 +1054,7 @@ readable sexp only."
 
 (defun inf-clojure--process-response-match-p (match-p proc form)
   "Eval MATCH-P on the response of sending to PROC the input FORM.
-Note that this function will add a \n to the end (or  )f the string
+Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
   (when-let ((response (inf-clojure--process-response form proc)))
     (funcall match-p response)))
