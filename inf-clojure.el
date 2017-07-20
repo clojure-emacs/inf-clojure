@@ -961,7 +961,7 @@ in case this is not nil." )
 
 (defun inf-clojure--log-string (string &optional tag)
   "Log STRING to file, according to `inf-clojure-log-response'.
-The optional TYPE will be converted to string and printed before
+The optional TAG will be converted to string and printed before
 STRING if present."
   (when inf-clojure-log-activity
     (write-region (concat "\n"
@@ -1062,9 +1062,9 @@ for evaluation, therefore FORM should not include it."
 (defun inf-clojure--some-response-p (proc form)
   "Return true iff PROC's response after evaluating FORM is not nil."
   (inf-clojure--process-response-match-p
-                  (lambda (string)
-                    (not (inf-clojure--nil-string-match-p string)))
-                  proc form))
+   (lambda (string)
+     (not (inf-clojure--nil-string-match-p (string-trim string))))
+   proc form))
 
 ;;;; Commands
 ;;;; ========
