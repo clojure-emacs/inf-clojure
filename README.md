@@ -209,7 +209,7 @@ Standard Emacs debugging turns out to be difficult when an asynchronous process 
 (setq inf-clojure-log-activity t)
 ```
 
-This creates `.inf-clojure.log` in the process root for you to `tail -f` on.
+This creates `.inf-clojure.log` in the project directory so that you can `tail -f` on it.
 
 ## License
 
