@@ -179,6 +179,16 @@ The following commands are available:
   (add-to-list 'completion-at-point-functions
                #'inf-clojure-completion-at-point))
 
+(defun inf-clojure--endpoint-p (x)
+  "Return non-nil if and only if X is a valid endpoint.
+
+A valid endpoint consists of a host and port
+number (e.g. (\"localhost\" . 5555))."
+  (and
+   (listp x)
+   (stringp (car x))
+   (numberp (cdr x))))
+
 (defcustom inf-clojure-lein-cmd "lein repl"
   "The command used to start a Clojure REPL for Leiningen projects.
 
@@ -188,6 +198,8 @@ number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
                  (cons string integer))
+  :risky #'stringp
+  :safe #'inf-clojure--endpoint-p
   :package-version '(inf-clojure . "2.0.0"))
 
 (define-obsolete-variable-alias 'inf-clojure-program 'inf-clojure-lein-cmd "2.0.0")
@@ -201,6 +213,8 @@ number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
                  (cons string integer))
+  :risky #'stringp
+  :safe #'inf-clojure--endpoint-p
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-generic-cmd "lein repl"
@@ -212,6 +226,8 @@ number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
                  (cons string integer))
+  :risky #'(stringp )
+  :safe #'inf-clojure--endpoint-p
   :package-version '(inf-clojure . "2.0.0"))
 
 (defvar-local inf-clojure-repl-type nil
