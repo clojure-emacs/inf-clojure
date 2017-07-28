@@ -226,7 +226,7 @@ number (e.g. (\"localhost\" . 5555)).  That's useful if you're
 often connecting to a remote REPL process."
   :type '(choice (string)
                  (cons string integer))
-  :risky #'(stringp )
+  :risky #'stringp
   :safe #'inf-clojure--endpoint-p
   :package-version '(inf-clojure . "2.0.0"))
 
@@ -283,6 +283,7 @@ This format string should use `%s' to substitute a file name and
 should result in a Clojure form that will be sent to the inferior
 Clojure to load that file."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (define-obsolete-variable-alias 'inf-clojure-load-command 'inf-clojure-load-form "2.0.0")
@@ -293,6 +294,7 @@ This format string should use `%s' to substitute a file name and
 should result in a Clojure form that will be sent to the inferior
 Clojure to load that file."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-load-form-planck "(load-file \"%s\")"
@@ -301,6 +303,7 @@ This format string should use `%s' to substitute a file name and
 should result in a Clojure form that will be sent to the inferior
 Clojure to load that file."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-load-form ()
@@ -650,6 +653,7 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
   "(clojure.repl/doc %s)"
   "Form to query inferior Clojure for a var's documentation."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (define-obsolete-variable-alias 'inf-clojure-var-doc-command 'inf-clojure-var-doc-form "2.0.0")
@@ -658,12 +662,14 @@ The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the 
   "(lumo.repl/doc %s)"
   "Lumo form to query inferior Clojure for a var's documentation."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-var-doc-form-planck
   "(planck.repl/doc %s)"
   "Planck form to query inferior Clojure for a var's documentation."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-var-doc-form ()
@@ -680,18 +686,21 @@ If you are using REPL types, it will pickup the most approapriate
   "(clojure.repl/source %s)"
   "Form to query inferior Clojure for a var's source."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-var-source-form-planck
   "(planck.repl/source %s)"
   "Planck form to query inferior Clojure for a var's source."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-var-source-form-lumo
   "(lumo.repl/source %s)"
   "Lumo form to query inferior Clojure for a var's source."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-var-source-form ()
@@ -715,6 +724,7 @@ If you are using REPL types, it will pickup the most approapriate
      (catch Throwable t nil))"
   "Form to query inferior Clojure for a function's arglists."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (define-obsolete-variable-alias 'inf-clojure-arglist-command 'inf-clojure-arglists-form "2.0.0")
@@ -726,6 +736,7 @@ If you are using REPL types, it will pickup the most approapriate
      (lumo.repl/get-arglists \"%s\"))"
   "Lumo form to query inferior Clojure for a function's arglists."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-arglists-form ()
@@ -741,6 +752,7 @@ If you are using REPL types, it will pickup the most approapriate
   "(complete.core/completions \"%s\")"
   "Form to query inferior Clojure for completion candidates."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (define-obsolete-variable-alias 'inf-clojure-completion-command 'inf-clojure-completion-form "2.0.0")
@@ -752,12 +764,14 @@ If you are using REPL types, it will pickup the most approapriate
      @ret)"
   "Lumo form to query inferior Clojure for completion candidates."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-completion-form-planck
   "(planck.repl/get-completions \"%s\")"
   "Planck form to query inferior Clojure for completion candidates."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-completion-form ()
@@ -774,18 +788,21 @@ If you are using REPL types, it will pickup the most approapriate
   "(clojure.repl/dir %s)"
   "Form to show the public vars in a namespace."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-ns-vars-form-lumo
   "(lumo.repl/dir %s)"
   "Lumo form to show the public vars in a namespace."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-ns-vars-form-planck
   "(planck.repl/dir %s)"
   "Planck form to show the public vars in a namespace."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-ns-vars-form ()
@@ -804,18 +821,21 @@ If you are using REPL types, it will pickup the most approapriate
   "(clojure.core/in-ns '%s)"
   "Form to set the namespace of the inferior Clojure process."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-set-ns-form-planck
   "(in-ns '%s)"
   "Planck form to set the namespace of the inferior Clojure process."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-set-ns-form-lumo
   "(in-ns '%s)"
   "Lumo form to set the namespace of the inferior Clojure process."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-set-ns-form ()
@@ -834,12 +854,14 @@ If you are using REPL types, it will pickup the most approapriate
      (println (str var)))"
   "Form to invoke apropos."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-apropos-form-lumo
   "(lumo.repl/apropos \"%s\")"
   "Planck form to invoke apropos."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-apropos-form-planck
@@ -847,6 +869,7 @@ If you are using REPL types, it will pickup the most approapriate
      (println (str var)))"
   "Planck form to invoke apropos."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-apropos-form ()
@@ -865,12 +888,14 @@ If you are using REPL types, it will pickup the most approapriate
   "(clojure.core/macroexpand '%s)"
   "Form to invoke macroexpand."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-macroexpand-form-planck
   "(macroexpand '%s)"
   "Planck form to invoke macroexpand."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-macroexpand-form ()
@@ -888,12 +913,14 @@ If you are using REPL types, it will pickup the most approapriate
   "(clojure.core/macroexpand-1 '%s)"
   "Form to invoke macroexpand-1."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-macroexpand-1-form-planck
   "(macroexpand-1 '%s)"
   "Planck form to invoke macroexpand-1."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defun inf-clojure-macroexpand-1-form ()
@@ -1339,6 +1366,7 @@ for evaluation, therefore FORM should not include it."
   "(find-ns 'lumo.repl)"
   "Form to invoke in order to verify that we launched a Lumo REPL."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 ;;;; Planck
@@ -1348,6 +1376,7 @@ for evaluation, therefore FORM should not include it."
   "(find-ns 'planck.repl)"
   "Form to invoke in order to verify that we launched a Planck REPL."
   :type 'string
+  :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
 (provide 'inf-clojure)
