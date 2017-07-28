@@ -1056,8 +1056,8 @@ readable sexp only."
   "Eval MATCH-P on the response of sending to PROC the input FORM.
 Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
-  (when-let ((response (inf-clojure--process-response form proc)))
-    (funcall match-p response)))
+  (let ((response (inf-clojure--process-response form proc)))
+    (when response (funcall match-p response))))
 
 (defun inf-clojure--some-response-p (proc form)
   "Return true iff PROC's response after evaluating FORM is not nil."
