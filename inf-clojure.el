@@ -932,7 +932,7 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
   (let ((var (if prompt-for-symbol
                  (car (inf-clojure-symprompt "Var doc" (inf-clojure-symbol-at-point)))
                (inf-clojure-symbol-at-point))))
-    (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-doc-form) var))))
+    (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-var-doc-form) var))))
 
 (defun inf-clojure-show-var-source (prompt-for-symbol)
   "Send a command to the inferior Clojure to give source for VAR.
@@ -942,7 +942,7 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
   (let ((var (if prompt-for-symbol
                  (car (inf-clojure-symprompt "Var source" (inf-clojure-symbol-at-point)))
                (inf-clojure-symbol-at-point))))
-    (comint-proc-query (inf-clojure-proc) (format (inf-clojure-var-source-form) var))))
+    (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-var-source-form) var))))
 
 ;;;; Response parsing
 ;;;; ================
@@ -1097,7 +1097,7 @@ prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
   (let ((ns (if prompt-for-ns
                 (car (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
               (clojure-find-ns))))
-    (comint-proc-query (inf-clojure-proc) (format (inf-clojure-ns-vars-form) ns))))
+    (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-ns-vars-form) ns))))
 
 (defun inf-clojure-set-ns (prompt-for-ns)
   "Set the ns of the inferior Clojure process to NS.
@@ -1110,13 +1110,13 @@ PROMPT-FOR-NS, it prompts for a namespace name."
               (clojure-find-ns))))
     (when (or (not ns) (equal ns ""))
       (user-error "No namespace selected"))
-    (comint-proc-query (inf-clojure-proc) (format (inf-clojure-set-ns-form) ns))))
+    (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-set-ns-form) ns))))
 
 (defun inf-clojure-apropos (var)
   "Send a form to the inferior Clojure to give apropos for VAR.
 See variable `inf-clojure-apropos-form'."
   (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-symbol-at-point)))
-  (comint-proc-query (inf-clojure-proc) (format (inf-clojure-apropos-form) var)))
+  (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-apropos-form) var)))
 
 (defun inf-clojure-macroexpand (&optional macro-1)
   "Send a form to the inferior Clojure to give apropos for VAR.

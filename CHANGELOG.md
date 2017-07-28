@@ -7,6 +7,7 @@
 * [#79](https://github.com/clojure-emacs/inf-clojure/pull/82): Eldoc error when running boot repl.
 * [#83](https://github.com/clojure-emacs/inf-clojure/pull/85): No such namespace: complete.core in lumo REPL.
 * [#93](https://github.com/clojure-emacs/inf-clojure/pull/93): Slow response from inf-clojure (completions, arglists, ...).
+* [#101](https://github.com/clojure-emacs/inf-clojure/pull/101): `inf-clojure-set-ns` hangs Emacs.
 
 ## 2.0.1 (2017-05-18)
 
