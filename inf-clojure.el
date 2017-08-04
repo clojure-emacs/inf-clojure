@@ -256,15 +256,28 @@ It requires a REPL PROC for inspecting the correct type."
     inf-clojure-repl-type))
 
 (defun inf-clojure--single-linify (string)
-  "Convert a multi-line STRING in a single-line STRING."
-  (replace-regexp-in-string "[[:space:]\\|\n]+" " " string))
+  "Convert a multi-line STRING in a single-line STRING.
+It also reduces/adds redundant whitespace for readability.  Note
+that this function will transform the empty string in \" \" (it
+adds an empty space)."
+  (replace-regexp-in-string "[ \\|\n]+" " " string))
+
+(defun inf-clojure--trim-newline-right (string)
+  "Trim newlines (only) in STRING."
+  (if (string-match "\n+\\'" string)
+      (replace-match "" t t string)
+    string))
 
 (defun inf-clojure--sanitize-command (command)
   "Sanitize COMMAND for sending it to a process.
 An example of things that this function does is to add a final
-newline at the end of the form."
-  (concat (string-trim-right (inf-clojure--single-linify command))
-          "\n"))
+newline at the end of the form.  Return an empty string if the
+sanitized command is empty."
+  (let* ((linified (inf-clojure--single-linify command))
+         (sanitized (inf-clojure--trim-newline-right linified)))
+    (if (or (string-blank-p linified) (string-blank-p sanitized))
+        ""
+      (concat sanitized "\n"))))
 
 (defun inf-clojure--send-string (proc string)
   "A custom `comint-input-sender` / `comint-send-string`.
@@ -275,7 +288,8 @@ always be preferred over `comint-send-string`.  It delegates to
 the string for evaluation.  Refer to `comint-simple-send` for
 customizations."
   (inf-clojure--set-repl-type proc)
-  (comint-simple-send proc string))
+  (when (> (length string) 0)
+    (comint-simple-send proc string)))
 
 (defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")"
   "Format-string for building a Clojure expression to load a file.
@@ -1041,31 +1055,32 @@ If BEG-REGEXP is nil, the result string will start from (point)
 in the results buffer.  If END-REGEXP is nil, the result string
 will end at (point-max) in the results buffer.  It cuts out the
 output from and including the `inf-clojure-prompt`."
-  (inf-clojure--log-string command "----CMD->")
-  (let ((work-buffer inf-clojure--redirect-buffer-name))
-    (save-excursion
-      (set-buffer (get-buffer-create work-buffer))
-      (erase-buffer)
-      (comint-redirect-send-command-to-process
-       (inf-clojure--sanitize-command command) work-buffer process nil t)
-      ;; Wait for the process to complete
-      (set-buffer (process-buffer process))
-      (while (and (null comint-redirect-completed)
-                  (accept-process-output process 1 0 t))
-        (sleep-for 0.01))
-      ;; Collect the output
-      (set-buffer work-buffer)
-      (goto-char (point-min))
-      (let* ((buffer-string (buffer-substring-no-properties (point-min) (point-max)))
-             (boundaries (inf-clojure--string-boundaries buffer-string inf-clojure-prompt beg-regexp end-regexp))
-             (beg-pos (car boundaries))
-             (end-pos (car (cdr boundaries)))
-             (prompt-pos (car (cdr (cdr boundaries))))
-             (response-string (substring buffer-string beg-pos (min end-pos prompt-pos))))
-        (inf-clojure--log-string buffer-string "<-BUF----")
-        (inf-clojure--log-string boundaries "<-BND----")
-        (inf-clojure--log-string response-string "<-RES----")
-        response-string))))
+  (let ((work-buffer inf-clojure--redirect-buffer-name)
+        (sanitized-command (inf-clojure--sanitize-command command)))
+    (when (not (string-empty-p sanitized-command))
+      (inf-clojure--log-string command "----CMD->")
+      (save-excursion
+        (set-buffer (get-buffer-create work-buffer))
+        (erase-buffer)
+        (comint-redirect-send-command-to-process sanitized-command work-buffer process nil t)
+        ;; Wait for the process to complete
+        (set-buffer (process-buffer process))
+        (while (and (null comint-redirect-completed)
+                    (accept-process-output process 1 0 t))
+          (sleep-for 0.01))
+        ;; Collect the output
+        (set-buffer work-buffer)
+        (goto-char (point-min))
+        (let* ((buffer-string (buffer-substring-no-properties (point-min) (point-max)))
+               (boundaries (inf-clojure--string-boundaries buffer-string inf-clojure-prompt beg-regexp end-regexp))
+               (beg-pos (car boundaries))
+               (end-pos (car (cdr boundaries)))
+               (prompt-pos (car (cdr (cdr boundaries))))
+               (response-string (substring buffer-string beg-pos (min end-pos prompt-pos))))
+          (inf-clojure--log-string buffer-string "<-BUF----")
+          (inf-clojure--log-string boundaries "<-BND----")
+          (inf-clojure--log-string response-string "<-RES----")
+          response-string)))))
 
 (defun inf-clojure--nil-string-match-p (string)
   "Return true iff STRING is not nil.
