@@ -744,7 +744,7 @@ If you are using REPL types, it will pickup the most approapriate
   "Planck form to query inferior Clojure for a function's arglists."
   :type 'string
   :safe #'stringp
-  :package-version '(inf-clojure . "2.0.0"))
+  :package-version '(inf-clojure . "2.0.1"))
 
 (defun inf-clojure-arglists-form ()
   "Return the form to query inferior Clojure for arglists of a var.
