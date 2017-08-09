@@ -753,6 +753,13 @@ If you are using REPL types, it will pickup the most approapriate
   :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-arglists-form-planck
+  "(planck.repl/get-arglists \"%s\""
+  "Planck form to query inferior Clojure for a function's arglists."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.1.0"))
+
 (defun inf-clojure-arglists-form ()
   "Return the form to query inferior Clojure for arglists of a var.
 If you are using REPL types, it will pickup the most approapriate
@@ -760,6 +767,7 @@ If you are using REPL types, it will pickup the most approapriate
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type (inf-clojure-proc))
      (`lumo inf-clojure-arglists-form-lumo)
+     (`planck inf-clojure-arglists-form-planck)
      (_ inf-clojure-arglists-form))))
 
 (defcustom inf-clojure-completion-form
