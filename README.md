@@ -119,6 +119,44 @@ For leiningen, there are no command line switches and you need to add a custom [
 ...
 ```
 
+#### Multiple Process Support
+
+To run multiple Clojure processes, you start the first up
+with `inf-clojure`.  It will be in a buffer named `*inf-clojure*`.
+Rename this buffer with `rename-buffer`.  You may now start up a new
+process with another `inf-clojure`.  It will be in a new buffer,
+named `*inf-clojure*`.  You can switch between the different process
+buffers with `switch-to-buffer`.
+
+Commands that send text from source buffers to Clojure processes (like `inf-clojure-eval-defun`
+or `inf-clojure-show-arglists`) have to choose a process to send to, when you have more than
+one Clojure process around. This is determined by the global variable `inf-clojure-buffer`.
+
+Suppose you have three inferior Clojures running:
+
+```
+    Buffer              Process
+    ------              -------
+    foo                 inf-clojure
+    bar                 inf-clojure<2>
+    *inf-clojure*       inf-clojure<3>
+```
+
+If you do a `inf-clojure-eval-defun` command on some Clojure source code,
+what process do you send it to?
+
+- If you're in a process buffer (foo, bar, or *inf-clojure*),
+  you send it to that process.
+- If you're in some other buffer (e.g., a source file), you
+  send it to the process attached to buffer `inf-clojure-buffer`.
+  
+This process selection is performed by function `inf-clojure-proc`.
+Whenever `inf-clojure` fires up a new process, it resets
+`inf-clojure-buffer` to be the new process's buffer.  If you only run
+one process, this does the right thing.  If you run multiple
+processes, you might need to change `inf-clojure-buffer` to
+whichever process buffer you want to use.
+
 ## Configuration options
 
 In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
@@ -127,7 +165,7 @@ configurable.
 You can see all the configuration options available using the command
 `M-x customize-group RET inf-clojure`.
 
-## REPL Type
+#### REPL Type
 
 An `inf-clojure` REPL can be of different types: Clojure,
 ClojureScript, Lumo and Planck are all potentially valid options.  At
@@ -150,7 +188,7 @@ Lumo just add the following in your `.dir-locals.el`:
 ((nil . ((inf-clojure-boot-cmd . "lumo -d")))) ;; inf-clojure-lein-cmd if you are using Leiningen
 ```
 
-## ElDoc
+#### ElDoc
 
 `eldoc-mode` is supported in Clojure source buffers and `*inferior-clojure*`
 buffers which are running a Clojure REPL.
@@ -170,7 +208,7 @@ following to you Emacs config:
 ElDoc currently doesn't work with ClojureScript buffers and REPL's.
 You can leave it enabled, it just won't show anything in the echo area.
 
-## Lumo Setup
+#### Lumo Setup
 
 For an optimal Lumo experience the `-d` needs to be passed to Lumo
 when launched from the command line. This disable `readline` support
