@@ -230,6 +230,26 @@ often connecting to a remote REPL process."
   :safe #'inf-clojure--endpoint-p
   :package-version '(inf-clojure . "2.0.0"))
 
+;;;; Lumo
+;;;; ====
+
+(defcustom inf-clojure--lumo-repl-form
+  "(find-ns 'lumo.repl)"
+  "Form to invoke in order to verify that we launched a Lumo REPL."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.0.0"))
+
+;;;; Planck
+;;;; ====
+
+(defcustom inf-clojure--planck-repl-form
+  "(find-ns 'planck.repl)"
+  "Form to invoke in order to verify that we launched a Planck REPL."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.0.0"))
+
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
 Its root binding is nil and it can be further customized using
@@ -1067,8 +1087,7 @@ output from and including the `inf-clojure-prompt`."
         (sanitized-command (inf-clojure--sanitize-command command)))
     (when (not (string-empty-p sanitized-command))
       (inf-clojure--log-string command "----CMD->")
-      (save-excursion
-        (set-buffer (get-buffer-create work-buffer))
+      (with-current-buffer (get-buffer-create work-buffer)
         (erase-buffer)
         (comint-redirect-send-command-to-process sanitized-command work-buffer process nil t)
         ;; Wait for the process to complete
@@ -1381,26 +1400,6 @@ to suppress the usage of the target buffer discovery logic."
 Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
   (funcall match-p (inf-clojure--process-response form proc nil)))
-
-;;;; Lumo
-;;;; ====
-
-(defcustom inf-clojure--lumo-repl-form
-  "(find-ns 'lumo.repl)"
-  "Form to invoke in order to verify that we launched a Lumo REPL."
-  :type 'string
-  :safe #'stringp
-  :package-version '(inf-clojure . "2.0.0"))
-
-;;;; Planck
-;;;; ====
-
-(defcustom inf-clojure--planck-repl-form
-  "(find-ns 'planck.repl)"
-  "Form to invoke in order to verify that we launched a Planck REPL."
-  :type 'string
-  :safe #'stringp
-  :package-version '(inf-clojure . "2.0.0"))
 
 (provide 'inf-clojure)
 
