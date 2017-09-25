@@ -1220,7 +1220,7 @@ See variable `inf-clojure-buffer'."
       (inf-clojure--read-or-nil)
       (inf-clojure--list-or-nil))))
 
-(defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{(")
+(defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{()[]")
 
 (defun inf-clojure-completion-bounds-of-expr-at-point ()
   "Return bounds of expression at point to complete."
@@ -1228,7 +1228,9 @@ See variable `inf-clojure-buffer'."
     (save-excursion
       (let ((end (point)))
         (skip-chars-backward (concat "^" inf-clojure-clojure-expr-break-chars))
-        (cons (point) end)))))
+        (let ((first-char (substring-no-properties (thing-at-point 'symbol) 0 1)))
+          (when (string-match-p "[^0-9]" first-char)
+            (cons (point) end)))))))
 
 (defun inf-clojure-completion-expr-at-point ()
   "Return expression at point to complete."
