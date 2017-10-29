@@ -774,7 +774,7 @@ If you are using REPL types, it will pickup the most approapriate
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-arglists-form-planck
-  "(planck.repl/get-arglists \"%s\""
+  "(planck.repl/get-arglists \"%s\")"
   "Planck form to query inferior Clojure for a function's arglists."
   :type 'string
   :safe #'stringp
