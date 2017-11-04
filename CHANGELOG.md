@@ -9,6 +9,10 @@
 * [#93](https://github.com/clojure-emacs/inf-clojure/pull/93): Slow response from inf-clojure (completions, arglists, ...).
 * [#101](https://github.com/clojure-emacs/inf-clojure/pull/101): `inf-clojure-set-ns` hangs Emacs.
 
+### New Features
+
+* [#114](https://github.com/clojure-emacs/inf-clojure/pull/114): Introduce `inf-clojure-project-type` defcustom.
+
 ## 2.0.1 (2017-05-18)
 
 ### Bugs Fixed
