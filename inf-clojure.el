@@ -367,6 +367,7 @@ This should usually be a combination of `inf-clojure-prompt' and
   "Controls whether to display the REPL buffer in the current window or not."
   :type '(choice (const :tag "same" t)
                  (const :tag "different" nil))
+  :safe #'booleanp
   :package-version '(inf-clojure . "2.0.0"))
 
 (defvar inf-clojure-buffer nil
