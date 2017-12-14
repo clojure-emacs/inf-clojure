@@ -12,6 +12,7 @@
 ### New Features
 
 * [#114](https://github.com/clojure-emacs/inf-clojure/pull/114): Introduce `inf-clojure-project-type` defcustom.
+* [#117](https://github.com/clojure-emacs/inf-clojure/pull/117): Introduce `tools.deps` project type and `inf-clojure-tools-deps-cmd`.
 
 ## 2.0.1 (2017-05-18)
 

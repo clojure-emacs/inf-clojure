@@ -71,12 +71,12 @@ Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure source file.
 This will start a REPL process for the current project and you can start
 interacting with it.
 
-`inf-clojure` has several custom variables which control the command
-used to start a REPL for particular project type - `inf-clojure-lein-cmd`,
-`inf-clojure-boot-cmd` and `inf-clojure-generic-cmd`.
-The `inf-clojure-project-type` can force a particular project type, skipping
-the project detection, which can be useful for projects that don't have
-standard layouts.
+`inf-clojure` has several custom variables which control the command used to
+start a REPL for particular project type - `inf-clojure-lein-cmd`,
+`inf-clojure-boot-cmd`, `inf-clojure-tools-deps-cmd` and
+`inf-clojure-generic-cmd`.  The `inf-clojure-project-type` can force a
+particular project type, skipping the project detection, which can be useful
+for projects that don't have standard layouts.
 
 By default all those variables are set to strings (e.g. `lein repl`).
 However, it is possible to use a cons pair like `("localhost" . 5555)`
