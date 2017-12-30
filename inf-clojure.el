@@ -292,9 +292,10 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
 (defun inf-clojure--set-repl-type (proc)
   "Set the REPL type if has not already been set.
 It requires a REPL PROC for inspecting the correct type."
-  (if (not inf-clojure-repl-type)
-      (setq inf-clojure-repl-type (inf-clojure--detect-repl-type proc))
-    inf-clojure-repl-type))
+  (with-current-buffer inf-clojure-buffer
+    (if (not inf-clojure-repl-type)
+        (setq inf-clojure-repl-type (inf-clojure--detect-repl-type proc))
+      inf-clojure-repl-type)))
 
 (defun inf-clojure--single-linify (string)
   "Convert a multi-line STRING in a single-line STRING.
