@@ -8,6 +8,7 @@
 * [#83](https://github.com/clojure-emacs/inf-clojure/pull/85): No such namespace: complete.core in lumo REPL.
 * [#93](https://github.com/clojure-emacs/inf-clojure/pull/93): Slow response from inf-clojure (completions, arglists, ...).
 * [#101](https://github.com/clojure-emacs/inf-clojure/pull/101): `inf-clojure-set-ns` hangs Emacs.
+* [#119](https://github.com/clojure-emacs/inf-clojure/pull/119): Set inf-clojure-buffer REPL type on detect.
 * [#120](https://github.com/clojure-emacs/inf-clojure/pull/120): Send REPL string always, even if empty.
 
 ### New Features
