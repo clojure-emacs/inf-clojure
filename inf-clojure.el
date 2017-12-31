@@ -329,8 +329,7 @@ always be preferred over `comint-send-string`.  It delegates to
 the string for evaluation.  Refer to `comint-simple-send` for
 customizations."
   (inf-clojure--set-repl-type proc)
-  (when (> (length string) 0)
-    (comint-simple-send proc string)))
+  (comint-simple-send proc string))
 
 (defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")"
   "Format-string for building a Clojure expression to load a file.
