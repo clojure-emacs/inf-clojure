@@ -1211,7 +1211,7 @@ prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
 
 (defun inf-clojure-set-ns (prompt-for-ns)
   "Set the ns of the inferior Clojure process to NS.
-See variable `inf-clojure-set-ns-form`.  It defaults to the ns of
+See variable `inf-clojure-set-ns-form'.  It defaults to the ns of
 the current buffer.  When invoked with a prefix argument
 PROMPT-FOR-NS, it prompts for a namespace name."
   (interactive "P")
@@ -1255,14 +1255,52 @@ See variable `inf-clojure-buffer'."
   "Return DATA if and only if it is a list."
   (when (listp data) data))
 
+(defun inf-clojure-list-completions (response-str)
+  "Parse completions from RESPONSE-STR.
+
+Its only ability is to parse a Lisp list of candidate strings,
+every other EXPR will be discarded and nil will be returned."
+  (thread-first
+      response-str
+    (inf-clojure--read-or-nil)
+    (inf-clojure--list-or-nil)))
+
 (defun inf-clojure-completions (expr)
-  "Return a list of completions for the Clojure expression starting with EXPR."
+  "Return completions for the Clojure expression starting with EXPR.
+
+Under the hood it calls the function
+\\[inf-clojure-completions-fn] passing in the result of
+evaluating \\[inf-clojure-completion-form] at the REPL."
   (when (not (string-blank-p expr))
-    (thread-first
-        (format (inf-clojure-completion-form) (substring-no-properties expr))
-      (inf-clojure--process-response (inf-clojure-proc) "(" ")")
-      (inf-clojure--read-or-nil)
-      (inf-clojure--list-or-nil))))
+    (let ((proc (inf-clojure-proc))
+          (completion-form (format (inf-clojure-completion-form) (substring-no-properties expr))))
+      (funcall inf-clojure-completions-fn
+               (inf-clojure--process-response completion-form proc  "(" ")")))))
+
+(defcustom inf-clojure-completions-fn 'inf-clojure-list-completions
+  "The function that parses completion results.
+
+It is a single-arity function that will receive the REPL
+evaluation result of \\[inf-clojure-completion-form] as string and
+should return elisp data compatible with your completion mode.
+
+The easiest possible data passed in input is a list of
+candidates (e.g.: (\"def\" \"defn\")) but more complex libraries
+like `alexander-yakushev/compliment' can return other things like
+edn.
+
+The expected return depends on the mode that you use for
+completion: usually it is something compatible with
+\\[completion-at-point-functions] but other modes like
+`company-mode' allow an even higher level of sophistication.
+
+The default value is the `inf-clojure-list-completions' function,
+which is able to parse results in list form only.  You can peek
+at its implementation for getting to know some utility functions
+you might want to use in your customization."
+  :type 'function
+  :safe #'functionp
+  :package-version '(inf-clojure . "2.1.0"))
 
 (defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{()[]")
 

@@ -214,6 +214,18 @@ following to you Emacs config:
 ElDoc currently doesn't work with ClojureScript buffers and REPL's.
 You can leave it enabled, it just won't show anything in the echo area.
 
+#### Code Completion
+
+Code completion is particularly open to customization. Not only you can `setq`
+the customary `inf-clojure-completion-form`, `inf-clojure-completion-form-lumo`
+and `inf-clojure-completion-form-planck` - the form to send to the REPL - but
+you can also use `inf-clojure-completions-fn` for specifying a function that
+given the REPL response should return elisp data compatible with
+[`completion-at-point-functions`](https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html).
+For more info run `M-x describe-variable RET inf-clojure-completions-fn`.
+Another option is to have a look at
+[how cider does it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765dc9bff5d6/cider-interaction.el#L595).
+
 #### Lumo Setup
 
 For an optimal Lumo experience the `-d` needs to be passed to Lumo
