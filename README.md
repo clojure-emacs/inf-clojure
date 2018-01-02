@@ -152,7 +152,7 @@ what process do you send it to?
   you send it to that process.
 - If you're in some other buffer (e.g., a source file), you
   send it to the process attached to buffer `inf-clojure-buffer`.
-  
+
 This process selection is performed by function `inf-clojure-proc`.
 Whenever `inf-clojure` fires up a new process, it resets
 `inf-clojure-buffer` to be the new process's buffer.  If you only run
@@ -269,7 +269,7 @@ This creates `.inf-clojure.log` in the project directory so that you can `tail -
 
 ## License
 
-Copyright © 2014-2017 Bozhidar Batsov and [contributors][].
+Copyright © 2014-2018 Bozhidar Batsov and [contributors][].
 
 Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to view it.
 

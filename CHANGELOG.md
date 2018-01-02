@@ -2,6 +2,14 @@
 
 ## master (unreleased)
 
+## 2.1.0 (2018-01-02)
+
+### New Features
+
+* [#114](https://github.com/clojure-emacs/inf-clojure/pull/114): Introduce `inf-clojure-project-type` defcustom.
+* [#117](https://github.com/clojure-emacs/inf-clojure/pull/117): Introduce `tools.deps` project type and `inf-clojure-tools-deps-cmd`.
+* [#122](https://github.com/clojure-emacs/inf-clojure/pull/122): Introduce `inf-clojure-completions-fn` defcustom.
+
 ### Bugs Fixed
 
 * [#79](https://github.com/clojure-emacs/inf-clojure/pull/82): Eldoc error when running boot repl.
@@ -10,12 +18,6 @@
 * [#101](https://github.com/clojure-emacs/inf-clojure/pull/101): `inf-clojure-set-ns` hangs Emacs.
 * [#119](https://github.com/clojure-emacs/inf-clojure/pull/119): Set inf-clojure-buffer REPL type on detect.
 * [#120](https://github.com/clojure-emacs/inf-clojure/pull/120): Send REPL string always, even if empty.
-
-### New Features
-
-* [#114](https://github.com/clojure-emacs/inf-clojure/pull/114): Introduce `inf-clojure-project-type` defcustom.
-* [#117](https://github.com/clojure-emacs/inf-clojure/pull/117): Introduce `tools.deps` project type and `inf-clojure-tools-deps-cmd`.
-* [#122](https://github.com/clojure-emacs/inf-clojure/pull/122): Introduce `inf-clojure-completions-fn` defcustom.
 
 ## 2.0.1 (2017-05-18)
 
