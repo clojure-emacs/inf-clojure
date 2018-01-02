@@ -170,11 +170,14 @@ You can see all the configuration options available using the command
 
 #### REPL Type
 
-An `inf-clojure` REPL can be of different types: Clojure,
-ClojureScript, Lumo and Planck are all potentially valid options.  At
-the moment, the default Clojure REPL, the Lumo REPL (though partially,
-see https://github.com/clojure-emacs/inf-clojure/pull/44), and the
-Planck REPL are supported.
+An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo
+and Planck are all potentially valid options.
+
+ At the moment, the default Clojure REPL, the Lumo REPL and the Planck REPL are
+supported (standard ClojureScript is lacking mostly because some features
+require to access the compiler state,
+[cljs-tooling](https://github.com/clojure-emacs/cljs-tooling) is a good
+candidate for enabling support).
 
 What does it mean that a REPL type is supported - well it means that `inf-clojure`
 would use the proper code internally to power commands like definition lookup and friends.
