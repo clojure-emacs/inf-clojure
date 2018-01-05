@@ -7,7 +7,7 @@
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, clojure
 ;; Version: 2.1.0
-;; Package-Requires: ((emacs "24.4") (clojure-mode "5.6"))
+;; Package-Requires: ((emacs "24.4") (clojure-mode "5.6") (edn "1.1.2"))
 
 ;; This file is part of GNU Emacs.
 
@@ -1255,7 +1255,7 @@ See variable `inf-clojure-buffer'."
   "Return DATA if and only if it is a list."
   (when (listp data) data))
 
-(defun inf-clojure-list-completions (response-str)
+(defun inf-clojure--list-completions (response-str)
   "Parse completions from RESPONSE-STR.
 
 Its only ability is to parse a Lisp list of candidate strings,
@@ -1265,7 +1265,7 @@ every other EXPR will be discarded and nil will be returned."
     (inf-clojure--read-or-nil)
     (inf-clojure--list-or-nil)))
 
-(defun inf-clojure-completions (expr)
+(defun inf-clojure--completions (expr)
   "Return completions for the Clojure expression starting with EXPR.
 
 Under the hood it calls the function
@@ -1277,7 +1277,7 @@ evaluating \\[inf-clojure-completion-form] at the REPL."
       (funcall inf-clojure-completions-fn
                (inf-clojure--process-response completion-form proc  "(" ")")))))
 
-(defcustom inf-clojure-completions-fn 'inf-clojure-list-completions
+(defcustom inf-clojure-completions-fn 'inf-clojure--list-completions
   "The function that parses completion results.
 
 It is a single-arity function that will receive the REPL
@@ -1294,13 +1294,30 @@ completion: usually it is something compatible with
 \\[completion-at-point-functions] but other modes like
 `company-mode' allow an even higher level of sophistication.
 
-The default value is the `inf-clojure-list-completions' function,
+The default value is the `inf-clojure--list-completions' function,
 which is able to parse results in list form only.  You can peek
 at its implementation for getting to know some utility functions
 you might want to use in your customization."
   :type 'function
   :safe #'functionp
   :package-version '(inf-clojure . "2.1.0"))
+
+(defcustom inf-clojure-completions-annotation-fn nil
+  "The function that annotates completion results.
+
+It is a single-arity function that will receive a a completion
+candidate from \\[inf-clojure-completions-fn] and returns the
+string that some completion backends (like `company-mode' use for
+augmenting the results.
+
+The candidate may or may not contain text properties.  The
+`inf-clojure-completions-fn' is responsible for passing back
+these text properties.  You can retrieve any of these properties
+with `get-text-property', such as \(get-text-property 0
+'type candidate)."
+  :type 'function
+  :safe #'functionp
+  :package-version '(inf-clojure . "2.2.0"))
 
 (defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{()[]")
 
@@ -1325,10 +1342,12 @@ you might want to use in your customization."
 Returns the selected completion or nil."
   (let ((bounds (inf-clojure-completion-bounds-of-expr-at-point)))
     (when bounds
-      (list (car bounds) (cdr bounds)
-            (if (fboundp 'completion-table-with-cache)
-                (completion-table-with-cache #'inf-clojure-completions)
-              (completion-table-dynamic #'inf-clojure-completions))))))
+      (nconc (list (car bounds) (cdr bounds)
+                   (if (fboundp 'completion-table-with-cache)
+                       (completion-table-with-cache #'inf-clojure--completions)
+                     (completion-table-dynamic #'inf-clojure--completions)))
+             (when inf-clojure-completions-annotation-fn
+               (list :annotation-function inf-clojure-completions-annotation-fn))))))
 
 ;;;; ElDoc
 ;;;; =====
