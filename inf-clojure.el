@@ -392,7 +392,7 @@ This should usually be a combination of `inf-clojure-prompt' and
   :package-version '(inf-clojure . "2.0.0"))
 
 (defvar inf-clojure-buffer nil
-  "The current inf-clojure process buffer.
+  "The current `inf-clojure' process buffer.
 
 MULTIPLE PROCESS SUPPORT
 ===========================================================================
@@ -558,9 +558,10 @@ Fallback to `default-directory.' if not within a project."
   "Run an inferior Clojure process, input and output via buffer `*inf-clojure*'.
 If there is a process already running in `*inf-clojure*', just switch
 to that buffer.
-With argument, allows you to edit the command line (default is value
-of `inf-clojure-*-cmd').  Runs the hooks from
-`inf-clojure-mode-hook' (after the `comint-mode-hook' is run).
+With argument, allows you to edit the CMD used to launch
+it (default is value of `inf-clojure-*-cmd').  Runs the hooks
+from `inf-clojure-mode-hook' (after the `comint-mode-hook' is
+run).
 \(Type \\[describe-mode] in the process buffer for a list of commands.)"
   (interactive (list (if current-prefix-arg
                          (read-string "Run Clojure: " (inf-clojure-cmd (inf-clojure-project-type)))
@@ -680,9 +681,11 @@ Used by this command to determine defaults."
   :type '(repeat symbol))
 
 (defun inf-clojure-load-file (&optional switch-to-repl file-name)
-  "Load a Clojure file FILE-NAME into the inferior Clojure process.
+  "Load a Clojure file into the inferior Clojure process.
 
-The prefix argument SWITCH-TO-REPL controls whether to switch to REPL after the file is loaded or not."
+The prefix argument SWITCH-TO-REPL controls whether to switch to
+REPL after the file is loaded or not.  If the argument FILE-NAME
+is present it will be used instead of the current file."
   (interactive "P")
   (let ((file-name (or file-name
                        (car (comint-get-source "Load Clojure file: " inf-clojure-prev-l/c-dir/file
@@ -1004,8 +1007,11 @@ If you are using REPL types, it will pickup the most approapriate
 ;;; Ancillary functions
 ;;; ===================
 
-;;; Reads a string from the user.
 (defun inf-clojure-symprompt (prompt default)
+  "Read a string from the user.
+
+It allows to specify a PROMPT string and a DEFAULT string to
+display."
   (list (let* ((prompt (if default
                            (format "%s (default %s): " prompt default)
                          (concat prompt ": ")))
@@ -1222,16 +1228,16 @@ PROMPT-FOR-NS, it prompts for a namespace name."
       (user-error "No namespace selected"))
     (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-set-ns-form) ns))))
 
-(defun inf-clojure-apropos (var)
-  "Send a form to the inferior Clojure to give apropos for VAR.
+(defun inf-clojure-apropos ()
+  "Send an expression to the inferior Clojure for apropos.
 See variable `inf-clojure-apropos-form'."
   (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-symbol-at-point)))
   (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-apropos-form) var)))
 
 (defun inf-clojure-macroexpand (&optional macro-1)
-  "Send a form to the inferior Clojure to give apropos for VAR.
+  "Send a form to the inferior Clojure for macro expansion.
 See variable `inf-clojure-macroexpand-form'.
-With a prefix arg MACRO-1 uses `inf-clojure-macroexpand-1-form'."
+With a prefix arg MACRO-1 uses function `inf-clojure-macroexpand-1-form'."
   (interactive "P")
   (let ((last-sexp (buffer-substring-no-properties (save-excursion (backward-sexp) (point)) (point))))
     (inf-clojure--send-string
@@ -1418,9 +1424,9 @@ Return the number of nested sexp the point was over or after."
   (message "inf-clojure (version %s)" inf-clojure-version))
 
 (defun inf-clojure-select-target-repl ()
-  "Find or select an inf-clojure buffer to operate on.
+  "Find or select an ‘inf-clojure’ buffer to operate on.
 
-Useful for commands that can invoked outside of an inf-clojure buffer
+Useful for commands that can invoked outside of an ‘inf-clojure’ buffer
 \\(e.g. from a Clojure buffer\\)."
   ;; if we're in a inf-clojure buffer we simply return in
   (if (eq major-mode 'inf-clojure-mode)
@@ -1461,7 +1467,7 @@ to suppress the usage of the target buffer discovery logic."
     (rename-buffer target-buffer-name)))
 
 (defun inf-clojure--response-match-p (form match-p proc)
-  "Return MATCH-P on the result of sending FORM to PROC.
+  "Send FORM and apply MATCH-P on the result of sending it to PROC.
 Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
   (funcall match-p (inf-clojure--process-response form proc nil)))
