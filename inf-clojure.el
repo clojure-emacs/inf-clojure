@@ -123,6 +123,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 
 (defvar inf-clojure-minor-mode-map
   (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map prog-mode-map)
     (define-key map "\M-\C-x"  #'inf-clojure-eval-defun)     ; Gnu convention
     (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp) ; Gnu convention
     (define-key map "\C-c\C-e" #'inf-clojure-eval-last-sexp)
