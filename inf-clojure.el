@@ -101,6 +101,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-a" #'inf-clojure-show-arglists)
     (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
     (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
+    (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
     (define-key map "\C-c\M-o" #'inf-clojure-clear-repl-buffer)
     (define-key map "\C-c\C-q" #'inf-clojure-quit)
     (easy-menu-define inf-clojure-mode-menu map
@@ -113,6 +114,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Show arglists" inf-clojure-show-arglists t]
         ["Show documentation for var" inf-clojure-show-var-documentation t]
         ["Show source for var" inf-clojure-show-var-source t]
+        ["Apropos" inf-clojure-apropos t]
         "--"
         ["Clear REPL" inf-clojure-clear-repl-buffer]
         ["Restart" inf-clojure-restart]
@@ -132,7 +134,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
     (define-key map "\C-c\C-z" #'inf-clojure-switch-to-repl)
     (define-key map "\C-c\C-i" #'inf-clojure-show-ns-vars)
-    (define-key map "\C-c\C-A" #'inf-clojure-apropos)
+    (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
     (define-key map "\C-c\C-m" #'inf-clojure-macroexpand)
     (define-key map "\C-c\C-l" #'inf-clojure-load-file)
     (define-key map "\C-c\C-a" #'inf-clojure-show-arglists)
