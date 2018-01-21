@@ -9,6 +9,7 @@
 * [#114](https://github.com/clojure-emacs/inf-clojure/pull/114): Introduce `inf-clojure-project-type` defcustom.
 * [#117](https://github.com/clojure-emacs/inf-clojure/pull/117): Introduce `tools.deps` project type and `inf-clojure-tools-deps-cmd`.
 * [#122](https://github.com/clojure-emacs/inf-clojure/pull/122): Introduce `inf-clojure-completions-fn` defcustom.
+* [#128](https://github.com/clojure-emacs/inf-clojure/pull/128): Expose `inf-clojure-apropos` as `C-c C-S-a` in `inf-clojure-mode` (the REPL).
 
 ### Bugs Fixed
 
@@ -18,6 +19,7 @@
 * [#101](https://github.com/clojure-emacs/inf-clojure/pull/101): `inf-clojure-set-ns` hangs Emacs.
 * [#119](https://github.com/clojure-emacs/inf-clojure/pull/119): Set inf-clojure-buffer REPL type on detect.
 * [#120](https://github.com/clojure-emacs/inf-clojure/pull/120): Send REPL string always, even if empty.
+* [#128](https://github.com/clojure-emacs/inf-clojure/pull/128): Fix inf-clojure-apropos.
 
 ## 2.0.1 (2017-05-18)
 
