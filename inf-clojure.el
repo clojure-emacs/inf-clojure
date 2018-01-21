@@ -1228,11 +1228,12 @@ PROMPT-FOR-NS, it prompts for a namespace name."
       (user-error "No namespace selected"))
     (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-set-ns-form) ns))))
 
-(defun inf-clojure-apropos ()
+(defun inf-clojure-apropos (expr)
   "Send an expression to the inferior Clojure for apropos.
-See variable `inf-clojure-apropos-form'."
+EXPR can be either a regular expression or a stringable
+thing.  See variable `inf-clojure-apropos-form'."
   (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-symbol-at-point)))
-  (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-apropos-form) var)))
+  (inf-clojure--send-string (inf-clojure-proc) (format (inf-clojure-apropos-form) expr)))
 
 (defun inf-clojure-macroexpand (&optional macro-1)
   "Send a form to the inferior Clojure for macro expansion.
