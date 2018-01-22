@@ -1344,7 +1344,7 @@ you might want to use in your customization."
   :safe #'functionp
   :package-version '(inf-clojure . "2.1.0"))
 
-(defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{()[]")
+(defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{()[]@\\^")
 
 (defun inf-clojure-completion-bounds-of-expr-at-point ()
   "Return bounds of expression at point to complete."
