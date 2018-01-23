@@ -1352,9 +1352,11 @@ you might want to use in your customization."
     (save-excursion
       (let ((end (point)))
         (skip-chars-backward (concat "^" inf-clojure-clojure-expr-break-chars))
-        (let ((first-char (substring-no-properties (thing-at-point 'symbol) 0 1)))
-          (when (string-match-p "[^0-9]" first-char)
-            (cons (point) end)))))))
+        (let ((chars (thing-at-point 'symbol)))
+          (when (> (length chars) 0)
+            (let ((first-char (substring-no-properties chars 0 1)))
+              (when (string-match-p "[^0-9]" first-char)
+                (cons (point) end)))))))))
 
 (defun inf-clojure-completion-expr-at-point ()
   "Return expression at point to complete."
