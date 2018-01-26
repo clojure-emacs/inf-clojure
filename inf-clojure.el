@@ -970,12 +970,20 @@ If you are using REPL types, it will pickup the most approapriate
   :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-macroexpand-form-lumo
+  "(macroexpand '%s)"
+  "Lumo form to invoke macroexpand."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.2.0"))
+
 (defun inf-clojure-macroexpand-form (proc)
   "Return the form for macroexpansion in the Inf-Clojure PROC.
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-macroexpand-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
+     (`lumo inf-clojure-macroexpand-form-lumo)
      (`planck inf-clojure-macroexpand-form-planck)
      (_ inf-clojure-macroexpand-form))))
 
@@ -995,12 +1003,20 @@ If you are using REPL types, it will pickup the most approapriate
   :safe #'stringp
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-macroexpand-1-form-lumo
+  "(macroexpand-1 '%s)"
+  "Lumo form to invoke macroexpand-1."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.2.0"))
+
 (defun inf-clojure-macroexpand-1-form (proc)
   "Return the form for macroexpand-1 in the Inf-Clojure PROC.
 If you are using REPL types, it will pickup the most approapriate
 `inf-clojure-macroexpand-1-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
+     (`lumo inf-clojure-macroexpand-1-form-lumo)
      (`planck inf-clojure-macroexpand-1-form-planck)
      (_ inf-clojure-macroexpand-1-form))))
 
