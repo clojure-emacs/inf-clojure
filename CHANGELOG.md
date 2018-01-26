@@ -21,6 +21,7 @@
 * [#119](https://github.com/clojure-emacs/inf-clojure/pull/119): Set inf-clojure-buffer REPL type on detect.
 * [#120](https://github.com/clojure-emacs/inf-clojure/pull/120): Send REPL string always, even if empty.
 * [#128](https://github.com/clojure-emacs/inf-clojure/pull/128): Fix inf-clojure-apropos.
+* [#131](https://github.com/clojure-emacs/inf-clojure/pull/131): Add macroexpand forms for Lumo.
 
 ## 2.0.1 (2017-05-18)
 
