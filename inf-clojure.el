@@ -1344,19 +1344,38 @@ you might want to use in your customization."
   :safe #'functionp
   :package-version '(inf-clojure . "2.1.0"))
 
-(defconst inf-clojure-clojure-expr-break-chars " \t\n\"\'`><,;|&{()[]@\\^")
+(defconst inf-clojure-clojure-expr-break-chars "^[] \"'`><,;|&{()[@\\^]"
+  "Regexp are hard.
+
+This regex has been built in order to match the first of the
+listed chars.  There are a couple of quirks to consider:
+
+- the ] is always a special in elisp regex so you have to put it
+  directly AFTER [ if you want to match it as literal.
+- The ^ needs to be escaped with \\^.
+
+Tests and `re-builder' are your friends.")
+
+(defun inf-clojure--kw-to-symbol (kw)
+  "Convert the keyword KW to a symbol.
+
+This guy was taken from CIDER, thanks folks."
+  (when kw
+    (replace-regexp-in-string "\\`:+" "" kw)))
 
 (defun inf-clojure-completion-bounds-of-expr-at-point ()
   "Return bounds of expression at point to complete."
   (when (not (memq (char-syntax (following-char)) '(?w ?_)))
     (save-excursion
-      (let ((end (point)))
-        (skip-chars-backward (concat "^" inf-clojure-clojure-expr-break-chars))
-        (let ((chars (thing-at-point 'symbol)))
-          (when (> (length chars) 0)
-            (let ((first-char (substring-no-properties chars 0 1)))
-              (when (string-match-p "[^0-9]" first-char)
-                (cons (point) end)))))))))
+      (let* ((end (point))
+             (skipped-back (skip-chars-backward inf-clojure-clojure-expr-break-chars))
+             (start (+ end skipped-back))
+             (chars (or (thing-at-point 'symbol)
+                        (inf-clojure--kw-to-symbol (buffer-substring start end)))))
+        (when (> (length chars) 0)
+          (let ((first-char (substring-no-properties chars 0 1)))
+            (when (string-match-p "[^0-9]" first-char)
+              (cons (point) end))))))))
 
 (defun inf-clojure-completion-expr-at-point ()
   "Return expression at point to complete."
