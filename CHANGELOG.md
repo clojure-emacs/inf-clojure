@@ -12,6 +12,7 @@
 * [#128](https://github.com/clojure-emacs/inf-clojure/pull/128): Expose `inf-clojure-apropos` as `C-c C-S-a` in `inf-clojure-mode` (the REPL).
 * [#125](https://github.com/clojure-emacs/inf-clojure/pull/125): Avoid throwing an error for frequent operations like completion.
 * [#130](https://github.com/clojure-emacs/inf-clojure/pull/130): Support loading directory locals in our buffers.
+* [#129](https://github.com/clojure-emacs/inf-clojure/pull/129): Improve the completion bounds detection (now with keywords).
 
 ### Bugs Fixed
 
