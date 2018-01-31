@@ -131,6 +131,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-c" #'inf-clojure-eval-defun)     ; SLIME/CIDER style
     (define-key map "\C-c\C-b" #'inf-clojure-eval-buffer)
     (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
+    (define-key map "\C-c\M-r" #'inf-clojure-reload)
     (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
     (define-key map "\C-c\C-z" #'inf-clojure-switch-to-repl)
     (define-key map "\C-c\C-i" #'inf-clojure-show-ns-vars)
@@ -152,6 +153,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Eval buffer" inf-clojure-eval-buffer t]
         "--"
         ["Load file..." inf-clojure-load-file t]
+        ["Reload file... " inf-clojure-reload t]
         "--"
         ["Switch to REPL" inf-clojure-switch-to-repl t]
         ["Set REPL ns" inf-clojure-set-ns t]
@@ -371,6 +373,48 @@ If you are using REPL types, it will pickup the most appropriate
     (`lumo inf-clojure-load-form-lumo)
     (`planck inf-clojure-load-form-planck)
     (_ inf-clojure-load-form)))
+
+(defcustom inf-clojure-reload-form "(require '\"%s\" :reload)"
+  "Format-string for building a Clojure expression to reload a file.
+Reload forces loading of all the identified libs even if they are
+already loaded.
+This format string should use `%s' to substitute a namespace and
+should result in a Clojure form that will be sent to the inferior
+Clojure to load that file."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.2.0"))
+
+;; :reload forces loading of all the identified libs even if they are
+  ;; already loaded
+;; :reload-all implies :reload and also forces loading of all libs that the
+;; identified libs directly or indirectly load via require or use
+
+(defun inf-clojure-reload-form (proc)
+  "Return the form to query the Inf-Clojure PROC for reloading a namespace.
+If you are using REPL types, it will pickup the most appropriate
+`inf-clojure-reload-form` variant."
+  (inf-clojure--set-repl-type proc)
+  inf-clojure-reload-form)
+
+(defcustom inf-clojure-reload-all-form "(require '\"%s\" :reload-all)"
+  "Format-string for building a Clojure expression to :reload-all a file.
+Reload-all implies :reload and also forces loading of all libs
+that the identified libs directly or indirectly load via require
+or use.
+This format string should use `%s' to substitute a namespace and
+should result in a Clojure form that will be sent to the inferior
+Clojure to load that file."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.2.0"))
+
+(defun inf-clojure-reload-all-form (proc)
+  "Return the form to query the Inf-Clojure PROC for :reload-all of a namespace.
+If you are using REPL types, it will pickup the most appropriate
+`inf-clojure-reload-all-form` variant."
+  (inf-clojure--set-repl-type proc)
+  inf-clojure-reload-all-form)
 
 (defcustom inf-clojure-prompt "^[^=> \n]+=> *"
   "Regexp to recognize prompts in the Inferior Clojure mode."
@@ -701,6 +745,28 @@ is present it will be used instead of the current file."
     (inf-clojure--send-string proc (format (inf-clojure-load-form proc) file-name))
     (when switch-to-repl
       (inf-clojure-switch-to-repl t))))
+
+(defun inf-clojure-reload (arg)
+  "Send a query to the inferior Clojure for reloading the namespace.
+See variable `inf-clojure-reload-form' and
+`inf-clojure-reload-all-form'.
+
+The prefix argument ARG can change the behavior of the command:
+
+  - C-u M-x `inf-clojure-reload': prompts for a namespace name.
+  - M-- M-x `inf-clojure-reload': executes (require ... :reload-all).
+  - M-- C-u M-x `inf-clojure-reload': reloads all AND prompts."
+  (interactive "P")
+  (let* ((proc (inf-clojure-proc))
+         (invertp (or (equal arg "-") (equal arg '(-4))))
+         (promptp (or (equal arg '(4)) (equal arg '(-4))))
+         (ns (if promptp
+                (car (inf-clojure-symprompt "Namespace" (clojure-find-ns)))
+              (clojure-find-ns)))
+         (form (if (not invertp)
+                   (inf-clojure-reload-form proc)
+                 (inf-clojure-reload-all-form proc))))
+    (inf-clojure--send-string proc (format form ns))))
 
 (defun inf-clojure-connected-p ()
   "Return t if inferior Clojure is currently connected, nil otherwise."

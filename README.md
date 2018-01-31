@@ -23,6 +23,7 @@ Clojure(Script) development:
 * ElDoc
 * Apropos
 * Macroexpansion
+* Require `:reload`/`:reload-all`
 * Support connecting to socket REPLs
 * Support for Lumo
 * Support for Planck
