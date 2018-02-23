@@ -2,6 +2,8 @@
 
 ## master (unreleased)
 
+* [#135](https://github.com/clojure-emacs/inf-clojure/pull/135): Improve command sanitation code.
+
 ## 2.1.0 (2018-01-02)
 
 ### New Features

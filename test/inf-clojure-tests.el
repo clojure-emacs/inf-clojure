@@ -111,4 +111,24 @@
          (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
                  :to-equal "deref")))))
 
+(describe "inf-clojure--single-linify"
+  (it "replaces newlines with whitespace"
+      (expect (inf-clojure--single-linify "(do\n(println \"hello world\")\n)") :to-equal "(do (println \"hello world\") )"))
+
+  (it "does not leave whitespace at the end"
+      (expect (inf-clojure--single-linify "(do\n(println \"hello world\")\n)\n\n") :to-equal "(do (println \"hello world\") )"))
+
+  (it "returns empty string in case of only newline"
+      (expect (inf-clojure--single-linify "\n\n\n\n") :to-equal "")))
+
+(describe "inf-clojure--sanitize-command"
+  (it "sanitizes the command correctly"
+     (expect (inf-clojure--sanitize-command "(doc println)") :to-equal "(doc println)\n"))
+
+  (it "trims newline at the right of a command"
+     (expect (inf-clojure--sanitize-command "(doc println)\n\n\n\n") :to-equal "(doc println)\n"))
+
+  (it "returns empty string when the command is empty"
+     (expect (inf-clojure--sanitize-command "   ") :to-equal "")))
+
 ;;; inf-clojure-tests.el ends here
