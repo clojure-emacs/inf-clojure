@@ -307,10 +307,10 @@ It requires a REPL PROC for inspecting the correct type."
 
 (defun inf-clojure--single-linify (string)
   "Convert a multi-line STRING in a single-line STRING.
-It also reduces/adds redundant whitespace for readability.  Note
-that this function will transform the empty string in \" \" (it
-adds an empty space)."
-  (replace-regexp-in-string "[ \\|\n]+" " " string))
+It also reduces redundant whitespace for readability."
+  (thread-last string
+    (replace-regexp-in-string "[ \\|\n]+" " ")
+    (replace-regexp-in-string " $" "")))
 
 (defun inf-clojure--trim-newline-right (string)
   "Trim newlines (only) in STRING."
