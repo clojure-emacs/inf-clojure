@@ -338,7 +338,10 @@ always be preferred over `comint-send-string`.  It delegates to
 the string for evaluation.  Refer to `comint-simple-send` for
 customizations."
   (inf-clojure--set-repl-type proc)
-  (comint-simple-send proc string))
+  (let ((sanitized (inf-clojure--sanitize-command string)))
+    (when (not (string-empty-p sanitized))
+      (inf-clojure--log-string sanitized "----CMD->")
+      (comint-simple-send proc sanitized))))
 
 (defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")"
   "Format-string for building a Clojure expression to load a file.
@@ -559,6 +562,7 @@ to continue it."
 
 (defun inf-clojure-preoutput-filter (str)
   "Preprocess the output STR from interactive commands."
+  (inf-clojure--log-string str "<-RES----")
   (cond
    ((string-prefix-p "inf-clojure-" (symbol-name (or this-command last-command)))
     ;; Remove subprompts and prepend a newline to the output string
@@ -1177,7 +1181,7 @@ STRING if present."
                               (concat tag "\n")
                               (concat (prin1-to-string tag) "\n")))
                           (let ((print-escape-newlines t))
-                            (prin1-to-string string)))
+                            (prin1-to-string (substring-no-properties string))))
                   nil
                   (expand-file-name inf-clojure--log-file-name
                                     (inf-clojure-project-root))
