@@ -177,6 +177,9 @@ The following commands are available:
 
 \\{inf-clojure-minor-mode-map}"
   :lighter "" :keymap inf-clojure-minor-mode-map
+  ;; it is not originally buffer local
+  ;; https://github.com/emacs-mirror/emacs/blob/master/lisp/comint.el#L415
+  (setq-local comint-input-sender-no-newline t)
   (setq comint-input-sender 'inf-clojure--send-string)
   (inf-clojure-eldoc-setup)
   (make-local-variable 'completion-at-point-functions)
@@ -526,6 +529,9 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on o
 Paragraphs are separated only by blank lines.  Semicolons start comments.
 If you accidentally suspend your process, use \\[comint-continue-subjob]
 to continue it."
+  ;; it is not originally buffer local
+  ;; https://github.com/emacs-mirror/emacs/blob/master/lisp/comint.el#L415
+  (setq-local comint-input-sender-no-newline t)
   (setq comint-input-sender 'inf-clojure--send-string)
   (setq comint-prompt-regexp inf-clojure-comint-prompt-regexp)
   (setq mode-line-process '(":%s"))
