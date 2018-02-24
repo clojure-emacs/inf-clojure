@@ -305,27 +305,29 @@ It requires a REPL PROC for inspecting the correct type."
         (setq-local inf-clojure-repl-type repl-type))
     inf-clojure-repl-type))
 
-(defun inf-clojure--single-linify (string)
-  "Convert a multi-line STRING in a single-line STRING.
-It also reduces redundant whitespace for readability."
-  (thread-last string
-    (replace-regexp-in-string "[ \\|\n]+" " ")
-    (replace-regexp-in-string " $" "")))
+(defun inf-clojure--whole-comment-line-p (string)
+  "Return true iff STRING is a whole line semicolon comment."
+  (string-match-p "^\s*;" string))
 
-(defun inf-clojure--trim-newline-right (string)
-  "Trim newlines (only) in STRING."
-  (if (string-match "\n+\\'" string)
-      (replace-match "" t t string)
-    string))
+(defun inf-clojure--make-single-line (string)
+  "Convert a multi-line STRING in a single-line STRING.
+It also reduces redundant whitespace for readability and removes
+comments."
+  (let* ((lines (seq-filter (lambda (s) (not (inf-clojure--whole-comment-line-p s)))
+                            (split-string string "[\r\n]" t))))
+    (mapconcat (lambda (s)
+                 (if (not (string-match-p ";" s))
+                     (replace-regexp-in-string "\s+" " " s)
+                   (concat s "\n")))
+               lines " ")))
 
 (defun inf-clojure--sanitize-command (command)
   "Sanitize COMMAND for sending it to a process.
 An example of things that this function does is to add a final
 newline at the end of the form.  Return an empty string if the
 sanitized command is empty."
-  (let* ((linified (inf-clojure--single-linify command))
-         (sanitized (inf-clojure--trim-newline-right linified)))
-    (if (or (string-blank-p linified) (string-blank-p sanitized))
+  (let ((sanitized (inf-clojure--make-single-line command)))
+    (if (string-blank-p sanitized)
         ""
       (concat sanitized "\n"))))
 
