@@ -341,9 +341,8 @@ the string for evaluation.  Refer to `comint-simple-send` for
 customizations."
   (inf-clojure--set-repl-type proc)
   (let ((sanitized (inf-clojure--sanitize-command string)))
-    (when (not (string-empty-p sanitized))
-      (inf-clojure--log-string sanitized "----CMD->")
-      (comint-simple-send proc sanitized))))
+    (inf-clojure--log-string sanitized "----CMD->")
+    (comint-simple-send proc sanitized)))
 
 (defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")"
   "Format-string for building a Clojure expression to load a file.
