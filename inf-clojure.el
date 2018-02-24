@@ -342,7 +342,7 @@ customizations."
   (inf-clojure--set-repl-type proc)
   (let ((sanitized (inf-clojure--sanitize-command string)))
     (inf-clojure--log-string sanitized "----CMD->")
-    (comint-simple-send proc sanitized)))
+    (comint-send-string proc sanitized)))
 
 (defcustom inf-clojure-load-form "(clojure.core/load-file \"%s\")"
   "Format-string for building a Clojure expression to load a file.
