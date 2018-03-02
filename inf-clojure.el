@@ -68,6 +68,7 @@
 (require 'ansi-color)
 (require 'cl-lib)
 (require 'subr-x)
+(require 'seq)
 
 
 (defgroup inf-clojure nil
