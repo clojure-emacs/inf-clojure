@@ -230,7 +230,7 @@ often connecting to a remote REPL process."
   :safe #'inf-clojure--endpoint-p
   :package-version '(inf-clojure . "2.0.0"))
 
-(defcustom inf-clojure-tools-deps-cmd "clj"
+(defcustom inf-clojure-tools-deps-cmd "clojure"
   "The command used to start a Clojure REPL for tools.deps projects.
 
 Alternatively you can specify a TCP connection cons pair, instead
