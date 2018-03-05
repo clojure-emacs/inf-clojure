@@ -103,7 +103,7 @@ point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
 
-#### Starting and connecting to a socket REPL
+#### Clojure cli socket REPL
 
 If you have the new [Clojure CLI tools][] installed you can use the `clojure` command:
 
@@ -125,6 +125,8 @@ or the following to your [Emacs init file][]:
 (setf inf-clojure-tools-deps-cmd '("localhost" . 5555)):
 ```
 
+#### Leiningen socket REPL
+
 For Leiningen, add the following option to your `~/.lein/profiles.clj` or your `project.clj`:
 
 ```clojure
@@ -142,6 +144,8 @@ or the following to your [Emacs init file][]:
 ```el
 (setf inf-clojure-lein-cmd '("localhost" . 5555))
 ```
+
+#### Boot socket REPL
 
 For boot, export the environment variable `BOOT_JVM_OPTIONS`:
 
