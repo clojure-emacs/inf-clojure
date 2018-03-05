@@ -103,6 +103,19 @@ point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
 
+#### Starting and connecting to a socket server
+
+For Leiningen, add this to your ~/.lein/profiles.clj or your project.clj:
+```:jvm-opts ["-Dclojure.server.repl={:port 5555 :accept clojure.core.server/repl}"]```
+
+Then run `lein repl` from within your project directory, and `C-c M-c RET localhost RET 5555` from within Emacs.
+
+For boot, export the environment variable BOOT_JVM_OPTIONS:
+```export BOOT_JVM_OPTIONS='-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"'```
+
+You can also start a socket server via the [Clojure CLI tools](https://clojure.org/guides/getting_started).
+Configuration options are described [here](https://dev.clojure.org/display/design/Socket+Server+REPL).
+
 #### Caveats
 
 Note that if you decide _NOT_ to use the socket repl, it is highly recommended
