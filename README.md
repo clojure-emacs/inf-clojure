@@ -103,39 +103,65 @@ point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
 
-#### Starting and connecting to a socket server
+#### Starting and connecting to a socket REPL
 
-For Leiningen, add the following option to your ~/.lein/profiles.clj or your project.clj:
+If you have the new [Clojure CLI tools][] installed you can use the `clojure` command:
+
+_do not use `clj` because it adds readline support_
+
+```shell
+clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
 ```
+
+Then either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
+
+```el
+((nil . ((inf-clojure-tools-deps-cmd . ("localhost" . 5555)))))
+```
+
+or the following to your [Emacs init file][]:
+
+```el
+(setf inf-clojure-tools-deps-cmd '("localhost" . 5555)):
+```
+
+For Leiningen, add the following option to your `~/.lein/profiles.clj` or your `project.clj`:
+
+```clojure
 :jvm-opts ["-Dclojure.server.repl={:port 5555 :accept clojure.core.server/repl}"]
 ```
 
-Then run `lein repl` from within your project directory to start the
-REPL, and `C-c M-c RET localhost RET 5555` from within Emacs to
-connect, or add the following to your `.dir-locals.el`
-```
+Then run `lein repl` from within your project directory to start the REPL, and either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
+
+```el
 ((nil . ((inf-clojure-lein-cmd . ("localhost" . 5555)))))
 ```
-or the following to your `.emacs`
-```
+
+or the following to your [Emacs init file][]:
+
+```el
 (setf inf-clojure-lein-cmd '("localhost" . 5555))
 ```
 
-For boot, export the environment variable BOOT_JVM_OPTIONS:
-```
+For boot, export the environment variable `BOOT_JVM_OPTIONS`:
+
+```shell
 export BOOT_JVM_OPTIONS='-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"'
 ```
+
 or add the following to your `.dir-locals.el`:
-```
+
+```el
 ((nil . ((inf-clojure-boot-cmd . ("localhost" . 5555)))))
 ```
-or the following to your `.emacs`
-```
+
+or the following to your [Emacs init file][]:
+
+```el
 (setf inf-clojure-boot-cmd '("localhost" . 5555))
 ```
 
-You can also start a socket server via the [Clojure CLI tools](https://clojure.org/guides/getting_started).
-Configuration options are described [here](https://dev.clojure.org/display/design/Socket+Server+REPL).
+The socket server REPL configuration options are described [here](https://dev.clojure.org/display/design/Socket+Server+REPL).
 
 #### Caveats
 
@@ -320,3 +346,5 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [contributors]: https://github.com/clojure-emacs/inf-clojure/contributors
 [melpa]: http://melpa.org
 [melpa stable]: http://stable.melpa.org
+[Emacs init file]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Init-File.html
+[Clojure cli tools]: https://clojure.org/guides/getting_started
