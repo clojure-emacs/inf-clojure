@@ -105,13 +105,17 @@ for the symbol you want to show the docstring for.
 
 #### Starting and connecting to a socket server
 
-For Leiningen, add this to your ~/.lein/profiles.clj or your project.clj:
-```:jvm-opts ["-Dclojure.server.repl={:port 5555 :accept clojure.core.server/repl}"]```
+For Leiningen, add the following option to your ~/.lein/profiles.clj or your project.clj:
+```
+:jvm-opts ["-Dclojure.server.repl={:port 5555 :accept clojure.core.server/repl}"]
+```
 
-Then run `lein repl` from within your project directory, and `C-c M-c RET localhost RET 5555` from within Emacs.
+Then run `lein repl` from within your project directory to start the REPL, and `C-c M-c RET localhost RET 5555` from within Emacs to connect.
 
 For boot, export the environment variable BOOT_JVM_OPTIONS:
-```export BOOT_JVM_OPTIONS='-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"'```
+```
+export BOOT_JVM_OPTIONS='-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"'
+```
 
 You can also start a socket server via the [Clojure CLI tools](https://clojure.org/guides/getting_started).
 Configuration options are described [here](https://dev.clojure.org/display/design/Socket+Server+REPL).
