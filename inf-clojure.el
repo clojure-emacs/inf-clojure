@@ -1417,7 +1417,6 @@ which is able to parse results in list form only.  You can peek
 at its implementation for getting to know some utility functions
 you might want to use in your customization."
   :type 'function
-  :safe #'functionp
   :package-version '(inf-clojure . "2.1.0"))
 
 (defconst inf-clojure-clojure-expr-break-chars "^[] \"'`><,;|&{()[@\\^]"
