@@ -28,7 +28,7 @@ Clojure(Script) development:
 * Support for Lumo
 * Support for Planck
 
-For a more powerful/full-featured solution see [CIDER][].
+For a more powerful/full-featured solution see [CIDER](https://github.com/clojure-emacs/cider).
 
 ## Installation
 
@@ -62,22 +62,26 @@ Add the following to your Emacs config to enable
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 ```
 
-**Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same
-time.  They have overlapping functionality and keybindings and the
-result will be nothing short of havoc.**
+**Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same time. They
+have overlapping functionality and keybindings and the result will be nothing
+short of havoc.**
 
 ## Usage
 
 Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure source file.
 This will start a REPL process for the current project and you can start
-interacting with it.
+interacting with it. By defaul this will look for `lein` command on the path.
+
+For configuring other repls, read below.
 
 `inf-clojure` has several custom variables which control the command used to
-start a REPL for particular project type - `inf-clojure-lein-cmd`,
-`inf-clojure-boot-cmd`, `inf-clojure-tools-deps-cmd` and
-`inf-clojure-generic-cmd`.  The `inf-clojure-project-type` can force a
-particular project type, skipping the project detection, which can be useful
-for projects that don't have standard layouts.
+start a REPL for particular project type - `inf-clojure-lein-cmd` (lein),
+`inf-clojure-boot-cmd` (boot), `inf-clojure-tools-deps-cmd` (clj cli) and
+`inf-clojure-generic-cmd` (lumo).
+
+The `inf-clojure-project-type` can force a particular project type, skipping the
+project detection, which can be useful for projects that don't have standard
+layouts.
 
 By default all those variables are set to strings (e.g. `lein repl`).
 However, it is possible to use a cons pair like `("localhost" . 5555)`
@@ -166,6 +170,32 @@ or the following to your [Emacs init file][]:
 ```
 
 The socket server REPL configuration options are described [here](https://dev.clojure.org/display/design/Socket+Server+REPL).
+
+#### Lumo Socket REPL
+
+For lumo, setup a generic command in `init.el` to start the socket repl (say, port 5555)
+
+```el
+(setq inf-clojure-repl-use-same-window nil)
+(setq inf-clojure-generic-cmd '("localhost" 5555))	
+```
+
+Then start lumo repl, like so:
+
+```bash
+lumo -n 5555
+```
+
+If you want to use lumo with Clojure devtools
+[dependencies](https://clojure.org/guides/deps_and_cli) without lein or boot,
+add a `deps.edn` in the project root and run this command:
+
+```bash
+lumo -c `clj -Spath` -n 5555
+```
+
+You can use `M-x inf-clojure-connect` (`C-c M-c`) to connect to a running
+socket-repl. You will be prompted for host and port.
 
 #### Caveats
 
@@ -301,7 +331,7 @@ For example, you can use the following command (assuming `cp` contains
 the classpath) in your `.dir-locals.el`:
 
 ```el
-((nil . (eval . (setq inf-clojure-boot-cmd (concat "lumo -d -c "
+((nil . (eval . (setq inf-clojure-generic-cmd (concat "lumo -d -c "
                                                     (f-read (concat (inf-clojure-project-root) "cp")))))))
 ```
 
