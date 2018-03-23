@@ -70,33 +70,32 @@ short of havoc.**
 
 Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure source file.
 This will start a REPL process for the current project and you can start
-interacting with it. By defaul this will look for `lein` command on the path.
+interacting with it.
 
-For configuring other repls, read below.
+Inf-clojure has several custom variables which control the command used to
+start a REPL for a particular project type:
 
-`inf-clojure` has several custom variables which control the command used to
-start a REPL for particular project type - `inf-clojure-lein-cmd` (lein),
-`inf-clojure-boot-cmd` (boot), `inf-clojure-tools-deps-cmd` (clj cli) and
-`inf-clojure-generic-cmd` (lumo).
+ - `inf-clojure-lein-cmd` ([Leiningen][])
+ - `inf-clojure-boot-cmd` ([Boot][])
+ - `inf-clojure-tools-deps-cmd` ([Clojure cli tools][])
+ - `inf-clojure-generic-cmd`
 
-The `inf-clojure-project-type` can force a particular project type, skipping the
-project detection, which can be useful for projects that don't have standard
-layouts.
+Detection is attempted
+[in the above order](https://github.com/clojure-emacs/inf-clojure/blob/master/inf-clojure.el#L589-L596)
+but the `inf-clojure-project-type` variable can force a particular project
+type, useful for projects that don't have standard layouts.
 
-By default all those variables are set to strings (e.g. `lein repl`).
-However, it is possible to use a cons pair like `("localhost" . 5555)`
-to connect to a socket REPL like the one provided
-with [planck](http://planck-repl.org/), which can be started from the
-command line with `planck -n 5555`.
+It is highly recommended to use a cons pair like `("localhost" . 5555)` to
+connect to a socket REPL, terminal REPLs are inherently hard to work with and
+support will be deprecated in the foreseeable future.
 
-Use `C-u C-c C-z` to start a REPL with a different command/cons pair than
-the default specified in `inf-clojure-program`.
+Interactively, use `M-x inf-clojure-connect` (`C-c M-c`) to connect to a
+running socket REPL or `C-u C-c C-z` for specifying a different command/cons
+pair.
 
-You can use `M-x inf-clojure-connect` (`C-c M-c`) to connect to a running
-socket-repl.  You will be prompted for host and port.
-
-You can set custom values to `inf-clojure` variables on a per-project basis using [directory
-variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
+You can also set custom values to `inf-clojure` variables on a per-project
+basis using
+[directory variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
 
 For a list of all available commands in `inf-clojure-mode` (a.k.a. the REPL) and
 `inf-clojure-minor-mode` you can either invoke `C-h f RET inf-clojure-mode` and
@@ -173,29 +172,28 @@ The socket server REPL configuration options are described [here](https://dev.cl
 
 #### Lumo Socket REPL
 
-For lumo, setup a generic command in `init.el` to start the socket repl (say, port 5555)
+Lumo is decoupled from `inf-clojure-project-type` and therefore the command used depends on what you are using for dependency resolution.
+
+For example if a `project.clj` is present in the project root folder, `inf-clojure-lein-cmd` will be used.
+
+After you launch `lumo ... -n 5555`, as customary, either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
 
 ```el
-(setq inf-clojure-repl-use-same-window nil)
-(setq inf-clojure-generic-cmd '("localhost" 5555))	
+((nil . ((inf-clojure-lein-cmd . ("localhost" . 5555)))))
 ```
 
-Then start lumo repl, like so:
+or the following to your [Emacs init file][]:
 
-```bash
-lumo -n 5555
+```el
+(setf inf-clojure-lein-cmd '("localhost" . 5555))
 ```
 
-If you want to use lumo with Clojure devtools
-[dependencies](https://clojure.org/guides/deps_and_cli) without lein or boot,
-add a `deps.edn` in the project root and run this command:
+Project detection can be completely skipped and the `generic` project type can be used instead:
 
-```bash
-lumo -c `clj -Spath` -n 5555
+```el
+(inf-clojure-project-type . "generic")
+(setq inf-clojure-generic-cmd '("localhost" 5555))
 ```
-
-You can use `M-x inf-clojure-connect` (`C-c M-c`) to connect to a running
-socket-repl. You will be prompted for host and port.
 
 #### Caveats
 
@@ -332,7 +330,7 @@ the classpath) in your `.dir-locals.el`:
 
 ```el
 ((nil . (eval . (setq inf-clojure-generic-cmd (concat "lumo -d -c "
-                                                    (f-read (concat (inf-clojure-project-root) "cp")))))))
+                                                      (f-read (concat (inf-clojure-project-root) "cp")))))))
 ```
 
 ## Troubleshooting
@@ -382,3 +380,4 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [melpa stable]: http://stable.melpa.org
 [Emacs init file]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Init-File.html
 [Clojure cli tools]: https://clojure.org/guides/getting_started
+[Boot]: http://boot-clj.com
