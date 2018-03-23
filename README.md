@@ -106,7 +106,7 @@ point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
 
-#### Clojure cli socket REPL
+#### Clojure Command Line Socket REPL
 
 If you have the new [Clojure CLI tools][] installed you can use the `clojure` command:
 
@@ -128,7 +128,7 @@ or the following to your [Emacs init file][]:
 (setf inf-clojure-tools-deps-cmd '("localhost" . 5555)):
 ```
 
-#### Leiningen socket REPL
+#### Leiningen Socket REPL
 
 For Leiningen, add the following option to your `~/.lein/profiles.clj` or your `project.clj`:
 
@@ -148,7 +148,7 @@ or the following to your [Emacs init file][]:
 (setf inf-clojure-lein-cmd '("localhost" . 5555))
 ```
 
-#### Boot socket REPL
+#### Boot Socket REPL
 
 For boot, export the environment variable `BOOT_JVM_OPTIONS`:
 
@@ -191,8 +191,8 @@ or the following to your [Emacs init file][]:
 Project detection can be completely skipped and the `generic` project type can be used instead:
 
 ```el
-(inf-clojure-project-type . "generic")
-(setq inf-clojure-generic-cmd '("localhost" 5555))
+(setf inf-clojure-project-type . "generic")
+(setf inf-clojure-generic-cmd '("localhost" 5555))
 ```
 
 #### Caveats
