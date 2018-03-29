@@ -383,7 +383,7 @@ If you are using REPL types, it will pickup the most appropriate
     (`planck inf-clojure-load-form-planck)
     (_ inf-clojure-load-form)))
 
-(defcustom inf-clojure-reload-form "(require '\"%s\" :reload)"
+(defcustom inf-clojure-reload-form "(require '%s :reload)"
   "Format-string for building a Clojure expression to reload a file.
 Reload forces loading of all the identified libs even if they are
 already loaded.
@@ -406,7 +406,7 @@ If you are using REPL types, it will pickup the most appropriate
   (inf-clojure--set-repl-type proc)
   inf-clojure-reload-form)
 
-(defcustom inf-clojure-reload-all-form "(require '\"%s\" :reload-all)"
+(defcustom inf-clojure-reload-all-form "(require '%s :reload-all)"
   "Format-string for building a Clojure expression to :reload-all a file.
 Reload-all implies :reload and also forces loading of all libs
 that the identified libs directly or indirectly load via require
@@ -768,12 +768,12 @@ The prefix argument ARG can change the behavior of the command:
   - M-- C-u M-x `inf-clojure-reload': reloads all AND prompts."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
-         (invertp (or (equal arg "-") (equal arg '(-4))))
-         (promptp (or (equal arg '(4)) (equal arg '(-4))))
-         (ns (if promptp
+         (reload-all-p (or (equal arg '-) (equal arg '(-4))))
+         (prompt-p (or (equal arg '(4)) (equal arg '(-4))))
+         (ns (if prompt-p
                 (car (inf-clojure-symprompt "Namespace" (clojure-find-ns)))
               (clojure-find-ns)))
-         (form (if (not invertp)
+         (form (if (not reload-all-p)
                    (inf-clojure-reload-form proc)
                  (inf-clojure-reload-all-form proc))))
     (inf-clojure--send-string proc (format form ns))))
