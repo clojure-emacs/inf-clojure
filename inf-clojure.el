@@ -1099,6 +1099,39 @@ If you are using REPL types, it will pickup the most approapriate
 
 (define-obsolete-variable-alias 'inf-clojure-macroexpand-1-command 'inf-clojure-macroexpand-1-form "2.0.0")
 
+;;; Metadata
+;;; ===================
+(defcustom inf-clojure-meta-format
+  "(clojure.core/meta %s)"
+  "Form to retrieve metadata of another form."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.2.0"))
+
+(defcustom inf-clojure-meta-format-planck
+  "(meta %s)"
+  "Planck form to retrieve metadata of another form."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.2.0"))
+
+(defcustom inf-clojure-meta-format-lumo
+  "(meta %s)"
+  "Lumo form to retrieve metadata of another form."
+  :type 'string
+  :safe #'stringp
+  :package-version '(inf-clojure . "2.2.0"))
+
+(defun inf-clojure-meta-form (proc)
+  "Return the form for retrieving metadata in the Inf-Clojure PROC.
+If you are using REPL types, it will pickup the most appropriate
+`inf-clojure-meta-format` variant."
+  (inf-clojure--sanitize-command
+   (pcase (inf-clojure--set-repl-type proc)
+     (`lumo inf-clojure-meta-format-lumo)
+     (`planck inf-clojure-meta-format-planck)
+     (_ inf-clojure-meta-format))))
+
 ;;; Ancillary functions
 ;;; ===================
 
@@ -1344,6 +1377,15 @@ thing.  See variable `inf-clojure-apropos-form'."
   (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-symbol-at-point)))
   (let ((proc (inf-clojure-proc)))
     (inf-clojure--send-string proc (format (inf-clojure-apropos-form proc) expr))))
+
+(defun inf-clojure-meta ()
+  "Send a form to the inferior Clojure to show its metadata."
+  (interactive)
+  (let ((proc (inf-clojure-proc))
+        (last-sexp (buffer-substring-no-properties (save-excursion (backward-sexp) (point)) (point))))
+    (inf-clojure--send-string
+     proc
+     (format (inf-clojure-meta-form proc) last-sexp))))
 
 (defun inf-clojure-macroexpand (&optional macro-1)
   "Send a form to the inferior Clojure for macro expansion.
