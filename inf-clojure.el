@@ -815,7 +815,7 @@ The prefix argument ARG can change the behavior of the command:
 
 (defun inf-clojure-var-doc-form (proc)
   "Return the form to query the Inf-Clojure PROC for a var's documentation.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-var-doc-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
@@ -846,7 +846,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-var-source-form (proc)
   "Return the form to query the Inf-Clojure PROC for a var's source.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-var-source-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
@@ -889,7 +889,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-arglists-form (proc)
   "Return the form to query the Inf-Clojure PROC for arglists of a var.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-arglists-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
@@ -925,7 +925,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-completion-form (proc)
   "Return the form to query the Inf-Clojure PROC for completions.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-completion-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
@@ -956,7 +956,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-ns-vars-form (proc)
   "Return the form to query the Inf-Clojure PROC for public vars in a namespace.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-ns-vars-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
@@ -989,7 +989,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-set-ns-form (proc)
   "Return the form to set the namespace of the Inf-Clojure PROC.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-set-ns-form` variant."
   (pcase (inf-clojure--set-repl-type proc)
     (`planck inf-clojure-set-ns-form-planck)
@@ -1023,7 +1023,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-apropos-form (proc)
   "Return the form to query the Inf-Clojure PROC for a var's apropos.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-apropos-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
@@ -1056,7 +1056,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-macroexpand-form (proc)
   "Return the form for macroexpansion in the Inf-Clojure PROC.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-macroexpand-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
@@ -1089,7 +1089,7 @@ If you are using REPL types, it will pickup the most approapriate
 
 (defun inf-clojure-macroexpand-1-form (proc)
   "Return the form for macroexpand-1 in the Inf-Clojure PROC.
-If you are using REPL types, it will pickup the most approapriate
+If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-macroexpand-1-form` variant."
   (inf-clojure--sanitize-command
    (pcase (inf-clojure--set-repl-type proc)
