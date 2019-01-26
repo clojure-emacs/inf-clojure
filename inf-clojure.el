@@ -178,7 +178,7 @@ The following commands are available:
 
 \\{inf-clojure-minor-mode-map}"
   :lighter "" :keymap inf-clojure-minor-mode-map
-  (setq comint-input-sender 'inf-clojure--send-string)
+  (setq-local comint-input-sender 'inf-clojure--send-string)
   (inf-clojure-eldoc-setup)
   (make-local-variable 'completion-at-point-functions)
   (add-to-list 'completion-at-point-functions
