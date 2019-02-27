@@ -1,6 +1,7 @@
 [![License GPL 3][badge-license]][copying]
 [![MELPA][melpa-badge]][melpa-package]
 [![MELPA Stable][melpa-stable-badge]][melpa-stable-package]
+[![Circle CI][circle-ci-badge]][circleci]
 
 # inf-clojure
 
@@ -372,7 +373,8 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [melpa-package]: http://melpa.org/#/inf-clojure
 [melpa-stable-package]: http://stable.melpa.org/#/inf-clojure
 [COPYING]: http://www.gnu.org/copyleft/gpl.html
-[badge-travis]: https://travis-ci.org/clojure-emacs/inf-clojure.svg?branch=master
+[circleci]: https://circleci.com/gh/clojure-emacs/inf-clojure
+[circleci-badge]: https://circleci.com/gh/clojure-emacs/inf-clojure.svg?style=svg
 [CIDER]: https://github.com/clojure-emacs/cider
 [Leiningen]: http://leiningen.org
 [contributors]: https://github.com/clojure-emacs/inf-clojure/contributors
