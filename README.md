@@ -1,7 +1,7 @@
 [![License GPL 3][badge-license]][copying]
 [![MELPA][melpa-badge]][melpa-package]
 [![MELPA Stable][melpa-stable-badge]][melpa-stable-package]
-[![Circle CI][circle-ci-badge]][circleci]
+[![Circle CI][circleci-badge]][circleci]
 
 # inf-clojure
 
