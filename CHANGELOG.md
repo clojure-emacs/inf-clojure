@@ -2,6 +2,7 @@
 
 ## master (unreleased)
 
+* [#160](https://github.com/clojure-emacs/inf-clojure/pull/160): Support [Joker](https://joker-lang.org/).
 * [#135](https://github.com/clojure-emacs/inf-clojure/pull/135): Improve command sanitation code.
 
 ## 2.1.0 (2018-01-02)

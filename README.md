@@ -26,8 +26,9 @@ Clojure(Script) development:
 * Macroexpansion
 * Require `:reload`/`:reload-all`
 * Support connecting to socket REPLs
-* Support for Lumo
-* Support for Planck
+* Support for [Lumo](https://github.com/anmonteiro/lumo)
+* Support for [Planck](http://planck-repl.org/)
+* Support for [Joker](https://joker-lang.org/)
 
 For a more powerful/full-featured solution see [CIDER](https://github.com/clojure-emacs/cider).
 
@@ -267,9 +268,9 @@ You can see all the configuration options available using the command
 An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo
 and Planck are all potentially valid options.
 
- At the moment, the default Clojure REPL, the Lumo REPL and the Planck REPL are
-supported (standard ClojureScript is lacking mostly because some features
-require to access the compiler state,
+At the moment, the default Clojure REPL, the Lumo REPL, the Planck REPL and the
+Joker REPL are supported (standard ClojureScript is lacking mostly because some
+features require to access the compiler state,
 [cljs-tooling](https://github.com/clojure-emacs/cljs-tooling) is a good
 candidate for enabling support).
 
@@ -311,10 +312,11 @@ You can leave it enabled, it just won't show anything in the echo area.
 #### Code Completion
 
 Code completion is particularly open to customization. Not only you can `setq`
-the customary `inf-clojure-completion-form`, `inf-clojure-completion-form-lumo`
-and `inf-clojure-completion-form-planck` - the form to send to the REPL - but
-you can also use `inf-clojure-completions-fn` for specifying a function that
-given the REPL response should return elisp data compatible with
+the customary `inf-clojure-completion-form`,
+`inf-clojure-completion-form-lumo`, `inf-clojure-completion-form-planck` and
+`inf-clojure-completion-form-joker` - the form to send to the REPL - but you
+can also use `inf-clojure-completions-fn` for specifying a function that given
+the REPL response should return elisp data compatible with
 [`completion-at-point-functions`](https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html).
 For more info run `M-x describe-variable RET inf-clojure-completions-fn`.
 Another option is to have a look at
