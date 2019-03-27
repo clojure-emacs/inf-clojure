@@ -282,7 +282,7 @@ often connecting to a remote REPL process."
 
 (defcustom inf-clojure--joker-repl-form
   "(find-ns 'joker.repl)"
-  "Form to invoke in order to verify that we launched a Planck REPL."
+  "Form to invoke in order to verify that we launched a Joker REPL."
   :type 'string
   :safe #'stringp
   :package-version '(inf-clojure . "2.2.0"))
