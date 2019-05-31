@@ -5,6 +5,7 @@
 # [#164](https://github.com/clojure-emacs/inf-clojure/pull/164): Fix for eldoc-mode on ClojureCLR
 * [#160](https://github.com/clojure-emacs/inf-clojure/pull/160): Support [Joker](https://joker-lang.org/).
 * [#135](https://github.com/clojure-emacs/inf-clojure/pull/135): Improve command sanitation code.
+* [#157](https://github.com/clojure-emacs/inf-clojure/pull/157): Add `inf-clojure-meta`
 
 ## 2.1.0 (2018-01-02)
 
