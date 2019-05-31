@@ -900,7 +900,7 @@ If you are using REPL types, it will pickup the most appropriate
       (clojure.core/meta
        (clojure.core/resolve
         (clojure.core/read-string \"%s\"))))
-     (catch Throwable t nil))"
+     (catch #?(:clj Throwable :cljr Exception) e nil))"
   "Form to query inferior Clojure for a function's arglists."
   :type 'string
   :safe #'stringp
