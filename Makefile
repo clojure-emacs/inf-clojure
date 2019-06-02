@@ -1,9 +1,19 @@
+.PHONY: clean version test
+
+all: build
+
+clean:
+	rm -rf .cask
+
+.cask:
+	cask install
+	cask update
+
 version:
 	emacs --version
 
-test : version
-	cask exec buttercup -L .
+build: version .cask
+	cask build
 
-elpa:
-	cask install
-	cask update
+test: version .cask
+	cask exec buttercup -L .
