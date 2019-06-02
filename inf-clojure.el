@@ -375,24 +375,12 @@ Should be a symbol that is a key in `inf-clojure-repl-features'."
   "Return non-nil iff STRING is a whole line semicolon comment."
   (string-match-p "^\s*;" string))
 
-(defun inf-clojure--make-single-line (string)
-  "Convert a multi-line STRING in a single-line STRING.
-It also reduces redundant whitespace for readability and removes
-comments."
-  (let* ((lines (seq-filter (lambda (s) (not (inf-clojure--whole-comment-line-p s)))
-                            (split-string string "[\r\n]" t))))
-    (mapconcat (lambda (s)
-                 (if (not (string-match-p ";" s))
-                     (replace-regexp-in-string "\s+" " " s)
-                   (concat s "\n")))
-               lines " ")))
-
 (defun inf-clojure--sanitize-command (command)
   "Sanitize COMMAND for sending it to a process.
 An example of things that this function does is to add a final
 newline at the end of the form.  Return an empty string if the
 sanitized command is empty."
-  (let ((sanitized (inf-clojure--make-single-line command)))
+  (let ((sanitized (string-trim-right command)))
     (if (string-blank-p sanitized)
         ""
       (concat sanitized "\n"))))
