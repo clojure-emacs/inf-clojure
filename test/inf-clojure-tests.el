@@ -111,24 +111,6 @@
          (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
                  :to-equal "deref")))))
 
-(describe "inf-clojure--make-single-line"
-  (it "replaces newlines with whitespace"
-      (expect (inf-clojure--make-single-line "(do\n(println \"hello world\")\n)") :to-equal "(do (println \"hello world\") )"))
-
-  (it "does not leave whitespace at the end"
-      (expect (inf-clojure--make-single-line "(do\n(println \"hello world\")\n)\n\n") :to-equal "(do (println \"hello world\") )"))
-
-  (it "returns empty string when the line is only newlines"
-      (expect (inf-clojure--make-single-line "\n\n\n\n") :to-equal ""))
-
-  (it "removes comments when on their own line"
-      (expect (inf-clojure--make-single-line "(do\n(println \"hello world\")\n    ;; remove me\n)") :to-equal "(do (println \"hello world\") )"))
-
-  (it "preserves newlines of inline comments"
-      (expect (inf-clojure--make-single-line "(do\n(println \"hello world\") ;; don't remove this\n)") :to-equal "(do (println \"hello world\") ;; don't remove this\n )"))
-
-  )
-
 (describe "inf-clojure--sanitize-command"
   (it "sanitizes the command correctly"
      (expect (inf-clojure--sanitize-command "(doc println)") :to-equal "(doc println)\n"))
@@ -137,6 +119,9 @@
      (expect (inf-clojure--sanitize-command "(doc println)\n\n\n\n") :to-equal "(doc println)\n"))
 
   (it "returns empty string when the command is empty"
-     (expect (inf-clojure--sanitize-command "   ") :to-equal "")))
+      (expect (inf-clojure--sanitize-command "   ") :to-equal ""))
+
+  (it "only removes whitespace at the end of the command - fix 152"
+     (expect (inf-clojure--sanitize-command "1   5") :to-equal "1   5\n")))
 
 ;;; inf-clojure-tests.el ends here
