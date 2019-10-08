@@ -2,9 +2,15 @@
 
 ## master (unreleased)
 
-# [#164](https://github.com/clojure-emacs/inf-clojure/pull/164): Fix for eldoc-mode on ClojureCLR
+### New features
+
 * [#160](https://github.com/clojure-emacs/inf-clojure/pull/160): Support [Joker](https://joker-lang.org/).
+
+### Bugs fixed
+
+* [#164](https://github.com/clojure-emacs/inf-clojure/pull/164): Fix for eldoc-mode on ClojureCLR.
 * [#135](https://github.com/clojure-emacs/inf-clojure/pull/135): Improve command sanitation code.
+* Fix `info-clojure-apropos`.
 
 ## 2.1.0 (2018-01-02)
 
