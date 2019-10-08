@@ -1,6 +1,6 @@
 ;;; inf-clojure.el --- Run an external Clojure process in an Emacs buffer -*- lexical-binding: t; -*-
 
-;; Copyright © 2014-2018 Bozhidar Batsov
+;; Copyright © 2014-2019 Bozhidar Batsov
 
 ;; Authors: Bozhidar Batsov <bozhidar@batsov.com>
 ;;       Olin Shivers <shivers@cs.cmu.edu>
