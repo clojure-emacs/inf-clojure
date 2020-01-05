@@ -82,10 +82,11 @@ start a REPL for a particular project type:
  - `inf-clojure-tools-deps-cmd` ([Clojure cli tools][])
  - `inf-clojure-generic-cmd`
 
-Detection is attempted
-[in the above order](https://github.com/clojure-emacs/inf-clojure/blob/master/inf-clojure.el#L589-L596)
-but the `inf-clojure-project-type` variable can force a particular project
-type, useful for projects that don't have standard layouts.
+Detection is attempted in the above order (see [function
+`inf-clojure-project-type` in this
+file](https://github.com/clojure-emacs/inf-clojure/blob/master/inf-clojure.el#L611-L618)
+but the `inf-clojure-project-type` variable can force a particular
+project type, useful for projects that don't have standard layouts.
 
 It is highly recommended to use a cons pair like `("localhost" . 5555)` to
 connect to a socket REPL, terminal REPLs are inherently hard to work with and
@@ -170,7 +171,7 @@ or the following to your [Emacs init file][]:
 (setf inf-clojure-boot-cmd '("localhost" . 5555))
 ```
 
-The socket server REPL configuration options are described [here](https://dev.clojure.org/display/design/Socket+Server+REPL).
+The socket server REPL configuration options are described [here](https://clojure.org/reference/repl_and_main#_launching_a_socket_server).
 
 #### Lumo Socket REPL
 
@@ -243,7 +244,7 @@ Suppose you have three inferior Clojures running:
 If you do a `inf-clojure-eval-defun` command on some Clojure source code,
 what process do you send it to?
 
-- If you're in a process buffer (foo, bar, or *inf-clojure*),
+- If you're in a process buffer (foo, bar, or `*inf-clojure*`),
   you send it to that process.
 - If you're in some other buffer (e.g., a source file), you
   send it to the process attached to buffer `inf-clojure-buffer`.
