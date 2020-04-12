@@ -135,6 +135,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
     (define-key map "\C-c\M-r" #'inf-clojure-reload)
     (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
+    (define-key map (kbd "C-c C-j") #'inf-clojure-insert-defun)
     (define-key map "\C-c\C-z" #'inf-clojure-switch-to-repl)
     (define-key map "\C-c\C-i" #'inf-clojure-show-ns-vars)
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
@@ -682,15 +683,25 @@ Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   "Send the string CODE to the inferior Clojure process to be executed."
   (inf-clojure--send-string (inf-clojure-proc) code))
 
+(defun inf-clojure--defun-at-point (&optional bounds)
+  "Return text or range of defun at point.
+If BOUNDS is truthy return a dotted pair of beginning and end of
+current defun else return the string.."
+  (save-excursion
+    (end-of-defun)
+    (let ((end (point))
+          (case-fold-search t)
+          (func (if bounds #'cons #'buffer-substring-no-properties)))
+      (beginning-of-defun)
+      (funcall func (point) end))))
+
 (defun inf-clojure-eval-defun (&optional and-go)
   "Send the current defun to the inferior Clojure process.
 Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   (interactive "P")
   (save-excursion
-    (end-of-defun)
-    (let ((end (point)) (case-fold-search t))
-      (beginning-of-defun)
-      (inf-clojure-eval-region (point) end and-go))))
+    (let ((bounds (inf-clojure--defun-at-point t)))
+     (inf-clojure-eval-region (car bounds) (cdr bounds) and-go))))
 
 (defun inf-clojure-eval-buffer (&optional and-go)
   "Send the current buffer to the inferior Clojure process.
@@ -730,6 +741,24 @@ With prefix argument EOB-P, positions cursor at end of buffer."
   (when eob-p
     (push-mark)
     (goto-char (point-max))))
+
+(defun inf-clojure-insert-and-eval (form)
+  "Insert FORM into process and evaluate.
+Indent FORM.  FORM is expected to have been trimmed."
+  (let ((clojure-process (inf-clojure-proc)))
+    (with-current-buffer (process-buffer clojure-process)
+      (comint-goto-process-mark)
+      (let ((beginning (point)))
+        (insert (format "%s" form))
+        (let ((end (point)))
+          (goto-char beginning)
+          (indent-sexp end)))
+      (comint-send-input t))))
+
+(defun inf-clojure-insert-defun ()
+  "Send current defun to process."
+  (interactive)
+  (inf-clojure-insert-and-eval (string-trim (inf-clojure--defun-at-point))))
 
 
 ;;; Now that inf-clojure-eval-/defun/region takes an optional prefix arg,
