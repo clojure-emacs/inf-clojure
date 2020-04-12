@@ -4,6 +4,7 @@
 
 ### New features
 
+* [#170](https://github.com/clojure-emacs/inf-clojure/pull/170): Add insert defun and last sexp commands
 * [#160](https://github.com/clojure-emacs/inf-clojure/pull/160): Support [Joker](https://joker-lang.org/).
 
 ### Bugs fixed
