@@ -775,7 +775,6 @@ Indent FORM.  FORM is expected to have been trimmed."
    (buffer-substring-no-properties (save-excursion (backward-sexp) (point))
                                    (point))))
 
-
 ;;; Now that inf-clojure-eval-/defun/region takes an optional prefix arg,
 ;;; these commands are redundant. But they are kept around for the user
 ;;; to bind if he wishes, for backwards functionality, and because it's
