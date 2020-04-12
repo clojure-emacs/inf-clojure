@@ -125,6 +125,14 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
         ["Version" inf-clojure-display-version]))
     map))
 
+(defvar inf-clojure-insert-commands-map
+  (let ((map (define-prefix-command 'inf-clojure-insert-commands-map)))
+    (define-key map (kbd "d") #'inf-clojure-insert-defun)
+    (define-key map (kbd "C-d") #'inf-clojure-insert-defun)
+    (define-key map (kbd "e") #'inf-clojure-insert-last-sexp)
+    (define-key map (kbd "C-e") #'inf-clojure-insert-last-sexp)
+    map))
+
 (defvar inf-clojure-minor-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\M-\C-x"  #'inf-clojure-eval-defun)     ; Gnu convention
@@ -135,7 +143,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
     (define-key map "\C-c\M-r" #'inf-clojure-reload)
     (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
-    (define-key map (kbd "C-c C-j") #'inf-clojure-insert-defun)
+    (define-key map (kbd "C-c C-j") 'inf-clojure-insert-commands-map)
     (define-key map "\C-c\C-z" #'inf-clojure-switch-to-repl)
     (define-key map "\C-c\C-i" #'inf-clojure-show-ns-vars)
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
@@ -759,6 +767,13 @@ Indent FORM.  FORM is expected to have been trimmed."
   "Send current defun to process."
   (interactive)
   (inf-clojure-insert-and-eval (string-trim (inf-clojure--defun-at-point))))
+
+(defun inf-clojure-insert-last-sexp ()
+  "Send last sexp to process."
+  (interactive)
+  (inf-clojure-insert-and-eval
+   (buffer-substring-no-properties (save-excursion (backward-sexp) (point))
+                                   (point))))
 
 
 ;;; Now that inf-clojure-eval-/defun/region takes an optional prefix arg,
