@@ -1,0 +1,58 @@
+* Core
+
+** TODO set repl type on connection not first command
+For some reason ~inf-clojure--set-repl-type~ is called in:
+1. inf-clojure--send-string
+2. inf-clojure-reload-form
+3. inf-clojure-reload-all-form
+
+Seems better to do this on the two different connection methods and then be done with it?
+
+** TODO nice startup
+There's some project detection but that's becoming less and less useful as time goes on. Shadow, lein, deps.edn can all easily be mixed in the same project. And then lumo, planck, or bb scripts could live side by side. Rather than trying to guess the project type, I think i'd like to mimic geiser's style of handling multiple scheme backends. Perhaps ~m-x inf-clojure-run-planck~ and similar could help out.
+
+Some considerations:
+- is this path aware? IE, don't show an option to run planck, lumo, etc, if they aren't visible or installed?
+- should it have a rebuild function so that user registered implementations can show up in the ~m-x~ menu as well?
+
+** TODO Better dispatch for the implementations
+Right now the functions are kinda clunky cond statements:
+#+BEGIN_SRC emacs-lisp
+  (defun inf-clojure-cljs-features-dispatch (feature)
+    (case feature
+      ;; ((load) "(cljs.core/load-file \"%s\")")
+      ((doc) "(cljs.repl/doc %s)")
+      ((source) "(cljs.repl/source %s)")
+      ((arglists) "(try (->> '%s cljs.core/resolve cljs.core/meta :arglists) (catch :default _ nil))")
+      ((apropos) "(cljs.repl/apropos \"%s\")")
+      ((ns-vars) "(cljs.repl/dir %s)")
+      ((set-ns) "(cljs.core/in-ns '%s)")
+      ((macroexpand) "(cljs.core/macroexpand '%s)")
+      ((macroexpand-1) "(cljs.core/macroexpand-1 '%s)")
+      ;; ((completion) inf-clojure-completion-form-lumo)
+      ))
+#+END_SRC
+
+I really want something similar to ~(defprotocol Inf-clojure-REPL (doc ...)(source ...))~ rather than just this super open ended dispatch on symbols. I just don't know enough elisp at the moment. Also, the current function version prevents introspection and providing a way of listing the repl's capabilities without duplicating the keys. Or maybe a hack of sending all of the known keys in and seeing which return strings. Still not great.
+
+** TODO Nicer interface to create a command
+Right now everything is just a format string with a _single_ ~%s~ in it and that's called with ~(format feature-form e)~ where ~e~ is a symbol, or a form, or a whatever makes sense for that type of feature. This isn't super elegant although it does keep inf-clojure honest in that _all_ it does it format commands to ask a simple repl. But there could probably be a better way.
+
+** TODO Simpler way to define an implementation
+This first pass is very mechanical and just rearranging so we can easily see which features are where. In the future we should look into just providing the repl namespace and seeing how far we can get with that. For instance, an API like ~(inf-clojure-register 'bb "bb.repl")~ and this would tell us where ~source~, ~doc~, ~apropos~ ...etc live. No reason to duplicate all of these.
+
+** TODO Multiple connections
+As proven by CIDER, multiple connections are just a pain. Scoping, navigating into dependencies, etc. This is a monster lurking
+
+** TODO navigation to source
+The source primitive is quite nice but we most likely need a way to navigate to source. Possibly punt on this and just suggest people use with clojure-lsp?
+
+** TODO PREPL
+Be nice to implement this now that we have parseedn in elisp to understand edn.
+* Nice-to-haves
+
+** TODO Better handling of cyclic dependencies
+In inf-clojure.el I load the implementation specific files for lumo, planck, etc _after_ defining the register function. I would much prefer a way to do this without being so fragile.
+
+** TODO Put repl type in modeline
+Rather than just ~*inf-clojure*~ we could put the repl type. Make it easy to follow and makes it easy to see when it gets it wrong.
