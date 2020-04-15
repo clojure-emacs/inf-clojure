@@ -2,9 +2,11 @@
 
 ## master (unreleased)
 
+## 2.2.0 (2020-04-15)
+
 ### New features
 
-* [#170](https://github.com/clojure-emacs/inf-clojure/pull/170): Add insert defun and last sexp commands
+* [#170](https://github.com/clojure-emacs/inf-clojure/pull/170): Add insert defun and last sexp commands.
 * [#160](https://github.com/clojure-emacs/inf-clojure/pull/160): Support [Joker](https://joker-lang.org/).
 
 ### Bugs fixed
