@@ -26,11 +26,26 @@ Clojure(Script) development:
 * Macroexpansion
 * Require `:reload`/`:reload-all`
 * Support connecting to socket REPLs
-* Support for [Lumo](https://github.com/anmonteiro/lumo)
-* Support for [Planck](http://planck-repl.org/)
-* Support for [Joker](https://joker-lang.org/)
+
+In addition to the standard Clojure and ClojureScript REPLs, `inf-clojure` supports also:
+
+* [Lumo](https://github.com/anmonteiro/lumo)
+* [Planck](http://planck-repl.org/)
+* [Joker](https://joker-lang.org/)
 
 For a more powerful/full-featured solution see [CIDER](https://github.com/clojure-emacs/cider).
+
+## Rationale
+
+`inf-clojure`'s goal is to provide the simplest possible way to interact with a Clojure REPL.
+In Emacs terminology "inferior" process is a subprocess started by Emacs (it being the "superior" process, of course).
+
+`inf-clojure` doesn't require much of setup, as at its core it simply runs a terminal REPL process, pipes input to it, and
+processes its output. As the Clojure socket REPL works in exactly the same manner `inf-clojure` can also interact with it.
+
+Functionality like code completion and eldoc is powered by evaluation of predefined code snippets that provide the necessary results.
+As different Clojure REPLs have different capabilities, `inf-clojure` has to determine the type of a REPL and invoke
+the right code for each REPL type.
 
 ## Installation
 
