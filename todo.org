@@ -8,6 +8,9 @@ For some reason ~inf-clojure--set-repl-type~ is called in:
 
 Seems better to do this on the two different connection methods and then be done with it?
 
+** DONE do we need repl type in both source buffer and connection?
+   these can get out of sync and lead to confusing errors when closing a repl and opening a new one. It seems like we keep the repl-type in the source buffer to prevent a single ~(with-current-buffer (process-buffer proc) inf-clojure-repl-type)~
+
 ** TODO nice startup
 There's some project detection but that's becoming less and less useful as time goes on. Shadow, lein, deps.edn can all easily be mixed in the same project. And then lumo, planck, or bb scripts could live side by side. Rather than trying to guess the project type, I think i'd like to mimic geiser's style of handling multiple scheme backends. Perhaps ~m-x inf-clojure-run-planck~ and similar could help out.
 
@@ -15,7 +18,7 @@ Some considerations:
 - is this path aware? IE, don't show an option to run planck, lumo, etc, if they aren't visible or installed?
 - should it have a rebuild function so that user registered implementations can show up in the ~m-x~ menu as well?
 
-** TODO Better dispatch for the implementations
+** DONE Better dispatch for the implementations
 Right now the functions are kinda clunky cond statements:
 #+BEGIN_SRC emacs-lisp
   (defun inf-clojure-cljs-features-dispatch (feature)
@@ -41,6 +44,19 @@ Right now everything is just a format string with a _single_ ~%s~ in it and that
 ** TODO Simpler way to define an implementation
 This first pass is very mechanical and just rearranging so we can easily see which features are where. In the future we should look into just providing the repl namespace and seeing how far we can get with that. For instance, an API like ~(inf-clojure-register 'bb "bb.repl")~ and this would tell us where ~source~, ~doc~, ~apropos~ ...etc live. No reason to duplicate all of these.
 
+** TODO ability to update repl commands
+   we had this feature originally but now they are all literals. This is almost entirely fine but one problem. It would be common to toss clojure completions on the class path and then add the completions form for clojure.
+
+This should come back but only in a sense: if you don't have this on the classpath its obviously unacceptable to throw errors every time the user hits tab. Do we need some state recording if this is on the classpath or not maybe?
+
+#+BEGIN_SRC emacs-lisp
+  (defcustom inf-clojure-completion-form
+    "(complete.core/completions \"%s\")"
+    "Form to query inferior Clojure for completion candidates."
+    :type 'string
+    :safe #'stringp
+    :package-version '(inf-clojure . "2.0.0"))
+#+END_SRC
 ** TODO Multiple connections
 As proven by CIDER, multiple connections are just a pain. Scoping, navigating into dependencies, etc. This is a monster lurking
 

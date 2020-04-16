@@ -148,8 +148,7 @@
 
 (defun inf-clojure-get-feature (proc feature &optional no-error)
   "Get FEATURE based on repl type for PROC."
-  (let* ((repl-type (or inf-clojure-repl-type
-                        (with-current-buffer (process-buffer proc)
+  (let* ((repl-type (or (with-current-buffer (process-buffer proc)
                           inf-clojure-repl-type)
                         (error "Repl type is not known")))
          (feature-form (alist-get feature (alist-get repl-type inf-clojure-repl-features))))
@@ -195,21 +194,18 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
          (type-to-set (intern
                        (completing-read "Set repl type:"
                                         (sort (mapcar #'symbol-name types) #'string-lessp)))))
-    (setq-local inf-clojure-repl-type type-to-set)
     (with-current-buffer (process-buffer proc)
       (setq-local inf-clojure-repl-type  type-to-set))))
 
 (defun inf-clojure--set-repl-type (proc)
   "Set the REPL type if has not already been set.
 It requires a REPL PROC for inspecting the correct type."
-  (if (not inf-clojure-repl-type)
-      (let ((repl-type (inf-clojure--detect-repl-type proc)))
-        ;; set the REPL process buffer
-        (with-current-buffer inf-clojure-buffer
+  ;; todo: don't like this happening so frequently
+  (with-current-buffer (process-buffer proc)
+    (if (not inf-clojure-repl-type)
+        (let ((repl-type (inf-clojure--detect-repl-type proc)))
           (setq-local inf-clojure-repl-type repl-type))
-        ;; set in the current buffer
-        (setq-local inf-clojure-repl-type repl-type))
-    inf-clojure-repl-type))
+      inf-clojure-repl-type)))
 
 (defgroup inf-clojure nil
   "Run an external Clojure process (REPL) in an Emacs buffer."
@@ -1199,7 +1195,7 @@ This guy was taken from CIDER, thanks folks."
   "Retrieve the list of completions and prompt the user.
 Returns the selected completion or nil."
   (let ((bounds (inf-clojure-completion-bounds-of-expr-at-point)))
-    (when bounds
+    (when (and bounds (inf-clojure-get-feature (inf-clojure-proc) 'completion 'no-error))
       (list (car bounds) (cdr bounds)
             (if (fboundp 'completion-table-with-cache)
                 (completion-table-with-cache #'inf-clojure-completions)
