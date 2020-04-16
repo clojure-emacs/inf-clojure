@@ -345,26 +345,12 @@ number (e.g. (\"localhost\" . 5555))."
    (stringp (car x))
    (numberp (cdr x))))
 
-(defcustom inf-clojure-project-type nil
-  "Defines the project type.
-
-If this is `nil`, the project will be automatically detected."
-  :type 'string
-  :safe #'stringp
-  :package-version '(inf-clojure . "2.1.0"))
-
-(defcustom inf-clojure-generic-cmd "lein repl"
-  "The command used to start a Clojure REPL outside Lein/Boot projects.
-
-Alternatively you can specify a TCP connection cons pair, instead
-of command, consisting of a host and port
-number (e.g. (\"localhost\" . 5555)).  That's useful if you're
-often connecting to a remote REPL process."
-  :type '(choice (string)
-                 (cons string integer))
-  :risky #'stringp
-  :safe #'inf-clojure--endpoint-p
-  :package-version '(inf-clojure . "2.0.0"))
+(defcustom inf-clojure-custom-startup
+   nil
+   "Form to be used to start inf-clojure.
+Can be a cons pair of (host . port) where host is a string and
+port is an integer, or a string to startup an interpreter like
+\"planck\".")
 
 (defun inf-clojure--whole-comment-line-p (string)
   "Return non-nil iff STRING is a whole line semicolon comment."
@@ -664,10 +650,11 @@ it (default is value of `inf-clojure-*-cmd').  Runs the hooks
 from `inf-clojure-mode-hook' (after the `comint-mode-hook' is
 run).
 \(Type \\[describe-mode] in the process buffer for a list of commands.)"
-  (interactive (list (completing-read "Clojure startup command: "
-                                      (mapcar #'cdr inf-clojure-startup-forms)
-                                      nil
-                                      'confirm-after-completion)))
+  (interactive (list (or inf-clojure-custom-startup
+                         (completing-read "Clojure startup command: "
+                                          (mapcar #'cdr inf-clojure-startup-forms)
+                                          nil
+                                          'confirm-after-completion))))
   (if (not (comint-check-proc "*inf-clojure*"))
       ;; run the new process in the project's root when in a project folder
       (let ((default-directory (inf-clojure-project-root))
