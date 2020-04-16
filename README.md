@@ -47,7 +47,7 @@ You can install `inf-clojure` using the following command:
 
 or if you'd rather keep it in your dotfiles:
 
-```el
+```emacs-lisp
 (unless (package-installed-p 'inf-clojure)
   (package-refresh-contents)
   (package-install 'inf-clojure))
@@ -60,7 +60,7 @@ If the installation doesn't work try refreshing the package list:
 Add the following to your Emacs config to enable
 `inf-clojure-minor-mode` for Clojure source buffers:
 
-```el
+```emacs-lisp
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 ```
 
@@ -70,39 +70,27 @@ short of havoc.**
 
 ## Usage
 
-Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure source file.
-This will start a REPL process for the current project and you can start
-interacting with it.
+Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure
+source file. You should get a prompt with the supported repl types and
+common startup forms. You can select one of these or type in your own
+custom startup. This will start a REPL process for the current project
+and you can start interacting with it.
 
-Inf-clojure has several custom variables which control the command used to
-start a REPL for a particular project type:
-
- - `inf-clojure-lein-cmd` ([Leiningen][])
- - `inf-clojure-boot-cmd` ([Boot][])
- - `inf-clojure-tools-deps-cmd` ([Clojure cli tools][])
- - `inf-clojure-generic-cmd`
-
-Detection is attempted in the above order (see [function
-`inf-clojure-project-type` in this
-file](https://github.com/clojure-emacs/inf-clojure/blob/master/inf-clojure.el#L611-L618)
-but the `inf-clojure-project-type` variable can force a particular
-project type, useful for projects that don't have standard layouts.
+If you've already started a socket repl, use `M-x inf-clojure-connect`
+and enter the host and port numbers.
 
 It is highly recommended to use a cons pair like `("localhost" . 5555)` to
 connect to a socket REPL, terminal REPLs are inherently hard to work with and
 support will be deprecated in the foreseeable future.
 
-Interactively, use `M-x inf-clojure-connect` (`C-c M-c`) to connect to a
-running socket REPL or `C-u C-c C-z` for specifying a different command/cons
-pair.
+Inf-clojure aims to be very simple and offer tooling that the repl
+itself exposes. A few commands are:
 
-You can also set custom values to `inf-clojure` variables on a per-project
-basis using
-[directory variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html).
-
-For a list of all available commands in `inf-clojure-mode` (a.k.a. the REPL) and
-`inf-clojure-minor-mode` you can either invoke `C-h f RET inf-clojure-mode` and
-`C-h f RET inf-clojure-minor-mode` or simply browse their menus.
+- eval last sexp `C-x C-e`
+- show arglists for function `C-c C-a`
+- show var documentation `C-c C-v`
+- show source `C-c C-s`
+- insert top level form into repl `C-c C-j d`
 
 Many `inf-clojure-minor-mode` commands by default act on the symbol at
 point. You can, however, change this behaviour by invoking such
@@ -121,13 +109,13 @@ clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
 
 Then either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
 
-```el
+```emacs-lisp
 ((nil . ((inf-clojure-tools-deps-cmd . ("localhost" . 5555)))))
 ```
 
 or the following to your [Emacs init file][]:
 
-```el
+```emacs-lisp
 (setf inf-clojure-tools-deps-cmd '("localhost" . 5555)):
 ```
 
@@ -139,38 +127,14 @@ For Leiningen, add the following option to your `~/.lein/profiles.clj` or your `
 :jvm-opts ["-Dclojure.server.repl={:port 5555 :accept clojure.core.server/repl}"]
 ```
 
-Then run `lein repl` from within your project directory to start the REPL, and either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
+Then run `lein repl` from within your project directory to start the
+REPL.  To connect, you can either `m-x inf-clojure-connect [RET]
+localhost [RET] 5555` or you can put in a dir local file the
+information on how connect:
 
-```el
-((nil . ((inf-clojure-lein-cmd . ("localhost" . 5555)))))
+```emacs-lisp
+((nil (inf-clojure-custom-startup "localhost" . 5555)))
 ```
-
-or the following to your [Emacs init file][]:
-
-```el
-(setf inf-clojure-lein-cmd '("localhost" . 5555))
-```
-
-#### Boot Socket REPL
-
-For boot, export the environment variable `BOOT_JVM_OPTIONS`:
-
-```shell
-export BOOT_JVM_OPTIONS='-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"'
-```
-
-or add the following to your `.dir-locals.el`:
-
-```el
-((nil . ((inf-clojure-boot-cmd . ("localhost" . 5555)))))
-```
-
-or the following to your [Emacs init file][]:
-
-```el
-(setf inf-clojure-boot-cmd '("localhost" . 5555))
-```
-
 The socket server REPL configuration options are described [here](https://clojure.org/reference/repl_and_main#_launching_a_socket_server).
 
 #### Lumo Socket REPL
@@ -181,19 +145,19 @@ For example if a `project.clj` is present in the project root folder, `inf-cloju
 
 After you launch `lumo ... -n 5555`, as customary, either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
 
-```el
+```emacs-lisp
 ((nil . ((inf-clojure-lein-cmd . ("localhost" . 5555)))))
 ```
 
 or the following to your [Emacs init file][]:
 
-```el
+```emacs-lisp
 (setf inf-clojure-lein-cmd '("localhost" . 5555))
 ```
 
 Project detection can be completely skipped and the `generic` project type can be used instead:
 
-```el
+```emacs-lisp
 (setf inf-clojure-project-type . "generic")
 (setf inf-clojure-generic-cmd '("localhost" 5555))
 ```
@@ -206,7 +170,7 @@ filter out ASCII escape characters at the moment and will not behave correctly.
 
 You can disable coloring the following way for `boot`:
 
-```el
+```emacs-lisp
 ((nil . ((inf-clojure-boot-cmd . "boot repl -C"))))
 ```
 
@@ -286,7 +250,7 @@ By default `inf-clojure` would start a standard Clojure REPL using
 right launch command (or connect to the REPL via a socket).  For example, for
 Lumo just add the following in your `.dir-locals.el`:
 
-```el
+```emacs-lisp
 ((nil . ((inf-clojure-boot-cmd . "lumo -d")))) ;; inf-clojure-lein-cmd if you are using Leiningen
 ```
 
@@ -302,7 +266,7 @@ echo area.
 You can activate ElDoc with `M-x eldoc-mode` or by adding the
 following to you Emacs config:
 
-```el
+```emacs-lisp
 (add-hook 'clojure-mode-hook #'eldoc-mode)
 (add-hook 'inf-clojure-mode-hook #'eldoc-mode)
 ```
@@ -332,12 +296,25 @@ in order to play nicely with emacs.
 For example, you can use the following command (assuming `cp` contains
 the classpath) in your `.dir-locals.el`:
 
-```el
+```emacs-lisp
 ((nil . (eval . (setq inf-clojure-generic-cmd (concat "lumo -d -c "
                                                       (f-read (concat (inf-clojure-project-root) "cp")))))))
 ```
 
 ## Troubleshooting
+
+### Things seem broken
+
+Inf-clojure is intentionally quite simple and just sends commands to a
+repl on your behalf to provide features. In order to do this
+inf-clojure largely needs to know the repl type so it can format the
+correct calls. Most end up in `(lumo.repl/doc [symbol])` or
+`(cljs.repl/doc ...)` so its important that the repl type is set
+correctly. This repl type exists in the process buffer (repl) and the
+source buffers as a cache. If you have problems, run `m-x
+inf-clojure-set-repl-type` from the source buffer to set the repl type
+in both buffers. To see how simple inf-clojure is, look at
+`inf-clojure-repl-features` to see largely how things are laid out.
 
 ### REPL not responsive in Windows OS
 
@@ -358,7 +335,7 @@ jline.terminal=unsupported
 
 Standard Emacs debugging turns out to be difficult when an asynchronous process is involved. In this case try to enable logging:
 
-```el
+```emacs-lisp
 (setq inf-clojure-log-activity t)
 ```
 
