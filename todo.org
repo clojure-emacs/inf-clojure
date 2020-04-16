@@ -50,9 +50,15 @@ The source primitive is quite nice but we most likely need a way to navigate to 
 ** TODO PREPL
 Be nice to implement this now that we have parseedn in elisp to understand edn.
 * Nice-to-haves
-
-** TODO Better handling of cyclic dependencies
-In inf-clojure.el I load the implementation specific files for lumo, planck, etc _after_ defining the register function. I would much prefer a way to do this without being so fragile.
-
 ** TODO Put repl type in modeline
 Rather than just ~*inf-clojure*~ we could put the repl type. Make it easy to follow and makes it easy to see when it gets it wrong.
+
+** TODO How do CIDER and inf-clojure play nice on the same emacs?
+inf-clojure and CIDER are fighting over the keymappings. I've been doing a bit of a kludge to remove CIDER's tentacles from my clojure files for developing:
+#+BEGIN_SRC emacs-lisp
+  (seq-doseq (buffer (buffer-list))
+    (with-current-buffer buffer
+      (cider-mode -1))
+    (remove-hook 'clojure-mode-hook #'cider-mode))
+#+END_SRC
+Seems a bit heavy handed but its working for me so far.

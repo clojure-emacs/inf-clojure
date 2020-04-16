@@ -406,45 +406,6 @@ If this is `nil`, the project will be automatically detected."
   :safe #'stringp
   :package-version '(inf-clojure . "2.1.0"))
 
-(defcustom inf-clojure-lein-cmd "lein repl"
-  "The command used to start a Clojure REPL for Leiningen projects.
-
-Alternatively you can specify a TCP connection cons pair, instead
-of command, consisting of a host and port
-number (e.g. (\"localhost\" . 5555)).  That's useful if you're
-often connecting to a remote REPL process."
-  :type '(choice (string)
-                 (cons string integer))
-  :risky #'stringp
-  :safe #'inf-clojure--endpoint-p
-  :package-version '(inf-clojure . "2.0.0"))
-
-(defcustom inf-clojure-boot-cmd "boot repl -C"
-  "The command used to start a Clojure REPL for Boot projects.
-
-Alternatively you can specify a TCP connection cons pair, instead
-of command, consisting of a host and port
-number (e.g. (\"localhost\" . 5555)).  That's useful if you're
-often connecting to a remote REPL process."
-  :type '(choice (string)
-                 (cons string integer))
-  :risky #'stringp
-  :safe #'inf-clojure--endpoint-p
-  :package-version '(inf-clojure . "2.0.0"))
-
-(defcustom inf-clojure-tools-deps-cmd "clojure"
-  "The command used to start a Clojure REPL for tools.deps projects.
-
-Alternatively you can specify a TCP connection cons pair, instead
-of command, consisting of a host and port
-number (e.g. (\"localhost\" . 5555)).  That's useful if you're
-often connecting to a remote REPL process."
-  :type '(choice (string)
-                 (cons string integer))
-  :risky #'stringp
-  :safe #'inf-clojure--endpoint-p
-  :package-version '(inf-clojure . "2.1.0"))
-
 (defcustom inf-clojure-generic-cmd "lein repl"
   "The command used to start a Clojure REPL outside Lein/Boot projects.
 
@@ -686,7 +647,7 @@ to continue it."
    (t str)))
 
 (defvar inf-clojure-project-root-files
-  '("project.clj" "build.boot" "deps.edn")
+  '("project.clj" "build.boot" "deps.edn" "shadow-cljs.edn")
   "A list of files that can be considered project markers.")
 
 (defun inf-clojure-project-root ()
@@ -700,28 +661,51 @@ Fallback to `default-directory.' if not within a project."
                            inf-clojure-project-root-files)))
       default-directory))
 
-(defun inf-clojure-project-type ()
-  "Determine the type, either leiningen or boot of the current project."
-  (or inf-clojure-project-type
-      (let ((default-directory (inf-clojure-project-root)))
-        (cond ((file-exists-p "project.clj") "lein")
-              ((file-exists-p "build.boot") "boot")
-              ((file-exists-p "deps.edn") "tools.deps")
-              (t "generic")))))
-
-(defun inf-clojure-cmd (project-type)
-  "Determine the command `inf-clojure' needs to invoke for the PROJECT-TYPE."
-  (pcase project-type
-    ("lein" inf-clojure-lein-cmd)
-    ("boot" inf-clojure-boot-cmd)
-    ("tools.deps" inf-clojure-tools-deps-cmd)
-    (_ inf-clojure-generic-cmd)))
-
 (defun inf-clojure-clear-repl-buffer ()
   "Clear the REPL buffer."
   (interactive)
   (let ((comint-buffer-maximum-size 0))
     (comint-truncate-buffer)))
+
+(defun inf-clojure-switch-to-repl (eob-p)
+  "Switch to the inferior Clojure process buffer.
+With prefix argument EOB-P, positions cursor at end of buffer."
+  (interactive "P")
+  (if (get-buffer-process inf-clojure-buffer)
+      (let ((pop-up-frames
+             ;; Be willing to use another frame
+             ;; that already has the window in it.
+             (or pop-up-frames
+                 (get-buffer-window inf-clojure-buffer t))))
+        (pop-to-buffer inf-clojure-buffer))
+    (call-interactively #'inf-clojure))
+  (when eob-p
+    (push-mark)
+    (goto-char (point-max))))
+
+(defun inf-clojure-quit (&optional buffer)
+  "Kill the REPL buffer and its underlying process.
+
+You can pass the target BUFFER as an optional parameter
+to suppress the usage of the target buffer discovery logic."
+  (interactive)
+  (let ((target-buffer (or buffer (inf-clojure-select-target-repl))))
+    (when (get-buffer-process target-buffer)
+      (delete-process target-buffer))
+    (kill-buffer target-buffer)))
+
+(defun inf-clojure-restart (&optional buffer)
+  "Restart the REPL buffer and its underlying process.
+
+You can pass the target BUFFER as an optional parameter
+to suppress the usage of the target buffer discovery logic."
+  (interactive)
+  (let* ((target-buffer (or buffer (inf-clojure-select-target-repl)))
+         (target-buffer-name (buffer-name target-buffer)))
+    ;; TODO: Try to recycle the old buffer instead of killing and recreating it
+    (inf-clojure-quit target-buffer)
+    (call-interactively #'inf-clojure)
+    (rename-buffer target-buffer-name)))
 
 ;;;###autoload
 (defun inf-clojure (cmd)
@@ -818,22 +802,6 @@ Prefix argument AND-GO means switch to the Clojure buffer afterwards."
     (up-list))
   (inf-clojure-eval-last-sexp)
   (forward-sexp))
-
-(defun inf-clojure-switch-to-repl (eob-p)
-  "Switch to the inferior Clojure process buffer.
-With prefix argument EOB-P, positions cursor at end of buffer."
-  (interactive "P")
-  (if (get-buffer-process inf-clojure-buffer)
-      (let ((pop-up-frames
-             ;; Be willing to use another frame
-             ;; that already has the window in it.
-             (or pop-up-frames
-                 (get-buffer-window inf-clojure-buffer t))))
-        (pop-to-buffer inf-clojure-buffer))
-    (inf-clojure (inf-clojure-cmd (inf-clojure-project-type))))
-  (when eob-p
-    (push-mark)
-    (goto-char (point-max))))
 
 (defun inf-clojure-insert-and-eval (form)
   "Insert FORM into process and evaluate.
@@ -1408,30 +1376,6 @@ Useful for commands that can invoked outside of an ‘inf-clojure’ buffer
        ((= (length repl-buffers) 1) (car repl-buffers))
        (t (get-buffer (completing-read "Select target inf-clojure buffer: "
                                        (mapcar #'buffer-name repl-buffers))))))))
-
-(defun inf-clojure-quit (&optional buffer)
-  "Kill the REPL buffer and its underlying process.
-
-You can pass the target BUFFER as an optional parameter
-to suppress the usage of the target buffer discovery logic."
-  (interactive)
-  (let ((target-buffer (or buffer (inf-clojure-select-target-repl))))
-    (when (get-buffer-process target-buffer)
-      (delete-process target-buffer))
-    (kill-buffer target-buffer)))
-
-(defun inf-clojure-restart (&optional buffer)
-  "Restart the REPL buffer and its underlying process.
-
-You can pass the target BUFFER as an optional parameter
-to suppress the usage of the target buffer discovery logic."
-  (interactive)
-  (let* ((target-buffer (or buffer (inf-clojure-select-target-repl)))
-         (target-buffer-name (buffer-name target-buffer)))
-    ;; TODO: Try to recycle the old buffer instead of killing and recreating it
-    (inf-clojure-quit target-buffer)
-    (inf-clojure (inf-clojure-cmd (inf-clojure-project-type)))
-    (rename-buffer target-buffer-name)))
 
 (defun inf-clojure--response-match-p (form match-p proc)
   "Send FORM and apply MATCH-P on the result of sending it to PROC.
