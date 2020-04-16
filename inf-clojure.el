@@ -71,134 +71,91 @@
 (require 'subr-x)
 (require 'seq)
 
-(defvar inf-clojure-implementations (make-hash-table :size 6))
-(defvar inf-clojure-recognize-alist '())
-(defvar inf-clojure-startup-forms '())
+(defvar inf-clojure-recognize-alist '((lumo . "lumo.repl")
+                                      (planck . "planck.repl")
+                                      ;; cljs goes after the selfhosts
+                                      (cljs . "cljs.repl")
+                                      (joker . "joker.repl")
+                                      (clojure . "clojure.core.server")))
+(defvar inf-clojure-startup-forms '((clojure . "clojure")
+                                    (cljs . "clojure -m cljs.main -r")
+                                    (planck . "planck")
+                                    (lumo . "lumo")
+                                    (joker . "joker")))
 
-(defun inf-clojure-register-implementation
-    (repl-type implementation &optional recognize default-startup)
-  "Register a REPL-TYPE for `inf-clojure'.
-REPL-TYPE is a symbol of the repl type (lumo, planck, etc)
+(defvar inf-clojure-repl-features
+  '((cljs . ((doc . "(cljs.repl/doc %s)")
+             (source . "(cljs.repl/source %s)")
+             (arglists . "(try (->> '%s cljs.core/resolve cljs.core/meta :arglists) (catch :default _ nil))")
+             (apropos . "(cljs.repl/apropos \"%s\")")
+             (ns-vars . "(cljs.repl/dir %s)")
+             (set-ns . "(in-ns '%s)")
+             (macroexpand . "(cljs.core/macroexpand '%s)")
+             (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)")))
+    (lumo . ((load . "(clojure.core/load-file \"%s\")")
+             (doc . "(lumo.repl/doc %s)")
+             (source . "(lumo.repl/source %s)")
+             (arglists .
+                       "(let [old-value lumo.repl/*pprint-results*]
+                          (set! lumo.repl/*pprint-results* false)
+                          (js/setTimeout #(set! lumo.repl/*pprint-results* old-value) 0)
+                          (lumo.repl/get-arglists \"%s\"))")
+             (apropos . "(lumo.repl/apropos \"%s\")")
+             (ns-vars . "(lumo.repl/dir %s)")
+             (set-ns . "(in-ns '%s)")
+             (macroexpand . "(macroexpand-1 '%s)")
+             (macroexpand-1 . "(macroexpand-1 '%s)")
+             (completion .
+                         "(let [ret (atom nil)]
+                            (lumo.repl/get-completions \"%s\" (fn [res] (reset! ret (map str res))))
+                             @ret)")))
+    (planck . ((load . "(load-file \"%s\")")
+               (doc . "(planck.repl/doc %s)")
+               (source . "(planck.repl/source %s)")
+               (arglists . "(planck.repl/get-arglists \"%s\")")
+               (apropos . "(doseq [var (sort (planck.repl/apropos \"%s\"))] (println (str var)))")
+               (ns-vars . "(planck.repl/dir %s)")
+               (set-ns . "(in-ns '%s)")
+               (macroexpand . "(macroexpand '%s)")
+               (macroexpand-1 . "(macroexpand-1 '%s)")))
+    (joker . ((load . "(load-file \"%s\")")
+              (doc . "(joker.repl/doc %s)")
+              (arglists .
+                        "(try
+                            (:arglists
+                             (joker.core/meta
+                              (joker.core/resolve
+                               (joker.core/read-string \"%s\"))))
+                            (catch Error _ nil))")
+              (set-ns . "(in-ns '%s)")
+              (macroexpand . "(macroexpand '%s)")
+              (macroexpand-1 . "(macroexpand-1 '%s)")))
+    (clojure . ((load . "(clojure.core/load-file \"%s\")")
+                (doc . "(clojure.repl/doc %s)")
+                (source . "(clojure.repl/source %s)")
+                (arglists .
+                          "(try
+                             (:arglists
+                              (clojure.core/meta
+                               (clojure.core/resolve
+                                (clojure.core/read-string \"%s\"))))
+                            (catch #?(:clj Throwable :cljr Exception) e nil))")
+                (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
+                (ns-vars . "(clojure.repl/dir %s)")
+                (set-ns . "(clojure.core/in-ns '%s)")
+                (macroexpand . "(clojure.core/macroexpand '%s)")
+                (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))))
 
-IMPLEMENTATION is a function from feature-symbol to format
-string.  For instance, (implementation 'doc) > (cljs.repl/doc
-\"%s\"). The full list of feature symbols is: load, doc, source,
-arglists, apropos, ns-vars, set-ns, macroexpand, macroexpand-1,
-and completion.
-
-RECOGNIZE is a namespace that, if present, will indicate that the
-currently connected repl is a repl of this type.
-
-DEFAULT-STARTUP is a command to start a repl of this type from
-the repl"
-  (puthash repl-type implementation inf-clojure-implementations)
-  (when recognize
-    (add-to-list 'inf-clojure-recognize-alist (cons repl-type recognize)))
-  (when default-startup
-    (add-to-list 'inf-clojure-startup-forms (cons repl-type default-startup))))
-
-(defun inf-clojure-cljs-features-dispatch (feature)
-  (case feature
-    ;; ((load) "(cljs.core/load-file \"%s\")")
-    ((doc) "(cljs.repl/doc %s)")
-    ((source) "(cljs.repl/source %s)")
-    ((arglists) "(try (->> '%s cljs.core/resolve cljs.core/meta :arglists) (catch :default _ nil))")
-    ((apropos) "(cljs.repl/apropos \"%s\")")
-    ((ns-vars) "(cljs.repl/dir %s)")
-    ((set-ns) "(in-ns '%s)")
-    ((macroexpand) "(cljs.core/macroexpand '%s)")
-    ((macroexpand-1) "(cljs.core/macroexpand-1 '%s)")
-    ;; ((completion) inf-clojure-completion-form-lumo)
-    ))
-
-(inf-clojure-register-implementation
- 'cljs  #'inf-clojure-cljs-features-dispatch "cljs.repl" "clojure -m cljs.main -r")
-
-(defun inf-clojure-lumo-features-dispatch (feature)
-  (case feature
-    ((load) "(clojure.core/load-file \"%s\")")
-    ((doc) "(lumo.repl/doc %s)")
-    ((source) "(lumo.repl/source %s)")
-    ((arglists)
-     "(let [old-value lumo.repl/*pprint-results*]
- (set! lumo.repl/*pprint-results* false)
- (js/setTimeout #(set! lumo.repl/*pprint-results* old-value) 0)
- (lumo.repl/get-arglists \"%s\"))")
-    ((apropos) "(lumo.repl/apropos \"%s\")")
-    ((ns-vars) "(lumo.repl/dir %s)")
-    ((set-ns) "(in-ns '%s)")
-    ((macroexpand) "(macroexpand-1 '%s)")
-    ((macroexpand-1) "(macroexpand-1 '%s)")
-    ((completion)
-     "(let [ret (atom nil)]
-  (lumo.repl/get-completions \"%s\" (fn [res] (reset! ret (map str res))))
-   @ret)")) )
-
-(inf-clojure-register-implementation
- 'lumo  #'inf-clojure-lumo-features-dispatch "lumo.repl" "lumo")
-
-(defun inf-clojure-planck-features-dispatch (feature)
-  (case feature
-    ((load) "(load-file \"%s\")")
-    ((doc) "(planck.repl/doc %s)")
-    ((source) "(planck.repl/source %s)")
-    ((arglists) "(planck.repl/get-arglists \"%s\")")
-    ((apropos) "(doseq [var (sort (planck.repl/apropos \"%s\"))] (println (str var)))")
-    ((ns-vars) "(planck.repl/dir %s)")
-    ((set-ns) "(in-ns '%s)")
-    ((macroexpand) "(macroexpand '%s)")
-    ((macroexpand-1) "(macroexpand-1 '%s)")
-    ;; ((completion) inf-clojure-completion-form-planck )
-    ))
-
-(inf-clojure-register-implementation
- 'planck  #'inf-clojure-planck-features-dispatch "planck.repl" "planck")
-
-(defun inf-clojure-joker-features-dispatch (feature)
-  (case feature
-    ((load) "(load-file \"%s\")")
-    ((doc) "(joker.repl/doc %s)")
-    ;; ((source) "")
-    ((arglists)
-     "(try
-     (:arglists
-      (joker.core/meta
-       (joker.core/resolve
-        (joker.core/read-string \"%s\"))))
-     (catch Error _ nil))")
-    ;; ((apropos) "")
-    ;; ((ns-vars) "")
-    ((set-ns) "(in-ns '%s)")
-    ((macroexpand) "(macroexpand '%s)")
-    ((macroexpand-1) "(macroexpand-1 '%s)")
-    ;; ((completion) "")
-    ))
-
-(inf-clojure-register-implementation
- 'joker  #'inf-clojure-joker-features-dispatch "joker.repl" "joker")
-
-(defun inf-clojure-clojure-features-dispatch (feature)
-  (case feature
-    ((load) "(clojure.core/load-file \"%s\")")
-    ((doc) "(clojure.repl/doc %s)")
-    ((source) "(clojure.repl/source %s)")
-    ((arglists)
-     "(try
- (:arglists
-  (clojure.core/meta
-   (clojure.core/resolve
-    (clojure.core/read-string \"%s\"))))
-(catch #?(:clj Throwable :cljr Exception) e nil))")
-    ((apropos) "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
-    ((ns-vars) "(clojure.repl/dir %s)")
-    ((set-ns) "(clojure.core/in-ns '%s)")
-    ((macroexpand) "(clojure.core/macroexpand '%s)")
-    ((macroexpand-1) "(clojure.core/macroexpand-1 '%s)")
-    ;; ((completion) nil)
-    ))
-
-(inf-clojure-register-implementation
- 'clojure  #'inf-clojure-clojure-features-dispatch "clojure.core.server" "clojure")
+(defun inf-clojure-get-feature (proc feature &optional no-error)
+  "Get FEATURE based on repl type for PROC."
+  (let* ((repl-type (or inf-clojure-repl-type
+                        (with-current-buffer (process-buffer proc)
+                          inf-clojure-repl-type)
+                        (error "Repl type is not known")))
+         (feature-form (alist-get feature (alist-get repl-type inf-clojure-repl-features))))
+    (cond (feature-form feature-form)
+          (no-error nil)
+          (t (error "%s not configured for %s" feature repl-type)))))
 
 (defun inf-clojure-proc (&optional no-error)
   "Return the current inferior Clojure process.
@@ -234,11 +191,11 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
   "Set the REPL type to one of the available implementations."
   (interactive)
   (let* ((proc (inf-clojure-proc))
-         (types (hash-table-keys inf-clojure-implementations))
+         (types (mapcar #'car inf-clojure-repl-features))
          (type-to-set (intern
                        (completing-read "Set repl type:"
                                         (sort (mapcar #'symbol-name types) #'string-lessp)))))
-    (setq-local inf-clojure-repl-type  type-to-set)
+    (setq-local inf-clojure-repl-type type-to-set)
     (with-current-buffer (process-buffer proc)
       (setq-local inf-clojure-repl-type  type-to-set))))
 
@@ -253,18 +210,6 @@ It requires a REPL PROC for inspecting the correct type."
         ;; set in the current buffer
         (setq-local inf-clojure-repl-type repl-type))
     inf-clojure-repl-type))
-
-(defun inf-clojure-get-feature (proc feature &optional no-error)
-  "Get FEATURE based on repl type for PROC."
-  (let* ((repl-type (or inf-clojure-repl-type
-                        (with-current-buffer (process-buffer proc)
-                          inf-clojure-repl-type)
-                        (error "Repl type is not known")))
-         (implementation (gethash repl-type inf-clojure-implementations))
-         (feature-form (and implementation (funcall implementation feature))))
-    (cond (feature-form feature-form)
-          (no-error nil)
-          (t (error "%s not configured for %s" feature repl-type)))))
 
 (defgroup inf-clojure nil
   "Run an external Clojure process (REPL) in an Emacs buffer."
