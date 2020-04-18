@@ -41,10 +41,10 @@ I really want something similar to ~(defprotocol Inf-clojure-REPL (doc ...)(sour
 ** TODO Nicer interface to create a command
 Right now everything is just a format string with a _single_ ~%s~ in it and that's called with ~(format feature-form e)~ where ~e~ is a symbol, or a form, or a whatever makes sense for that type of feature. This isn't super elegant although it does keep inf-clojure honest in that _all_ it does it format commands to ask a simple repl. But there could probably be a better way.
 
-** TODO Simpler way to define an implementation
+** DONE Simpler way to define an implementation
 This first pass is very mechanical and just rearranging so we can easily see which features are where. In the future we should look into just providing the repl namespace and seeing how far we can get with that. For instance, an API like ~(inf-clojure-register 'bb "bb.repl")~ and this would tell us where ~source~, ~doc~, ~apropos~ ...etc live. No reason to duplicate all of these.
 
-** TODO ability to update repl commands
+** DONE ability to update repl commands
    we had this feature originally but now they are all literals. This is almost entirely fine but one problem. It would be common to toss clojure completions on the class path and then add the completions form for clojure.
 
 This should come back but only in a sense: if you don't have this on the classpath its obviously unacceptable to throw errors every time the user hits tab. Do we need some state recording if this is on the classpath or not maybe?
@@ -78,3 +78,6 @@ inf-clojure and CIDER are fighting over the keymappings. I've been doing a bit o
     (remove-hook 'clojure-mode-hook #'cider-mode))
 #+END_SRC
 Seems a bit heavy handed but its working for me so far.
+
+** TODO is disabling color still required?
+   in the readme it mentions that color should be turned off. in my usage I haven't run into this problem at all. perhaps no longer true?
