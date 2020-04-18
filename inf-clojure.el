@@ -146,15 +146,40 @@
                 (macroexpand . "(clojure.core/macroexpand '%s)")
                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))))
 
+(defun inf-clojure--get-feature (repl-type feature no-error)
+  "Get FEATURE for REPL-TYPE from repl-features.
+If no-error is truthy don't error if feature is not present."
+  (let ((feature-form (alist-get feature (alist-get repl-type inf-clojure-repl-features))))
+    (cond (feature-form feature-form)
+          (no-error nil)
+          (t (error "%s not configured for %s" feature repl-type)))))
+
 (defun inf-clojure-get-feature (proc feature &optional no-error)
   "Get FEATURE based on repl type for PROC."
   (let* ((repl-type (or (with-current-buffer (process-buffer proc)
                           inf-clojure-repl-type)
-                        (error "Repl type is not known")))
-         (feature-form (alist-get feature (alist-get repl-type inf-clojure-repl-features))))
-    (cond (feature-form feature-form)
-          (no-error nil)
-          (t (error "%s not configured for %s" feature repl-type)))))
+                        (error "Repl type is not known"))))
+    (inf-clojure--get-feature repl-type feature no-error)))
+
+(defun inf-clojure--update-feature (repl-type feature form)
+  "Return a copy of the datastructure containing the repl features.
+Given a REPL-TYPE ('clojure, 'lumo, ...) and a FEATURE ('doc,
+'apropos, ...) and a FORM this will return a new datastructure
+that can be set as `inf-clojure-repl-features'."
+  (let ((original (alist-get repl-type inf-clojure-repl-features)))
+    (if original
+        (cons (cons repl-type (cons (cons feature form) (assoc-delete-all feature original)))
+              (assoc-delete-all repl-type inf-clojure-repl-features))
+      (error "Attempted to update %s form of unknown repl type %s"
+             (symbol-name feature)
+             (symbol-name repl-type)))))
+
+(defun inf-clojure-update-feature (repl-type feature form)
+  "Mutate the repl features to the new FORM.
+Given a REPL-TYPE ('clojure, 'lumo, ...) and a FEATURE ('doc,
+'apropos, ...) and a FORM this will set
+`inf-clojure-repl-features' with these new values."
+  (setq inf-clojure-repl-features (inf-clojure--update-feature repl-type feature form)))
 
 (defun inf-clojure-proc (&optional no-error)
   "Return the current inferior Clojure process.

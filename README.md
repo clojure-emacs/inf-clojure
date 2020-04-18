@@ -228,22 +228,46 @@ configurable.
 You can see all the configuration options available using the command
 `M-x customize-group RET inf-clojure`.
 
+The supported repl-features are in an alist called
+`inc-clojure-repl-features` and it has the following shape:
+
+```emacs-lisp
+'((cljs . ((doc . "(cljs.repl/doc %s)")
+           (source . "(cljs.repl/source %s)")
+           (arglists . "(try (->> '%s cljs.core/resolve cljs.core/meta :arglists) (catch :default _ nil))")
+           (apropos . "(cljs.repl/apropos \"%s\")")
+           (ns-vars . "(cljs.repl/dir %s)")
+           (set-ns . "(in-ns '%s)")
+           (macroexpand . "(cljs.core/macroexpand '%s)")
+           (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)"))))
+```
+
+If you want to add a new repl type, just `(add-to-list
+'inf-clojure-repl-features (cons new-repl-type '((doc
+. "(myrepl/doc-command %s") ...)))`
+
+If you want to update a specific form there is a function
+`inf-clojure-update-repl-feature` which can be used like so:
+
+```emacs-lisp
+(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
+```
+
 #### REPL Type
 
-An `inf-clojure` REPL can be of different types: Clojure, ClojureScript, Lumo
-and Planck are all potentially valid options.
+An `inf-clojure` REPL can be of different types: Clojure,
+ClojureScript, Lumo and Planck are all potentially valid options.
 
-At the moment, the default Clojure REPL, the Lumo REPL, the Planck REPL and the
-Joker REPL are supported (standard ClojureScript is lacking mostly because some
-features require to access the compiler state,
-[cljs-tooling](https://github.com/clojure-emacs/cljs-tooling) is a good
-candidate for enabling support).
+At the moment, the default Clojure REPL, the Lumo REPL, the Planck
+REPL and the Joker REPL are supported.
 
-What does it mean that a REPL type is supported - well it means that `inf-clojure`
-would use the proper code internally to power commands like definition lookup and friends.
-Those differ from REPL to REPL and can't be implemented in a REPL-independent way. At
-boot type `inf-clojure` tries to detect the type of the REPL that was started and uses
-this type to dispatch the proper code for the respective REPL type.
+What does it mean that a REPL type is supported - well it means that
+`inf-clojure` would use the proper code internally to power commands
+like definition lookup and friends.  Those differ from REPL to REPL
+and can't be implemented in a REPL-independent way. At startup
+`inf-clojure` tries to detect the type of the REPL that was started
+and uses this type to dispatch the proper code for the respective REPL
+type.
 
 By default `inf-clojure` would start a standard Clojure REPL using
 `lein` or `boot` but you can easily change this.  To boot some other REPL just use the

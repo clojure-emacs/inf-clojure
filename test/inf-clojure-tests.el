@@ -139,4 +139,14 @@
   (it "returns empty string when the command is empty"
      (expect (inf-clojure--sanitize-command "   ") :to-equal "")))
 
+(describe "inf-clojure--update-feature"
+  (it "updates new forms correctly"
+    (let ((inf-clojure-repl-features (inf-clojure--update-feature 'cljs 'doc "new doc")))
+      (expect (inf-clojure--get-feature 'cljs 'doc nil)
+              :to-equal "new doc")))
+  (describe "if the repl type is unknown"
+    (it "signals an error"
+      (expect (inf-clojure--update-feature 'not-found 'doc "new doc")
+              :to-throw))))
+
 ;;; inf-clojure-tests.el ends here
