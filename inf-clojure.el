@@ -76,11 +76,13 @@
                                       ;; cljs goes after the selfhosts
                                       (cljs . "cljs.repl")
                                       (joker . "joker.repl")
+                                      (babashka . "babashka.classpath")
                                       (clojure . "clojure.core.server")))
 (defvar inf-clojure-startup-forms '((clojure . "clojure")
                                     (cljs . "clojure -m cljs.main -r")
-                                    (planck . "planck")
-                                    (lumo . "lumo")
+                                    (planck . "planck -d")
+                                    (babashka . "bb")
+                                    (lumo . "lumo -d")
                                     (joker . "joker")))
 
 (defvar inf-clojure-repl-features
@@ -117,7 +119,8 @@
                (ns-vars . "(planck.repl/dir %s)")
                (set-ns . "(in-ns '%s)")
                (macroexpand . "(macroexpand '%s)")
-               (macroexpand-1 . "(macroexpand-1 '%s)")))
+               (macroexpand-1 . "(macroexpand-1 '%s)")
+               (completion . "(seq (js->clj (#'planck.repl/get-completions \"%s\")))")))
     (joker . ((load . "(load-file \"%s\")")
               (doc . "(joker.repl/doc %s)")
               (arglists .
@@ -130,6 +133,17 @@
               (set-ns . "(in-ns '%s)")
               (macroexpand . "(macroexpand '%s)")
               (macroexpand-1 . "(macroexpand-1 '%s)")))
+    (babashka . ((load . "(clojure.core/load-file \"%s\")")
+                 (doc . "(clojure.repl/doc %s)")
+                 (source . "(clojure.repl/source %s)")
+                 (arglists .
+                           "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists)
+                              (catch Throwable e nil))")
+                 (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
+                 (ns-vars . "(clojure.repl/dir %s)")
+                 (set-ns . "(clojure.core/in-ns '%s)")
+                 (macroexpand . "(clojure.core/macroexpand '%s)")
+                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))
     (clojure . ((load . "(clojure.core/load-file \"%s\")")
                 (doc . "(clojure.repl/doc %s)")
                 (source . "(clojure.repl/source %s)")
@@ -1292,6 +1306,7 @@ Return the number of nested sexp the point was over or after."
 
 (defun inf-clojure-eldoc ()
   "Backend function for eldoc to show argument list in the echo area."
+  ;; todo: this never gets unset once connected and is a lie
   (when (and (inf-clojure-connected-p)
              ;; don't clobber an error message in the minibuffer
              (not (member last-command '(next-error previous-error))))

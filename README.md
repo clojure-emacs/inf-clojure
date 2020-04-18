@@ -8,10 +8,21 @@
 This package provides basic interaction with a Clojure subprocess (REPL).
 It's based on ideas from the popular `inferior-lisp` package.
 
-`inf-clojure` has two components - a nice Clojure REPL with
-auto-completion and a minor mode (`inf-clojure-minor-mode`), which
-extends `clojure-mode` with commands to evaluate forms directly in the
-REPL.
+`inf-clojure` aims to expose the extensive self-documenting features
+of Clojure repls into an emacs package. Inf-clojure does not require
+middleware or special tooling.  Inf-clojure supports the following
+repls:
+
+- Clojure
+- ClojureScript
+- planck
+- lumo
+- joker
+- babashka
+
+`inf-clojure` has two components - a nice REPL buffer (`inf-clojure`)
+(`inf-clojure-minor-mode`), which extends `clojure-mode` with commands
+to evaluate forms directly in the REPL.
 
 `inf-clojure` provides a set of essential features for interactive
 Clojure(Script) development:
@@ -83,7 +94,7 @@ Add the following to your Emacs config to enable
 have overlapping functionality and keybindings and the result will be nothing
 short of havoc.**
 
-## Usage
+## Basic Usage
 
 Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure
 source file. You should get a prompt with the supported repl types and
@@ -94,10 +105,6 @@ and you can start interacting with it.
 If you've already started a socket repl, use `M-x inf-clojure-connect`
 and enter the host and port numbers.
 
-It is highly recommended to use a cons pair like `("localhost" . 5555)` to
-connect to a socket REPL, terminal REPLs are inherently hard to work with and
-support will be deprecated in the foreseeable future.
-
 Inf-clojure aims to be very simple and offer tooling that the repl
 itself exposes. A few commands are:
 
@@ -107,10 +114,76 @@ itself exposes. A few commands are:
 - show source `C-c C-s`
 - insert top level form into repl `C-c C-j d`
 
+For a list of all available commands in `inf-clojure-mode` (a.k.a. the
+REPL) and `inf-clojure-minor-mode` you can either invoke `C-h f RET
+inf-clojure-mode` and `C-h f RET inf-clojure-minor-mode` or simply
+browse their menus.
+
 Many `inf-clojure-minor-mode` commands by default act on the symbol at
 point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
+
+## Configuration options
+
+In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
+configurable.
+
+You can set custom values to `inf-clojure` variables on a
+per-project basis using [directory
+variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html)
+or by setting them in in your init file.
+
+You can see all the configuration options available using the command
+`M-x customize-group RET inf-clojure`.
+
+The supported repl-features are in an alist called
+`inc-clojure-repl-features` and it has the following shape:
+
+```emacs-lisp
+'((cljs . ((doc . "(cljs.repl/doc %s)")
+           (source . "(cljs.repl/source %s)")
+           (arglists . "(try (->> '%s cljs.core/resolve cljs.core/meta :arglists) (catch :default _ nil))")
+           (apropos . "(cljs.repl/apropos \"%s\")")
+           (ns-vars . "(cljs.repl/dir %s)")
+           (set-ns . "(in-ns '%s)")
+           (macroexpand . "(cljs.core/macroexpand '%s)")
+           (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)"))))
+```
+
+If you want to add a new repl type, just `(add-to-list
+'inf-clojure-repl-features (cons new-repl-type '((doc
+. "(myrepl/doc-command %s") ...)))` since the datastructure is just an
+alist of alists.
+
+If you want to update a specific form there is a function
+`inf-clojure-update-repl-feature` which can be used like so:
+
+```emacs-lisp
+(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
+```
+
+#### Caveats
+
+It is highly recommended to use a cons pair like `("localhost" . 5555)` to
+connect to a socket REPL, terminal REPLs are inherently hard to work with and
+support will be deprecated in the foreseeable future. If you use the
+same project often, make a dir-locals file with this information in `inf-clojure-custom-startup`.
+
+Note that if you decide _NOT_ to use the socket repl, it is highly recommended
+you disable output coloring and/or readline facilities: `inf-clojure` does not
+filter out ASCII escape characters at the moment and will not behave correctly.
+
+For leiningen, there are no command line switches and you need to add
+a custom [`project.clj`
+option](https://github.com/technomancy/leiningen/blob/master/sample.project.clj):
+
+```clojure
+...
+  :repl-options {:color false}
+...
+```
+
 
 #### Clojure Command Line Socket REPL
 
@@ -125,15 +198,8 @@ clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
 Then either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
 
 ```emacs-lisp
-((nil . ((inf-clojure-tools-deps-cmd . ("localhost" . 5555)))))
+((nil . ((inf-clojure-custom-startup . ("localhost" . 5555)))))
 ```
-
-or the following to your [Emacs init file][]:
-
-```emacs-lisp
-(setf inf-clojure-tools-deps-cmd '("localhost" . 5555)):
-```
-
 #### Leiningen Socket REPL
 
 For Leiningen, add the following option to your `~/.lein/profiles.clj` or your `project.clj`:
@@ -159,43 +225,6 @@ Lumo is decoupled from `inf-clojure-project-type` and therefore the command used
 For example if a `project.clj` is present in the project root folder, `inf-clojure-lein-cmd` will be used.
 
 After you launch `lumo ... -n 5555`, as customary, either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
-
-```emacs-lisp
-((nil . ((inf-clojure-lein-cmd . ("localhost" . 5555)))))
-```
-
-or the following to your [Emacs init file][]:
-
-```emacs-lisp
-(setf inf-clojure-lein-cmd '("localhost" . 5555))
-```
-
-Project detection can be completely skipped and the `generic` project type can be used instead:
-
-```emacs-lisp
-(setf inf-clojure-project-type . "generic")
-(setf inf-clojure-generic-cmd '("localhost" 5555))
-```
-
-#### Caveats
-
-Note that if you decide _NOT_ to use the socket repl, it is highly recommended
-you disable output coloring and/or readline facilities: `inf-clojure` does not
-filter out ASCII escape characters at the moment and will not behave correctly.
-
-You can disable coloring the following way for `boot`:
-
-```emacs-lisp
-((nil . ((inf-clojure-boot-cmd . "boot repl -C"))))
-```
-
-For leiningen, there are no command line switches and you need to add a custom [`project.clj` option](https://github.com/technomancy/leiningen/blob/master/sample.project.clj):
-
-```clojure
-...
-  :repl-options {:color false}
-...
-```
 
 #### Multiple Process Support
 
@@ -235,46 +264,11 @@ one process, this does the right thing.  If you run multiple
 processes, you might need to change `inf-clojure-buffer` to
 whichever process buffer you want to use.
 
-## Configuration options
-
-In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
-configurable.
-
-You can see all the configuration options available using the command
-`M-x customize-group RET inf-clojure`.
-
-The supported repl-features are in an alist called
-`inc-clojure-repl-features` and it has the following shape:
-
-```emacs-lisp
-'((cljs . ((doc . "(cljs.repl/doc %s)")
-           (source . "(cljs.repl/source %s)")
-           (arglists . "(try (->> '%s cljs.core/resolve cljs.core/meta :arglists) (catch :default _ nil))")
-           (apropos . "(cljs.repl/apropos \"%s\")")
-           (ns-vars . "(cljs.repl/dir %s)")
-           (set-ns . "(in-ns '%s)")
-           (macroexpand . "(cljs.core/macroexpand '%s)")
-           (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)"))))
-```
-
-If you want to add a new repl type, just `(add-to-list
-'inf-clojure-repl-features (cons new-repl-type '((doc
-. "(myrepl/doc-command %s") ...)))`
-
-If you want to update a specific form there is a function
-`inf-clojure-update-repl-feature` which can be used like so:
-
-```emacs-lisp
-(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
-```
-
 #### REPL Type
 
-An `inf-clojure` REPL can be of different types: Clojure,
-ClojureScript, Lumo and Planck are all potentially valid options.
-
-At the moment, the default Clojure REPL, the Lumo REPL, the Planck
-REPL and the Joker REPL are supported.
+An `inf-clojure` REPL has an associated type. The available types are
+`(mapcar 'car inf-clojure-repl-features) ->> (cljs lumo planck joker
+clojure babashka)`
 
 What does it mean that a REPL type is supported - well it means that
 `inf-clojure` would use the proper code internally to power commands
@@ -283,15 +277,6 @@ and can't be implemented in a REPL-independent way. At startup
 `inf-clojure` tries to detect the type of the REPL that was started
 and uses this type to dispatch the proper code for the respective REPL
 type.
-
-By default `inf-clojure` would start a standard Clojure REPL using
-`lein` or `boot` but you can easily change this.  To boot some other REPL just use the
-right launch command (or connect to the REPL via a socket).  For example, for
-Lumo just add the following in your `.dir-locals.el`:
-
-```emacs-lisp
-((nil . ((inf-clojure-boot-cmd . "lumo -d")))) ;; inf-clojure-lein-cmd if you are using Leiningen
-```
 
 #### ElDoc
 
@@ -315,30 +300,60 @@ You can leave it enabled, it just won't show anything in the echo area.
 
 #### Code Completion
 
-Code completion is particularly open to customization. Not only you can `setq`
-the customary `inf-clojure-completion-form`,
-`inf-clojure-completion-form-lumo`, `inf-clojure-completion-form-planck` and
-`inf-clojure-completion-form-joker` - the form to send to the REPL - but you
-can also use `inf-clojure-completions-fn` for specifying a function that given
-the REPL response should return elisp data compatible with
+Code completion is a tricky aspect if you are trying to be as close to
+a generic repl as possible. Planck and lumo repl implementations
+explicitly provide completion functions in their repl namespaces. For
+clojure, you will need to have a library on your classpath. If you are
+using lein, you already have
+[clojure-complete](https://github.com/ninjudd/clojure-complete). You
+could alternatively use `compliment {:mvn/version "0.3.10"}`.
+
+```emacs-lisp
+;; for clojure-complete
+(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
+
+;; or
+;; for compliment
+(inf-clojure-update-feature 'clojure 'completion "(compliment.core/completions \"%s\")")
+
+```
+
+If you give a form for the completion form, it is your responsibility
+to ensure that this namespace is on the classpath and required. If
+using lein, this is done for you with clojure-complete. If adding
+compliment, the following sample deps.edn can conveniently add the dep
+to your program.
+
+Sample deps.edn:
+
+```clojure
+{:aliases {:compliment {:extra-deps {compliment {:mvn/version "0.3.10"}}}}}
+```
+
+
+Use the startup command: `clojure -A:compliment`. Then require the ns
+once so that the completion machinery will work: `(require
+'compliment.core)`. Now tab completion should work.
+
+For more advanced customization, code completion is particularly open
+to customization. Not only you can `setq` the customary
+`inf-clojure-completion-form`, `inf-clojure-completion-form-lumo`,
+`inf-clojure-completion-form-planck` and
+`inf-clojure-completion-form-joker` - the form to send to the REPL -
+but you can also use `inf-clojure-completions-fn` for specifying a
+function that given the REPL response should return elisp data
+compatible with
 [`completion-at-point-functions`](https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html).
-For more info run `M-x describe-variable RET inf-clojure-completions-fn`.
-Another option is to have a look at
-[how cider does it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765dc9bff5d6/cider-interaction.el#L595).
+For more info run `M-x describe-variable RET
+inf-clojure-completions-fn`.  Another option is to have a look at [how
+cider does
+it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765dc9bff5d6/cider-interaction.el#L595).
 
 #### Lumo Setup
 
 For an optimal Lumo experience the `-d` needs to be passed to Lumo
 when launched from the command line. This disable `readline` support
 in order to play nicely with emacs.
-
-For example, you can use the following command (assuming `cp` contains
-the classpath) in your `.dir-locals.el`:
-
-```emacs-lisp
-((nil . (eval . (setq inf-clojure-generic-cmd (concat "lumo -d -c "
-                                                      (f-read (concat (inf-clojure-project-root) "cp")))))))
-```
 
 ## Troubleshooting
 
