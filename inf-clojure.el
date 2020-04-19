@@ -78,7 +78,10 @@
                                       (joker . "joker.repl")
                                       (babashka . "babashka.classpath")
                                       (clojure . "clojure.core.server")))
-(defvar inf-clojure-startup-forms '((clojure . "clojure")
+
+(defvar inf-clojure-startup-forms '((lein . "lein repl")
+                                    (boot . "boot repl")
+                                    (clojure . "clojure")
                                     (cljs . "clojure -m cljs.main -r")
                                     (planck . "planck -d")
                                     (babashka . "bb")
