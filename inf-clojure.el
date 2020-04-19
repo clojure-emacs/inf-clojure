@@ -175,7 +175,7 @@ If no-error is truthy don't error if feature is not present."
   "Get FEATURE based on repl type for PROC."
   (let* ((repl-type (or (with-current-buffer (process-buffer proc)
                           inf-clojure-repl-type)
-                        (error "Repl type is not known"))))
+                        (error "REPL type is not known"))))
     (inf-clojure--get-feature repl-type feature no-error)))
 
 (defun inf-clojure--update-feature (repl-type feature form)
@@ -187,7 +187,7 @@ that can be set as `inf-clojure-repl-features'."
     (if original
         (cons (cons repl-type (cons (cons feature form) (assoc-delete-all feature original)))
               (assoc-delete-all repl-type inf-clojure-repl-features))
-      (error "Attempted to update %s form of unknown repl type %s"
+      (error "Attempted to update %s form of unknown REPL type %s"
              (symbol-name feature)
              (symbol-name repl-type)))))
 
@@ -234,7 +234,7 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
   (let* ((proc (inf-clojure-proc))
          (types (mapcar #'car inf-clojure-repl-features))
          (type-to-set (intern
-                       (completing-read "Set repl type:"
+                       (completing-read "Set REPL type:"
                                         (sort (mapcar #'symbol-name types) #'string-lessp)))))
     (with-current-buffer (process-buffer proc)
       (setq-local inf-clojure-repl-type  type-to-set))))
@@ -689,7 +689,7 @@ from `inf-clojure-mode-hook' (after the `comint-mode-hook' is
 run).
 \(Type \\[describe-mode] in the process buffer for a list of commands.)"
   (interactive (list (or inf-clojure-custom-startup
-                         (completing-read "Clojure startup command: "
+                         (completing-read "Select Clojure REPL startup command: "
                                           (mapcar #'cdr inf-clojure-startup-forms)
                                           nil
                                           'confirm-after-completion))))
