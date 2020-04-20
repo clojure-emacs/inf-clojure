@@ -8,21 +8,20 @@
 This package provides basic interaction with a Clojure subprocess (REPL).
 It's based on ideas from the popular `inferior-lisp` package.
 
-`inf-clojure` aims to expose the extensive self-documenting features
-of Clojure repls into an emacs package. Inf-clojure does not require
-middleware or special tooling.  Inf-clojure supports the following
-repls:
-
-- Clojure
-- ClojureScript
-- planck
-- lumo
-- joker
-- babashka
-
 `inf-clojure` has two components - a nice REPL buffer (`inf-clojure`)
 (`inf-clojure-minor-mode`), which extends `clojure-mode` with commands
 to evaluate forms directly in the REPL.
+
+`inf-clojure` aims to expose the extensive self-documenting features of Clojure
+REPLs via an Emacs package. `inf-clojure` is extremely simple and does not require special tooling.
+It supports the following REPLs:
+
+- Clojure
+- ClojureScript
+- [Planck](http://planck-repl.org/)
+- [Lumo](https://github.com/anmonteiro/lumo)
+- [Joker](https://joker-lang.org/)
+- [babashka](https://github.com/borkdude/babashka)
 
 `inf-clojure` provides a set of essential features for interactive
 Clojure(Script) development:
@@ -37,12 +36,6 @@ Clojure(Script) development:
 * Macroexpansion
 * Require `:reload`/`:reload-all`
 * Support connecting to socket REPLs
-
-In addition to the standard Clojure and ClojureScript REPLs, `inf-clojure` supports also:
-
-* [Lumo](https://github.com/anmonteiro/lumo)
-* [Planck](http://planck-repl.org/)
-* [Joker](https://joker-lang.org/)
 
 For a more powerful/full-featured solution see [CIDER](https://github.com/clojure-emacs/cider).
 
@@ -97,15 +90,15 @@ short of havoc.**
 ## Basic Usage
 
 Just invoke `M-x inf-clojure` or press `C-c C-z` within a Clojure
-source file. You should get a prompt with the supported repl types and
+source file. You should get a prompt with the supported REPL types and
 common startup forms. You can select one of these or type in your own
 custom startup. This will start a REPL process for the current project
 and you can start interacting with it.
 
-If you've already started a socket repl, use `M-x inf-clojure-connect`
-and enter the host and port numbers.
+If you've already started a socket REPL server, use `M-x inf-clojure-connect`
+and enter its host and port numbers.
 
-Inf-clojure aims to be very simple and offer tooling that the repl
+Inf-clojure aims to be very simple and offer tooling that the REPL
 itself exposes. A few commands are:
 
 - eval last sexp `C-x C-e`
