@@ -146,7 +146,7 @@ The supported REPL-features are in an alist called
 
 If you want to add a new REPL type, just `(add-to-list
 'inf-clojure-repl-features (cons new-repl-type '((doc
-. "(myrepl/doc-command %s") ...)))` since the datastructure is just an
+. "(myrepl/doc-command %s") ...)))` since the data structure is just an
 alist of alists.
 
 If you want to update a specific form there is a function
