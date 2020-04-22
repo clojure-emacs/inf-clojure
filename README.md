@@ -12,6 +12,23 @@ It's based on ideas from the popular `inferior-lisp` package.
 (`inf-clojure-minor-mode`), which extends `clojure-mode` with commands
 to evaluate forms directly in the REPL.
 
+**This documentation tracks the `master` branch of `inf-clojure`. Some of
+the features and settings discussed here might not be available in
+older releases (including the current stable release). Please, consult
+the relevant git tag (e.g. 2.2.0) if you need documentation for a
+specific `inf-clojure` release.**
+***
+
+- [Overview](#overview)
+- [Rationale](#rationale)
+- [Installation](#installation)
+- [Basic Usage](#basic-usage)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
+
+## Overview
+
 `inf-clojure` aims to expose the extensive self-documenting features of Clojure
 REPLs via an Emacs package. `inf-clojure` is extremely simple and does not require special tooling.
 It supports the following REPLs:
@@ -117,7 +134,9 @@ point. You can, however, change this behaviour by invoking such
 commands with a prefix argument. For instance: `C-u C-c C-v` will ask
 for the symbol you want to show the docstring for.
 
-## Configuration options
+## Configuration
+
+**Note:** The configuration options were changed massively in `inf-clojure` 3.0.
 
 In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
 configurable.
