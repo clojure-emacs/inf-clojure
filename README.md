@@ -105,7 +105,7 @@ itself exposes. A few commands are:
 - show arglists for function `C-c C-a`
 - show var documentation `C-c C-v`
 - show source `C-c C-s`
-- insert top level form into repl `C-c C-j d`
+- insert top level form into REPL `C-c C-j d`
 
 For a list of all available commands in `inf-clojure-mode` (a.k.a. the
 REPL) and `inf-clojure-minor-mode` you can either invoke `C-h f RET
@@ -130,7 +130,7 @@ or by setting them in in your init file.
 You can see all the configuration options available using the command
 `M-x customize-group RET inf-clojure`.
 
-The supported repl-features are in an alist called
+The supported REPL-features are in an alist called
 `inc-clojure-repl-features` and it has the following shape:
 
 ```emacs-lisp
@@ -144,7 +144,7 @@ The supported repl-features are in an alist called
            (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)"))))
 ```
 
-If you want to add a new repl type, just `(add-to-list
+If you want to add a new REPL type, just `(add-to-list
 'inf-clojure-repl-features (cons new-repl-type '((doc
 . "(myrepl/doc-command %s") ...)))` since the datastructure is just an
 alist of alists.
@@ -163,7 +163,7 @@ connect to a socket REPL, terminal REPLs are inherently hard to work with and
 support will be deprecated in the foreseeable future. If you use the
 same project often, make a dir-locals file with this information in `inf-clojure-custom-startup`.
 
-Note that if you decide _NOT_ to use the socket repl, it is highly recommended
+Note that if you decide _NOT_ to use the socket REPL, it is highly recommended
 you disable output coloring and/or readline facilities: `inf-clojure` does not
 filter out ASCII escape characters at the moment and will not behave correctly.
 
@@ -294,8 +294,8 @@ You can leave it enabled, it just won't show anything in the echo area.
 #### Code Completion
 
 Code completion is a tricky aspect if you are trying to be as close to
-a generic repl as possible. Planck and lumo repl implementations
-explicitly provide completion functions in their repl namespaces. For
+a generic REPL as possible. Planck and lumo REPL implementations
+explicitly provide completion functions in their REPL namespaces. For
 clojure, you will need to have a library on your classpath. If you are
 using lein, you already have
 [clojure-complete](https://github.com/ninjudd/clojure-complete). You
@@ -353,13 +353,13 @@ in order to play nicely with emacs.
 ### Things seem broken
 
 Inf-clojure is intentionally quite simple and just sends commands to a
-repl on your behalf to provide features. In order to do this
-inf-clojure largely needs to know the repl type so it can format the
+REPL on your behalf to provide features. In order to do this
+inf-clojure largely needs to know the REPL type so it can format the
 correct calls. Most end up in `(lumo.repl/doc [symbol])` or
-`(cljs.repl/doc ...)` so its important that the repl type is set
-correctly. This repl type exists in the process buffer (repl) and the
+`(cljs.repl/doc ...)` so its important that the REPL type is set
+correctly. This REPL type exists in the process buffer (REPL) and the
 source buffers as a cache. If you have problems, run `m-x
-inf-clojure-set-repl-type` from the source buffer to set the repl type
+inf-clojure-set-repl-type` from the source buffer to set the REPL type
 in both buffers. To see how simple inf-clojure is, look at
 `inf-clojure-repl-features` to see largely how things are laid out.
 
