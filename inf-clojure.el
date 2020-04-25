@@ -595,21 +595,6 @@ to continue it."
     (inf-clojure-chomp (concat "\n" (inf-clojure-remove-subprompts str))))
    (t str)))
 
-(defvar inf-clojure-project-root-files
-  '("project.clj" "build.boot" "deps.edn" "shadow-cljs.edn")
-  "A list of files that can be considered project markers.")
-
-(defun inf-clojure-project-root ()
-  "Retrieve the root directory of a project if available.
-
-Fallback to `default-directory.' if not within a project."
-  (or (car (remove nil
-                   (mapcar (lambda
-                             (file)
-                             (locate-dominating-file default-directory file))
-                           inf-clojure-project-root-files)))
-      default-directory))
-
 (defun inf-clojure-clear-repl-buffer ()
   "Clear the REPL buffer."
   (interactive)
@@ -682,7 +667,7 @@ process buffer for a list of commands.)"
                                           'confirm-after-completion))))
   (if (not (comint-check-proc "*inf-clojure*"))
       ;; run the new process in the project's root when in a project folder
-      (let ((default-directory (inf-clojure-project-root))
+      (let ((default-directory (clojure-project-dir))
             (cmdlist (if (consp cmd)
                          (list cmd)
                        (split-string cmd)))
@@ -957,7 +942,7 @@ STRING if present."
                             (prin1-to-string (substring-no-properties string))))
                   nil
                   (expand-file-name inf-clojure--log-file-name
-                                    (inf-clojure-project-root))
+                                    (clojure-project-dir))
                   'append
                   'no-annoying-write-file-in-minibuffer)))
 

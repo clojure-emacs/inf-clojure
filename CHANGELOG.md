@@ -4,6 +4,7 @@
 
 ### New features
 
+* [#173](https://github.com/clojure-emacs/inf-clojure/issues/173): Use clojure-mode project detection instead of duplicate version in inf-clojure
 * [#174](https://github.com/clojure-emacs/inf-clojure/pull/174): Set REPL type from startup form or prompt at startup, introduce `inf-clojure-custom-repl-type` defcustom.
 * [#174](https://github.com/clojure-emacs/inf-clojure/pull/174): Invoke `inf-clojure` with a prefix argument to prevent using `inf-clojure-custom-startup` and `inf-clojure-custom-repl-type.
 
