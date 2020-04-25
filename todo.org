@@ -1,6 +1,6 @@
 * Core
 
-** TODO set repl type on connection not first command
+** DONE set repl type on connection not first command
 For some reason ~inf-clojure--set-repl-type~ is called in:
 1. inf-clojure--send-string
 2. inf-clojure-reload-form
@@ -10,13 +10,6 @@ Seems better to do this on the two different connection methods and then be done
 
 ** DONE do we need repl type in both source buffer and connection?
    these can get out of sync and lead to confusing errors when closing a repl and opening a new one. It seems like we keep the repl-type in the source buffer to prevent a single ~(with-current-buffer (process-buffer proc) inf-clojure-repl-type)~
-
-** TODO nice startup
-There's some project detection but that's becoming less and less useful as time goes on. Shadow, lein, deps.edn can all easily be mixed in the same project. And then lumo, planck, or bb scripts could live side by side. Rather than trying to guess the project type, I think i'd like to mimic geiser's style of handling multiple scheme backends. Perhaps ~m-x inf-clojure-run-planck~ and similar could help out.
-
-Some considerations:
-- is this path aware? IE, don't show an option to run planck, lumo, etc, if they aren't visible or installed?
-- should it have a rebuild function so that user registered implementations can show up in the ~m-x~ menu as well?
 
 ** DONE Better dispatch for the implementations
 Right now the functions are kinda clunky cond statements:
@@ -65,6 +58,9 @@ The source primitive is quite nice but we most likely need a way to navigate to 
 
 ** TODO PREPL
 Be nice to implement this now that we have parseedn in elisp to understand edn.
+
+** DONE inhibit custom repl-type and startup form
+its nice to have these in dir-locals to just start up. but if you normally have ~clojure -m cljs.main -r~ as the startup command but you want to crank up a clj repl there's no way without removing those dir locals.
 * Nice-to-haves
 ** TODO Put repl type in modeline
 Rather than just ~*inf-clojure*~ we could put the repl type. Make it easy to follow and makes it easy to see when it gets it wrong.
@@ -81,3 +77,9 @@ Seems a bit heavy handed but its working for me so far.
 
 ** TODO is disabling color still required?
    in the readme it mentions that color should be turned off. in my usage I haven't run into this problem at all. perhaps no longer true?
+** TODO nice startup
+There's some project detection but that's becoming less and less useful as time goes on. Shadow, lein, deps.edn can all easily be mixed in the same project. And then lumo, planck, or bb scripts could live side by side. Rather than trying to guess the project type, I think i'd like to mimic geiser's style of handling multiple scheme backends. Perhaps ~m-x inf-clojure-run-planck~ and similar could help out.
+
+Some considerations:
+- is this path aware? IE, don't show an option to run planck, lumo, etc, if they aren't visible or installed?
+- should it have a rebuild function so that user registered implementations can show up in the ~m-x~ menu as well?

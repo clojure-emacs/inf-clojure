@@ -136,6 +136,27 @@ for the symbol you want to show the docstring for.
 
 ## Configuration
 
+## Most Common Configuration
+
+Most likely you will want to set the startup command and the repl
+type. This is most easily set with the follow dir-locals
+
+```emacs-lisp
+((nil
+  (inf-clojure-custom-startup . "clojure -A:compliment")
+  (inf-clojure-custom-repl-type . clojure)))
+```
+
+There are two important commands here:
+1. `inf-clojure-custom-startup`: Which startup command to use so
+   inf-clojure can run the inferior process and
+2. `inf-clojure-custom-repl-type`: Which repl type it is so
+   inf-clojure knows how to format commands to the repl
+
+If these are set and you wish to prevent inf-clojure from using them,
+use a prefix arg when invoking `inf-clojure`.
+
+### All Configuration
 **Note:** The configuration options were changed massively in `inf-clojure` 3.0.
 
 In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
