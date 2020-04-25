@@ -71,14 +71,6 @@
 (require 'subr-x)
 (require 'seq)
 
-(defvar inf-clojure-recognize-alist '((lumo . "lumo.repl")
-                                      (planck . "planck.repl")
-                                      ;; cljs goes after the selfhosts
-                                      (cljs . "cljs.repl")
-                                      (joker . "joker.repl")
-                                      (babashka . "babashka.classpath")
-                                      (clojure . "clojure.core.server")))
-
 (defvar inf-clojure-startup-forms '((lein . "lein repl")
                                     (boot . "boot repl")
                                     (clojure . "clojure")
@@ -217,37 +209,13 @@ either `setq-local` or an entry in `.dir-locals.el`." )
   "Global lock for protecting against proc filter race conditions.
 See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filter.html")
 
-(defun inf-clojure--detect-repl-type (proc)
-  "Identifies the current REPL type for PROC."
-  (when (not inf-clojure--repl-type-lock)
-    (let ((inf-clojure--repl-type-lock t))
-      (or (seq-some (lambda (r)
-                      (when (inf-clojure--some-response-p
-                             proc (format "(find-ns '%s)" (cdr r)))
-                        (car r)))
-                    inf-clojure-recognize-alist)
-          'clojure))))
-
-(defun inf-clojure-set-repl-type ()
+(defun inf-clojure--prompt-repl-type ()
   "Set the REPL type to one of the available implementations."
   (interactive)
-  (let* ((proc (inf-clojure-proc))
-         (types (mapcar #'car inf-clojure-repl-features))
-         (type-to-set (intern
-                       (completing-read "Set REPL type:"
-                                        (sort (mapcar #'symbol-name types) #'string-lessp)))))
-    (with-current-buffer (process-buffer proc)
-      (setq-local inf-clojure-repl-type  type-to-set))))
-
-(defun inf-clojure--set-repl-type (proc)
-  "Set the REPL type if has not already been set.
-It requires a REPL PROC for inspecting the correct type."
-  ;; todo: don't like this happening so frequently
-  (with-current-buffer (process-buffer proc)
-    (if (not inf-clojure-repl-type)
-        (let ((repl-type (inf-clojure--detect-repl-type proc)))
-          (setq-local inf-clojure-repl-type repl-type))
-      inf-clojure-repl-type)))
+  (let ((types (mapcar #'car inf-clojure-repl-features)))
+    (intern
+     (completing-read "Set REPL type:"
+                      (sort (mapcar #'symbol-name types) #'string-lessp)))))
 
 (defgroup inf-clojure nil
   "Run an external Clojure process (REPL) in an Emacs buffer."
@@ -390,6 +358,19 @@ Can be a cons pair of (host . port) where host is a string and
 port is an integer, or a string to startup an interpreter like
 \"planck\".")
 
+(defcustom inf-clojure-custom-repl-type
+  nil
+  "REPL type to use for inf-clojure process buffer.
+Should be a symbol that is a key in `inf-clojure-repl-features'."
+  :package-version '(inf-clojure . "3.0.0")
+  :type '(choice (const :tag "clojure" clojure)
+                 (const :tag "cljs" cljs)
+                 (const :tag "lumo" lumo)
+                 (const :tag "planck" planck)
+                 (const :tag "joker" joker)
+                 (const :tag "babashka" babashka)
+                 (const :tag "determine at startup" nil)))
+
 (defun inf-clojure--whole-comment-line-p (string)
   "Return non-nil iff STRING is a whole line semicolon comment."
   (string-match-p "^\s*;" string))
@@ -424,7 +405,6 @@ always be preferred over `comint-send-string`.  It delegates to
 `comint-simple-send` so it always appends a newline at the end of
 the string for evaluation.  Refer to `comint-simple-send` for
 customizations."
-  (inf-clojure--set-repl-type proc)
   (let ((sanitized (inf-clojure--sanitize-command string)))
     (inf-clojure--log-string sanitized "----CMD->")
     (comint-send-string proc sanitized)))
@@ -449,7 +429,6 @@ Clojure to load that file."
   "Return the form to query the Inf-Clojure PROC for reloading a namespace.
 If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-reload-form` variant."
-  (inf-clojure--set-repl-type proc)
   inf-clojure-reload-form)
 
 (defcustom inf-clojure-reload-all-form "(require '%s :reload-all)"
@@ -468,7 +447,6 @@ Clojure to load that file."
   "Return the form to query the Inf-Clojure PROC for :reload-all of a namespace.
 If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-reload-all-form` variant."
-  (inf-clojure--set-repl-type proc)
   inf-clojure-reload-all-form)
 
 (defcustom inf-clojure-prompt "^[^=> \n]+=> *"
@@ -681,14 +659,23 @@ to suppress the usage of the target buffer discovery logic."
 ;;;###autoload
 (defun inf-clojure (cmd)
   "Run an inferior Clojure process, input and output via buffer `*inf-clojure*'.
-If there is a process already running in `*inf-clojure*', just switch
-to that buffer.
-With argument, allows you to edit the CMD used to launch
-it (default is value of `inf-clojure-*-cmd').  Runs the hooks
-from `inf-clojure-mode-hook' (after the `comint-mode-hook' is
-run).
-\(Type \\[describe-mode] in the process buffer for a list of commands.)"
-  (interactive (list (or inf-clojure-custom-startup
+If there is a process already running in `*inf-clojure*', just
+switch to that buffer.
+
+CMD is a string which serves as the startup command or a cons of
+host and port.
+
+ Prompts user for repl startup command and repl type if not
+inferrable from startup command. Uses
+`inf-clojure-custom-repl-type' and `inf-clojure-custom-startup'
+if those are set. Use a prefix to prevent using these when they
+are set.
+
+ Runs the hooks from `inf-clojure-mode-hook' (after the
+`comint-mode-hook' is run).  \(Type \\[describe-mode] in the
+process buffer for a list of commands.)"
+  (interactive (list (or (unless current-prefix-arg
+                           inf-clojure-custom-startup)
                          (completing-read "Select Clojure REPL startup command: "
                                           (mapcar #'cdr inf-clojure-startup-forms)
                                           nil
@@ -698,11 +685,16 @@ run).
       (let ((default-directory (inf-clojure-project-root))
             (cmdlist (if (consp cmd)
                          (list cmd)
-                       (split-string cmd))))
+                       (split-string cmd)))
+            (repl-type (or (unless prefix-arg
+                             inf-clojure-custom-repl-type)
+                           (car (rassoc cmd inf-clojure-startup-forms))
+                           (inf-clojure--prompt-repl-type))))
         (message "Starting Clojure REPL via `%s'..." cmd)
         (with-current-buffer (apply #'make-comint
                                     "inf-clojure" (car cmdlist) nil (cdr cmdlist))
           (inf-clojure-mode)
+          (setq-local inf-clojure-repl-type repl-type)
           (hack-dir-local-variables-non-file-buffer))))
   (setq inf-clojure-buffer "*inf-clojure*")
   (if inf-clojure-repl-use-same-window
