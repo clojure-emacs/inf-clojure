@@ -151,8 +151,10 @@ You can see all the configuration options available using the command
 
 ### Startup
 
-Most likely you will want to set the startup command and the repl
-type. This is most easily set with the following `dir-locals.el`:
+While `inf-clojure` is capable of starting many common REPLs out of the box it's
+fairly likely you will want to set some custom REPL startup command
+(e.g. because you need to include some `tools.deps` profile) and the REPL type
+that goes with it. This is most easily achieved with the following `dir-locals.el`:
 
 ```emacs-lisp
 ((nil
@@ -219,7 +221,6 @@ option](https://github.com/technomancy/leiningen/blob/master/sample.project.clj)
   :repl-options {:color false}
 ...
 ```
-
 
 #### Clojure Command Line Socket REPL
 
