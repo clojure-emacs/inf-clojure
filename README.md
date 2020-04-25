@@ -136,27 +136,6 @@ for the symbol you want to show the docstring for.
 
 ## Configuration
 
-## Most Common Configuration
-
-Most likely you will want to set the startup command and the repl
-type. This is most easily set with the follow dir-locals
-
-```emacs-lisp
-((nil
-  (inf-clojure-custom-startup . "clojure -A:compliment")
-  (inf-clojure-custom-repl-type . clojure)))
-```
-
-There are two important commands here:
-1. `inf-clojure-custom-startup`: Which startup command to use so
-   inf-clojure can run the inferior process and
-2. `inf-clojure-custom-repl-type`: Which repl type it is so
-   inf-clojure knows how to format commands to the repl
-
-If these are set and you wish to prevent inf-clojure from using them,
-use a prefix arg when invoking `inf-clojure`.
-
-### All Configuration
 **Note:** The configuration options were changed massively in `inf-clojure` 3.0.
 
 In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
@@ -169,6 +148,30 @@ or by setting them in in your init file.
 
 You can see all the configuration options available using the command
 `M-x customize-group RET inf-clojure`.
+
+### Startup
+
+Most likely you will want to set the startup command and the repl
+type. This is most easily set with the following `dir-locals.el`:
+
+```emacs-lisp
+((nil
+  (inf-clojure-custom-startup . "clojure -A:compliment")
+  (inf-clojure-custom-repl-type . clojure)))
+```
+
+**Note:** This file has to be in the directory in which you're invoking `inf-clojure`.
+
+There are two important configuration variables here:
+
+1. `inf-clojure-custom-startup`: Which startup command to use so
+   inf-clojure can run the inferior Clojure process (REPL).
+2. `inf-clojure-custom-repl-type`: The type of the REPL started by the above command (e.g. `lumo`).
+
+If these are set and you wish to prevent inf-clojure from using them,
+use a prefix arg when invoking `inf-clojure` (`C-u M-x inf-clojure`).
+
+### REPL Features
 
 The supported REPL-features are in an alist called
 `inc-clojure-repl-features` and it has the following shape:
