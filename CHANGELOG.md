@@ -8,6 +8,10 @@
 * [#174](https://github.com/clojure-emacs/inf-clojure/pull/174): Set REPL type from startup form or prompt at startup, introduce `inf-clojure-custom-repl-type` defcustom.
 * [#174](https://github.com/clojure-emacs/inf-clojure/pull/174): Invoke `inf-clojure` with a prefix argument to prevent using `inf-clojure-custom-startup` and `inf-clojure-custom-repl-type.
 
+### Bugs fixed
+
+* [#178](https://github.com/clojure-emacs/inf-clojure/issues/178): Ensure a valid directory is used when starting process.
+
 ## 2.2.0 (2020-04-15)
 
 ### New features
