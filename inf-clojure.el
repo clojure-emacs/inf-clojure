@@ -667,7 +667,7 @@ process buffer for a list of commands.)"
                                           'confirm-after-completion))))
   (if (not (comint-check-proc "*inf-clojure*"))
       ;; run the new process in the project's root when in a project folder
-      (let ((default-directory (clojure-project-dir))
+      (let ((default-directory (or (clojure-project-dir) default-directory))
             (cmdlist (if (consp cmd)
                          (list cmd)
                        (split-string cmd)))
