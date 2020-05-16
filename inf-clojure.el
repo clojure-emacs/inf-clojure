@@ -598,8 +598,11 @@ to continue it."
 (defun inf-clojure-clear-repl-buffer ()
   "Clear the REPL buffer."
   (interactive)
-  (let ((comint-buffer-maximum-size 0))
-    (comint-truncate-buffer)))
+  (with-current-buffer (if (derived-mode-p 'inf-clojure-mode)
+                           (current-buffer)
+                         inf-clojure-buffer)
+    (let ((comint-buffer-maximum-size 0))
+      (comint-truncate-buffer))))
 
 (defun inf-clojure-switch-to-repl (eob-p)
   "Switch to the inferior Clojure process buffer.
