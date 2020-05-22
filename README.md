@@ -8,9 +8,9 @@
 This package provides basic interaction with a Clojure subprocess (REPL).
 It's based on ideas from the popular `inferior-lisp` package.
 
-`inf-clojure` has two components - a nice REPL buffer (`inf-clojure`)
-(`inf-clojure-minor-mode`), which extends `clojure-mode` with commands
-to evaluate forms directly in the REPL.
+`inf-clojure` has two components - a nice REPL buffer (`inf-clojure`) and a REPL
+interaction minor mode (`inf-clojure-minor-mode`), which extends `clojure-mode`
+with commands to evaluate forms directly in the REPL.
 
 **This documentation tracks the `master` branch of `inf-clojure`. Some of
 the features and settings discussed here might not be available in
