@@ -279,11 +279,11 @@ one Clojure process around. This is determined by the global variable `inf-cloju
 Suppose you have three inferior Clojures running:
 
 ```
-    Buffer              Process
-    ------              -------
-    foo                 inf-clojure
-    bar                 inf-clojure<2>
-    *inf-clojure*       inf-clojure<3>
+Buffer              Process
+------              -------
+foo                 inf-clojure
+bar                 inf-clojure<2>
+*inf-clojure*       inf-clojure<3>
 ```
 
 If you do a `inf-clojure-eval-defun` command on some Clojure source code,
