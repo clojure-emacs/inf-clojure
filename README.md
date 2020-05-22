@@ -303,17 +303,21 @@ whichever process buffer you want to use.
 
 #### REPL Type
 
-An `inf-clojure` REPL has an associated type. The available types are
-`(mapcar 'car inf-clojure-repl-features) ->> (cljs lumo planck joker
-clojure babashka)`
+An `inf-clojure` REPL has an associated type. The available types can be
+obtained from `inf-clojure-repl-features`:
 
-What does it mean that a REPL type is supported - well it means that
-`inf-clojure` would use the proper code internally to power commands
-like definition lookup and friends.  Those differ from REPL to REPL
-and can't be implemented in a REPL-independent way. At startup
-`inf-clojure` tries to detect the type of the REPL that was started
-and uses this type to dispatch the proper code for the respective REPL
-type.
+```emacs-lisp
+(mapcar 'car inf-clojure-repl-features)
+
+;; => (cljs lumo planck joker clojure babashka)
+```
+
+What does it mean that a REPL type is supported? Well, it means that
+`inf-clojure` would use the proper Clojure(Script) code internally to power
+commands like definition lookup and friends.  Those differ from REPL to REPL and
+can't be implemented in a REPL-independent way. The REPL type is inferred on
+startup when using the `inf-clojure` command or is specified manually when using
+`inf-clojure-connect`.
 
 #### ElDoc
 
