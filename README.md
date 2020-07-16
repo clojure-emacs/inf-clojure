@@ -176,7 +176,7 @@ use a prefix arg when invoking `inf-clojure` (`C-u M-x inf-clojure`).
 ### REPL Features
 
 The supported REPL-features are in an alist called
-`inc-clojure-repl-features` and it has the following shape:
+`inf-clojure-repl-features` and it has the following shape:
 
 ```emacs-lisp
 '((cljs . ((doc . "(cljs.repl/doc %s)")
@@ -189,10 +189,17 @@ The supported REPL-features are in an alist called
            (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)"))))
 ```
 
-If you want to add a new REPL type, just `(add-to-list
-'inf-clojure-repl-features (cons new-repl-type '((doc
-. "(myrepl/doc-command %s") ...)))` since the data structure is just an
-alist of alists.
+If you want to add a new REPL type, just do something like:
+
+``` emacs-lisp
+(add-to-list 'inf-clojure-repl-features
+             (cons new-repl-type '((doc . "(myrepl/doc-command %s")
+                                   (source . "...")
+                                   ...)))
+```
+
+The `inf-clojure-repl-features` data structure is just an
+alist of alists, so you can manipulate it in numerous ways.
 
 If you want to update a specific form there is a function
 `inf-clojure-update-repl-feature` which can be used like so:
