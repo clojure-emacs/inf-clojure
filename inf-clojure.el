@@ -245,14 +245,14 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
-    (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp)
-    (define-key map "\C-c\C-l" #'inf-clojure-load-file)
-    (define-key map "\C-c\C-a" #'inf-clojure-show-arglists)
-    (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
-    (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
+    (define-key map (kbd "C-x C-e") #'inf-clojure-eval-last-sexp)
+    (define-key map (kbd "C-c C-l") #'inf-clojure-load-file)
+    (define-key map (kbd "C-c C-a") #'inf-clojure-show-arglists)
+    (define-key map (kbd "C-c C-v") #'inf-clojure-show-var-documentation)
+    (define-key map (kbd "C-c C-s") #'inf-clojure-show-var-source)
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
-    (define-key map "\C-c\M-o" #'inf-clojure-clear-repl-buffer)
-    (define-key map "\C-c\C-q" #'inf-clojure-quit)
+    (define-key map (kbd "C-c M-o") #'inf-clojure-clear-repl-buffer)
+    (define-key map (kbd "C-c C-q") #'inf-clojure-quit)
     (easy-menu-define inf-clojure-mode-menu map
       "Inferior Clojure REPL Menu"
       '("Inf-Clojure REPL"
@@ -282,26 +282,26 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 
 (defvar inf-clojure-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\M-\C-x"  #'inf-clojure-eval-defun)     ; Gnu convention
-    (define-key map "\C-x\C-e" #'inf-clojure-eval-last-sexp) ; Gnu convention
-    (define-key map "\C-c\C-e" #'inf-clojure-eval-last-sexp)
-    (define-key map "\C-c\C-c" #'inf-clojure-eval-defun)     ; SLIME/CIDER style
-    (define-key map "\C-c\C-b" #'inf-clojure-eval-buffer)
-    (define-key map "\C-c\C-r" #'inf-clojure-eval-region)
-    (define-key map "\C-c\M-r" #'inf-clojure-reload)
-    (define-key map "\C-c\C-n" #'inf-clojure-eval-form-and-next)
+    (define-key map (kbd "C-M-x")  #'inf-clojure-eval-defun)     ; Gnu convention
+    (define-key map (kbd "C-x C-e") #'inf-clojure-eval-last-sexp) ; Gnu convention
+    (define-key map (kbd "C-c C-e") #'inf-clojure-eval-last-sexp)
+    (define-key map (kbd "C-c C-c") #'inf-clojure-eval-defun)     ; SLIME/CIDER style
+    (define-key map (kbd "C-c C-b") #'inf-clojure-eval-buffer)
+    (define-key map (kbd "C-c C-r") #'inf-clojure-eval-region)
+    (define-key map (kbd "C-c M-r") #'inf-clojure-reload)
+    (define-key map (kbd "C-c C-n") #'inf-clojure-eval-form-and-next)
     (define-key map (kbd "C-c C-j") 'inf-clojure-insert-commands-map)
-    (define-key map "\C-c\C-z" #'inf-clojure-switch-to-repl)
-    (define-key map "\C-c\C-i" #'inf-clojure-show-ns-vars)
+    (define-key map (kbd "C-c C-z") #'inf-clojure-switch-to-repl)
+    (define-key map (kbd "C-c C-i") #'inf-clojure-show-ns-vars)
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
-    (define-key map "\C-c\C-m" #'inf-clojure-macroexpand)
-    (define-key map "\C-c\C-l" #'inf-clojure-load-file)
-    (define-key map "\C-c\C-a" #'inf-clojure-show-arglists)
-    (define-key map "\C-c\C-v" #'inf-clojure-show-var-documentation)
-    (define-key map "\C-c\C-s" #'inf-clojure-show-var-source)
-    (define-key map "\C-c\M-n" #'inf-clojure-set-ns)
-    (define-key map "\C-c\C-q" #'inf-clojure-quit)
-    (define-key map "\C-c\M-c" #'inf-clojure-connect)
+    (define-key map (kbd "C-c C-m") #'inf-clojure-macroexpand)
+    (define-key map (kbd "C-c C-l") #'inf-clojure-load-file)
+    (define-key map (kbd "C-c C-a") #'inf-clojure-show-arglists)
+    (define-key map (kbd "C-c C-v") #'inf-clojure-show-var-documentation)
+    (define-key map (kbd "C-c C-s") #'inf-clojure-show-var-source)
+    (define-key map (kbd "C-c M-n") #'inf-clojure-set-ns)
+    (define-key map (kbd "C-c C-q") #'inf-clojure-quit)
+    (define-key map (kbd "C-c M-c") #'inf-clojure-connect)
     (easy-menu-define inf-clojure-minor-mode-menu map
       "Inferior Clojure Minor Mode Menu"
       '("Inf-Clojure"
@@ -387,7 +387,7 @@ comments."
                    (concat s "\n")))
                lines " ")))
 
-(defun inf-clojure--sanitize-command (command)
+(defun inf-clojure--sanitinze-command (command)
   "Sanitize COMMAND for sending it to a process.
 An example of things that this function does is to add a final
 newline at the end of the form.  Return an empty string if the
