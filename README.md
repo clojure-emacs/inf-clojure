@@ -151,7 +151,7 @@ You can see all the configuration options available using the command
 
 ### Startup
 
-While `inf-clojure` is capable of starting many common REPLs out of the box it's
+While `inf-clojure` is capable of starting many common REPLs out of the box, it's
 fairly likely you will want to set some custom REPL startup command
 (e.g. because you need to include some `tools.deps` profile) and the REPL type
 that goes with it. This is most easily achieved with the following `dir-locals.el`:
@@ -162,7 +162,8 @@ that goes with it. This is most easily achieved with the following `dir-locals.e
   (inf-clojure-custom-repl-type . clojure)))
 ```
 
-**Note:** This file has to be in the directory in which you're invoking `inf-clojure`.
+**Note:** This file has to be in the directory in which you're invoking `inf-clojure` or a parent
+directory.
 
 There are two important configuration variables here:
 
@@ -235,8 +236,8 @@ If you have the new [Clojure CLI tools][] installed you can use the `clojure` co
 
 _do not use `clj` because it adds readline support_
 
-```shell
-clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
+``` shellsession
+$ clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
 ```
 
 Then either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
@@ -260,6 +261,7 @@ information on how connect:
 ```emacs-lisp
 ((nil (inf-clojure-custom-startup "localhost" . 5555)))
 ```
+
 The socket server REPL configuration options are described [here](https://clojure.org/reference/repl_and_main#_launching_a_socket_server).
 
 #### Lumo Socket REPL
@@ -269,6 +271,10 @@ Lumo is decoupled from `inf-clojure-project-type` and therefore the command used
 For example if a `project.clj` is present in the project root folder, `inf-clojure-lein-cmd` will be used.
 
 After you launch `lumo ... -n 5555`, as customary, either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
+
+```emacs-lisp
+((nil (inf-clojure-custom-startup "localhost" . 5555)))
+```
 
 #### Multiple Process Support
 
@@ -327,6 +333,9 @@ startup when using the `inf-clojure` command or is specified manually when using
 `inf-clojure-connect`.
 
 #### ElDoc
+
+**Note:** You can skip this section if you're using Emacs 26.1+, as `eldoc-mode`
+is enabled by default there.
 
 `eldoc-mode` is supported in Clojure source buffers and `*inferior-clojure*`
 buffers which are running a Clojure REPL.
