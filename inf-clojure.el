@@ -353,14 +353,14 @@ number (e.g. (\"localhost\" . 5555))."
 
 (defcustom inf-clojure-custom-startup
    nil
-   "Form to be used to start inf-clojure.
+   "Form to be used to start `inf-clojure'.
 Can be a cons pair of (host . port) where host is a string and
 port is an integer, or a string to startup an interpreter like
 \"planck\".")
 
 (defcustom inf-clojure-custom-repl-type
   nil
-  "REPL type to use for inf-clojure process buffer.
+  "REPL type to use for `inf-clojure' process buffer.
 Should be a symbol that is a key in `inf-clojure-repl-features'."
   :package-version '(inf-clojure . "3.0.0")
   :type '(choice (const :tag "clojure" clojure)
