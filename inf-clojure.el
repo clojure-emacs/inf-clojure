@@ -387,7 +387,7 @@ comments."
                    (concat s "\n")))
                lines " ")))
 
-(defun inf-clojure--sanitinze-command (command)
+(defun inf-clojure--sanitize-command (command)
   "Sanitize COMMAND for sending it to a process.
 An example of things that this function does is to add a final
 newline at the end of the form.  Return an empty string if the
