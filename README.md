@@ -65,7 +65,7 @@ In Emacs terminology "inferior" process is a subprocess started by Emacs (it bei
 processes its output. As the Clojure socket REPL works in exactly the same manner `inf-clojure` can also interact with it.
 
 Functionality like code completion and eldoc is powered by evaluation of predefined code snippets that provide the necessary results.
-As different Clojure REPLs have different capabilities, `inf-clojure` has to determine the type of a REPL and invoke
+As different Clojure REPLs have different capabilities, `inf-clojure` tracks the type of a REPL and invokes
 the right code for each REPL type.
 
 ## Installation
