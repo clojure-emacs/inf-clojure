@@ -2,6 +2,8 @@
 
 ## master (unreleased)
 
+## 3.0.0 (2020-08-01)
+
 ### New features
 
 * [#174](https://github.com/clojure-emacs/inf-clojure/pull/174): Invoke `inf-clojure` with a prefix argument to prevent using `inf-clojure-custom-startup` and `inf-clojure-custom-repl-type`.
