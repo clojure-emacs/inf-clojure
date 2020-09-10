@@ -154,7 +154,7 @@ You can see all the configuration options available using the command
 While `inf-clojure` is capable of starting many common REPLs out of the box, it's
 fairly likely you will want to set some custom REPL startup command
 (e.g. because you need to include some `tools.deps` profile) and the REPL type
-that goes with it. This is most easily achieved with the following `dir-locals.el`:
+that goes with it. This is most easily achieved with the following `.dir-locals.el`:
 
 ```emacs-lisp
 ((nil
@@ -214,7 +214,7 @@ If you want to update a specific form there is a function
 It is highly recommended to use a cons pair like `("localhost" . 5555)` to
 connect to a socket REPL, terminal REPLs are inherently hard to work with and
 support will be deprecated in the foreseeable future. If you use the
-same project often, make a dir-locals file with this information in `inf-clojure-custom-startup`.
+same project often, make a `.dir-locals.el` file with this information in `inf-clojure-custom-startup`.
 
 Note that if you decide _NOT_ to use the socket REPL, it is highly recommended
 you disable output coloring and/or readline facilities: `inf-clojure` does not
