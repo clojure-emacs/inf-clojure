@@ -4,9 +4,6 @@
 
 ;; Authors: Bozhidar Batsov <bozhidar@batsov.com>
 ;;          Andrea Richiardi <a.richiardi.work@gmail.com>
-;; URL: http://github.com/clojure-emacs/inf-clojure
-;; Keywords: processes, clojure
-;; Package-Requires: ((emacs "24.4") (clojure-mode "5.3"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -25,16 +22,14 @@
 
 ;;; Commentary:
 ;;
-;; Code completion using alexander-yakushev/compliment.
+;; Tests for inf-clojure.
 
 ;;; Code:
-
-;; Tests for inf-clojure.el
 
 (message "Running tests on Emacs %s" emacs-version)
 
 (require 'buttercup)
-(require 'assess)
+(require 'assess) ;; requires Emacs 26, due to a dependency on seq.el
 (require 'inf-clojure)
 
 (cl-defmacro ict-with-assess-buffers ((&rest varlist) &body body)
