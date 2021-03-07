@@ -70,7 +70,9 @@ the right code for each REPL type.
 
 ## Installation
 
-Available on all major `package.el` community maintained repos -
+**Note:** `inf-clojure` requires Emacs 25 or newer.
+
+`inf-clojure` is available on the community-maintained `package.el` repos -
 [MELPA Stable][] and [MELPA][] repos.
 
 MELPA Stable is recommended as it has the latest stable version.
@@ -100,9 +102,9 @@ Add the following to your Emacs config to enable
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
 ```
 
-**Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same time. They
+**Warning:** Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same time. They
 have overlapping functionality and keybindings and the result will be nothing
-short of havoc.**
+short of havoc.
 
 ## Basic Usage
 
