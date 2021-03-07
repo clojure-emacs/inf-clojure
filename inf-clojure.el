@@ -69,7 +69,6 @@
 (require 'ansi-color)
 (require 'cl-lib)
 (require 'subr-x)
-(require 'seq)
 
 (defvar inf-clojure-startup-forms '((lein . "lein repl")
                                     (boot . "boot repl")
