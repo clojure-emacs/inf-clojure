@@ -683,16 +683,40 @@ HOST is the host the process is running on, PORT is where it's listening."
   (interactive "shost: \nnport: ")
   (inf-clojure (cons host port)))
 
+(defun inf-clojure--forms-without-newlines (str)
+  "Remove newlines between toplevel forms.
+STR is a string of contents to be evaluated.  When sending
+multiple forms to a socket repl, each newline triggers a prompt.
+So we replace all newlines between top level forms but not inside
+of forms."
+  (condition-case nil
+      (with-temp-buffer
+        (progn
+          (clojurec-mode)
+          (insert str)
+          (whitespace-cleanup)
+          (goto-char (point-min))
+          (while (not (eobp))
+            (while (looking-at "\n")
+              (delete-char 1))
+            (unless (eobp)
+              (clojure-forward-logical-sexp))
+            (unless (eobp)
+              (forward-char)))
+          (buffer-substring-no-properties (point-min) (point-max))))
+    (scan-error str)))
+
 (defun inf-clojure-eval-region (start end &optional and-go)
   "Send the current region to the inferior Clojure process.
 Sends substring between START and END.  Prefix argument AND-GO
 means switch to the Clojure buffer afterwards."
   (interactive "r\nP")
-  ;; drops newlines at the end of the region
-  (let ((str (replace-regexp-in-string
-              "[\n]+\\'" ""
-              (buffer-substring-no-properties start end))))
-    (inf-clojure--send-string (inf-clojure-proc) str))
+  (let* ((str (buffer-substring-no-properties start end))
+         ;; newlines over a socket repl between top level forms cause
+         ;; a prompt to be returned. so here we dump the region into a
+         ;; temp buffer, and delete all newlines between the forms
+         (formatted (inf-clojure--forms-without-newlines str)))
+    (inf-clojure--send-string (inf-clojure-proc) formatted))
   (when and-go (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-eval-string (code)

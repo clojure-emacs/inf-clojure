@@ -119,6 +119,35 @@
   (it "only removes whitespace at the end of the command - fix 152"
     (expect (inf-clojure--sanitize-command "1   5") :to-equal "1   5\n")))
 
+(describe "inf-clojure--forms-without-newlines"
+  (it "removes newlines between toplevel forms"
+    (expect (inf-clojure--forms-without-newlines
+             "(def foo 3)\n\n\n(def bar 4)")
+            :to-equal "(def foo 3)\n(def bar 4)"))
+  (it "doesn't remove newlines inside forms or strings"
+    (expect (inf-clojure--forms-without-newlines
+             "
+
+(defn foo []
+
+  :foo)
+
+
+(def thing \"this
+
+is a string\")
+
+(defn bar [])")
+            ;; note no leading newline, newlines inside defn remain,
+            ;; newlines inside string remain
+            :to-equal "(defn foo []
+
+  :foo)
+(def thing \"this
+
+is a string\")
+(defn bar [])")))
+
 
 (describe "inf-clojure--update-feature"
   (it "updates new forms correctly"
