@@ -776,7 +776,8 @@ Indent FORM.  FORM is expected to have been trimmed."
         (insert (format "%s" form))
         (let ((end (point)))
           (goto-char beginning)
-          (indent-sexp end)))
+          (indent-sexp end)
+          (font-lock-ensure beginning end)))
       (comint-send-input t t))))
 
 (defun inf-clojure-insert-defun ()
