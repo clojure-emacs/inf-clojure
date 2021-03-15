@@ -4,7 +4,7 @@
 
 ### Bugs fixed
 
-[#152](https://github.com/clojure-emacs/inf-clojure/issues/152): Sanitize should only remove whitespace at the end of a command.
+* [#152](https://github.com/clojure-emacs/inf-clojure/issues/152): Sanitize should only remove whitespace at the end of a command.
 
 ## 3.0.0 (2020-08-01)
 
