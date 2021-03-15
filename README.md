@@ -43,7 +43,7 @@ It supports the following REPLs:
 `inf-clojure` provides a set of essential features for interactive
 Clojure(Script) development:
 
-* REPL
+* Enhanced REPL
 * Interactive code evaluation
 * Code completion
 * Definition lookup
@@ -51,8 +51,8 @@ Clojure(Script) development:
 * ElDoc
 * Apropos
 * Macroexpansion
-* Require `:reload`/`:reload-all`
-* Support connecting to socket REPLs
+* Reloading a namespace (via `require :reload`/`require :reload-all`)
+* Connecting to socket REPLs
 
 For a more powerful/full-featured solution see [CIDER](https://github.com/clojure-emacs/cider).
 
