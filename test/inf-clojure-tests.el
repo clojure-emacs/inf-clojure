@@ -48,76 +48,77 @@
     (expect (inf-clojure--kw-to-symbol "::keyword") :to-equal "keyword")
     (expect (inf-clojure--kw-to-symbol nil) :to-equal nil)))
 
-(describe "completion bounds at point" ()
+(describe "completion bounds at point"
   (it "computes bounds for plain-text"
-      (ict-with-assess-buffers
-       ((a (insert "plain-text")))
-       (with-current-buffer a
-         (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-                 :to-equal "plain-text"))))
+    (ict-with-assess-buffers
+     ((a (insert "plain-text")))
+     (with-current-buffer a
+       (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+               :to-equal "plain-text"))))
 
   (it "computes bounds for @deref"
-      (ict-with-assess-buffers
-       ((a (insert "@deref")))
-       (with-current-buffer a
-         (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-                 :to-equal "deref"))))
+    (ict-with-assess-buffers
+     ((a (insert "@deref")))
+     (with-current-buffer a
+       (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+               :to-equal "deref"))))
 
   (it "computes bounds for ^:keyword"
-      (ict-with-assess-buffers
-       ((a (insert "^:keyword")))
-       (with-current-buffer a
-         (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-                 :to-equal ":keyword"))))
+    (ict-with-assess-buffers
+     ((a (insert "^:keyword")))
+     (with-current-buffer a
+       (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+               :to-equal ":keyword"))))
 
   (it "computes bounds for ::keyword"
-      (ict-with-assess-buffers
-       ((a (insert "::keyword")))
-       (with-current-buffer a
-         (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-                 :to-equal "::keyword"))))
+    (ict-with-assess-buffers
+     ((a (insert "::keyword")))
+     (with-current-buffer a
+       (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+               :to-equal "::keyword"))))
 
   (it "computes bounds for [^:keyword (combined break chars and keyword)"
-      (ict-with-assess-buffers
-       ((a (insert "[^:keyword")))
-       (with-current-buffer a
-         (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-                 :to-equal ":keyword"))))
+    (ict-with-assess-buffers
+     ((a (insert "[^:keyword")))
+     (with-current-buffer a
+       (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+               :to-equal ":keyword"))))
 
   (it "computes no bounds for point directly after a break expression"
-      (ict-with-assess-buffers
-       ((a (insert "@")))
-       (with-current-buffer a
-         (expect
-          (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-          :not :to-be nil))))
+    (ict-with-assess-buffers
+     ((a (insert "@")))
+     (with-current-buffer a
+       (expect
+        (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+        :not :to-be nil))))
 
   (it "computes bounds for [symbol"
-      (ict-with-assess-buffers
-       ((a (insert "[symbol")))
-       (with-current-buffer a
-         (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-                 :to-equal "symbol"))))
+    (ict-with-assess-buffers
+     ((a (insert "[symbol")))
+     (with-current-buffer a
+       (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+               :to-equal "symbol"))))
 
   (it "computes bounds for (@deref (multiple break chars)"
-      (ict-with-assess-buffers
-       ((a (insert "(@deref")))
-       (with-current-buffer a
-         (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-                 :to-equal "deref")))))
+    (ict-with-assess-buffers
+     ((a (insert "(@deref")))
+     (with-current-buffer a
+       (expect (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
+               :to-equal "deref")))))
 
 (describe "inf-clojure--sanitize-command"
   (it "sanitizes the command correctly"
-     (expect (inf-clojure--sanitize-command "(doc println)") :to-equal "(doc println)\n"))
+    (expect (inf-clojure--sanitize-command "(doc println)") :to-equal "(doc println)\n"))
 
   (it "trims newline at the right of a command"
-     (expect (inf-clojure--sanitize-command "(doc println)\n\n\n\n") :to-equal "(doc println)\n"))
+    (expect (inf-clojure--sanitize-command "(doc println)\n\n\n\n") :to-equal "(doc println)\n"))
 
   (it "returns empty string when the command is empty"
-      (expect (inf-clojure--sanitize-command "   ") :to-equal ""))
+    (expect (inf-clojure--sanitize-command "   ") :to-equal ""))
 
   (it "only removes whitespace at the end of the command - fix 152"
-     (expect (inf-clojure--sanitize-command "1   5") :to-equal "1   5\n")))
+    (expect (inf-clojure--sanitize-command "1   5") :to-equal "1   5\n")))
+
 
 (describe "inf-clojure--update-feature"
   (it "updates new forms correctly"
