@@ -5,6 +5,8 @@
 ### Bugs fixed
 
 * [#152](https://github.com/clojure-emacs/inf-clojure/issues/152): Sanitize should only remove whitespace at the end of a command.
+* [#188](https://github.com/clojure-emacs/inf-clojure/pull/188): Handle newlines between forms for `inf-clojure-eval-buffer`.
+* [#189](https://github.com/clojure-emacs/inf-clojure/pull/189): Font-lock code inserted in the REPL from a source buffer.
 
 ## 3.0.0 (2020-08-01)
 

@@ -777,6 +777,7 @@ Indent FORM.  FORM is expected to have been trimmed."
         (let ((end (point)))
           (goto-char beginning)
           (indent-sexp end)
+          ;; font-lock the inserted code
           (font-lock-ensure beginning end)))
       (comint-send-input t t))))
 
