@@ -277,7 +277,8 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 (defun inf-clojure--modeline-info ()
   "Return modeline info.
 Either \"not connected\" or \"repl-type: buffer-name\""
-  (if (bufferp inf-clojure-buffer)
+  (if (and (bufferp inf-clojure-buffer)
+           (buffer-live-p inf-clojure-buffer))
       (with-current-buffer inf-clojure-buffer
         (format "%s: %s" inf-clojure-repl-type (buffer-name (current-buffer))))
     "not connected"))
