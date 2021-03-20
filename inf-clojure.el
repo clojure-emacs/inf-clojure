@@ -274,6 +274,14 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 \(as in :a, :c, etc.)"
   :type 'regexp)
 
+(defun inf-clojure--modeline-info ()
+  "Return modeline info.
+Either \"not connected\" or \"repl-type: buffer-name\""
+  (if (bufferp inf-clojure-buffer)
+      (with-current-buffer inf-clojure-buffer
+        (format "%s: %s" inf-clojure-repl-type (buffer-name (current-buffer))))
+    "not connected"))
+
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
     (define-key map (kbd "C-x C-e") #'inf-clojure-eval-last-sexp)
@@ -359,13 +367,30 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
     map))
 
 ;;;###autoload
+(defcustom inf-clojure-mode-line
+  '(:eval (format " inf-clojure[%s]" (inf-clojure--modeline-info)))
+  "Mode line lighter for cider mode.
+
+The value of this variable is a mode line template as in
+`mode-line-format'.  See Info Node `(elisp)Mode Line Format' for details
+about mode line templates.
+
+Customize this variable to change how inf-clojure-minor-mode
+displays its status in the mode line.  The default value displays
+the current connection.  Set this variable to nil to disable the
+mode line entirely."
+  :type 'sexp
+  :risky t)
+
+;;;###autoload
 (define-minor-mode inf-clojure-minor-mode
   "Minor mode for interacting with the inferior Clojure process buffer.
 
 The following commands are available:
 
 \\{inf-clojure-minor-mode-map}"
-  :lighter "" :keymap inf-clojure-minor-mode-map
+  :lighter inf-clojure-mode-line
+  :keymap inf-clojure-minor-mode-map
   (setq-local comint-input-sender 'inf-clojure--send-string)
   (inf-clojure-eldoc-setup)
   (make-local-variable 'completion-at-point-functions)
@@ -703,7 +728,7 @@ process buffer for a list of commands.)"
           (inf-clojure-mode)
           (setq-local inf-clojure-repl-type repl-type)
           (hack-dir-local-variables-non-file-buffer))))
-  (setq inf-clojure-buffer "*inf-clojure*")
+  (setq inf-clojure-buffer (get-buffer "*inf-clojure*"))
   (if inf-clojure-repl-use-same-window
       (pop-to-buffer-same-window "*inf-clojure*")
     (pop-to-buffer "*inf-clojure*")))
