@@ -316,6 +316,17 @@ one process, this does the right thing.  If you run multiple
 processes, you might need to change `inf-clojure-buffer` to
 whichever process buffer you want to use.
 
+You can use the helpful function `inf-clojure-set-repl`. If called in
+an inf-clojure repl buffer, it will assign that buffer as the current
+connection (`(setq inf-clojure-buffer (current-buffer)`). If you are
+not in an inf-clojure repl buffer, it will offer a choice of
+acceptable buffers to set as the repl buffer. If called with a prefix,
+it will always give the list even if you are currently in an
+acceptable repl buffer. Renaming buffers will greatly improve the
+functionality of this list; the list "project-1: clojure repl",
+"project-2: cljs repl" is far more understandable than "inf-clojure",
+"inf-clojure<2>".
+
 #### REPL Type
 
 An `inf-clojure` REPL has an associated type. The available types can be
