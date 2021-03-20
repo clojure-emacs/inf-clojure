@@ -2,6 +2,10 @@
 
 ## master (unreleased)
 
+### New features
+
+* [#190](https://github.com/clojure-emacs/inf-clojure/pull/190): Helper function `inf-clojure-set-repl` to select inf-clojure process buffer.
+
 ### Bugs fixed
 
 * [#152](https://github.com/clojure-emacs/inf-clojure/issues/152): Sanitize should only remove whitespace at the end of a command.

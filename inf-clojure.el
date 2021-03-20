@@ -199,6 +199,29 @@ has been found.  See also variable `inf-clojure-buffer'."
       (unless no-error
         (error "No Clojure subprocess; see variable `inf-clojure-buffer'"))))
 
+(defun inf-clojure-set-repl (always-ask)
+  "Set an inf clojure buffer as the active repl.
+If in a repl already, use that unless a prefix is used (or
+ALWAYS-ASK).  Otherwise get a list of all active inf-clojure
+repls and offer a choice.  Recommended to rename buffers as they
+are created with `rename-buffer`."
+  (interactive "P")
+  (cl-flet ((inf-clojure-repl-p () (and (derived-mode-p 'inf-clojure-mode)
+                                        (get-buffer-process (current-buffer))
+                                        (process-live-p (get-buffer-process (current-buffer))))))
+    (if (and (not always-ask)
+             (inf-clojure-repl-p))
+        (setq inf-clojure-buffer (current-buffer))
+      (let (repl-buffers)
+        (dolist (b (buffer-list))
+          (with-current-buffer b
+            (when (inf-clojure-repl-p)
+              (push (buffer-name b) repl-buffers))))
+        (if (> (length repl-buffers) 0)
+            (when-let ((repl-buffer (completing-read "Use for repl: " repl-buffers nil t)))
+              (setq inf-clojure-buffer (get-buffer repl-buffer)))
+          (user-error "No buffers have an inf-clojure process"))))))
+
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
 Its root binding is nil and it can be further customized using
