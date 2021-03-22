@@ -516,6 +516,34 @@ This should usually be a combination of `inf-clojure-prompt' and
   :safe #'booleanp
   :package-version '(inf-clojure . "2.0.0"))
 
+(defcustom inf-clojure-auto-mode t
+  "When non-nil, automatically enable inf-clojure-minor-mode for all Clojure buffers."
+  :type 'boolean
+  :safe #'booleanp
+  :package-version '(inf-clojure . "3.1.0"))
+
+(defun inf-clojure--clojure-buffers ()
+  "Return a list of all existing `clojure-mode' buffers."
+  (cl-remove-if-not
+   (lambda (buffer) (with-current-buffer buffer (derived-mode-p 'clojure-mode)))
+   (buffer-list)))
+
+(defun inf-clojure-enable-on-existing-clojure-buffers ()
+  "Enable inf-clojure's minor mode on existing Clojure buffers.
+See command `inf-clojure-minor-mode'."
+  (interactive)
+  (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
+  (dolist (buffer (inf-clojure--clojure-buffers))
+    (with-current-buffer buffer
+      (inf-clojure-minor-mode +1))))
+
+(defun inf-clojure-disable-on-existing-clojure-buffers ()
+  "Disable command `inf-clojure-minor-mode' on existing Clojure buffers."
+  (interactive)
+  (dolist (buffer (inf-clojure--clojure-buffers))
+    (with-current-buffer buffer
+      (inf-clojure-minor-mode -1))))
+
 (defvar inf-clojure-buffer nil
   "The current `inf-clojure' process buffer.
 
@@ -609,7 +637,9 @@ to continue it."
   (setq-local comint-prompt-read-only inf-clojure-prompt-read-only)
   (add-hook 'comint-preoutput-filter-functions #'inf-clojure-preoutput-filter nil t)
   (add-hook 'completion-at-point-functions #'inf-clojure-completion-at-point nil t)
-  (ansi-color-for-comint-mode-on))
+  (ansi-color-for-comint-mode-on)
+  (when inf-clojure-auto-mode
+    (inf-clojure-enable-on-existing-clojure-buffers)))
 
 (defun inf-clojure-get-old-input ()
   "Return a string containing the sexp ending at point."

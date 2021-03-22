@@ -95,8 +95,12 @@ If the installation doesn't work try refreshing the package list:
 
 <kbd>M-x package-refresh-contents</kbd>
 
-Add the following to your Emacs config to enable
-`inf-clojure-minor-mode` for Clojure source buffers:
+`inf-clojure-minor-mode` will be auto-enabled for Clojure source buffers after you do
+`M-x inf-clojure`. You can disable this behavior by setting `inf-clojure-auto-mode` to
+`nil`.
+
+You can also add the following to your Emacs config to enable
+`inf-clojure-minor-mode` for Clojure source buffers, regardless of whether there's an `inf-clojure` REPL running:
 
 ```emacs-lisp
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
