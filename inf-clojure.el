@@ -191,7 +191,7 @@ Given a REPL-TYPE ('clojure, 'lumo, ...) and a FEATURE ('doc,
 
 (defun inf-clojure-proc (&optional no-error)
   "Return the current inferior Clojure process.
-When NO-ERROR is non-nil, don't throw an error when no connection
+When NO-ERROR is non-nil, don't throw an error when no process
 has been found.  See also variable `inf-clojure-buffer'."
   (or (get-buffer-process (if (derived-mode-p 'inf-clojure-mode)
                               (current-buffer)
@@ -200,14 +200,14 @@ has been found.  See also variable `inf-clojure-buffer'."
         (error "No Clojure subprocess; see variable `inf-clojure-buffer'"))))
 
 (defun inf-clojure-repl-p ()
-  "Indicates if current buffer is an inf-clojure repl.
+  "Indicates if the current buffer is an inf-clojure REPL.
 Checks the mode and that there is a live process."
   (and (derived-mode-p 'inf-clojure-mode)
        (get-buffer-process (current-buffer))
        (process-live-p (get-buffer-process (current-buffer)))))
 
-(defun inf-clojure-repls-list ()
-  "Return a list of all known inf-clojure repls."
+(defun inf-clojure-repls ()
+  "Return a list of all inf-clojure REPL buffers."
   (let (repl-buffers)
     (dolist (b (buffer-list))
       (with-current-buffer b
@@ -216,18 +216,18 @@ Checks the mode and that there is a live process."
     repl-buffers))
 
 (defun inf-clojure-set-repl (always-ask)
-  "Set an inf clojure buffer as the active repl.
-If in a repl already, use that unless a prefix is used (or
+  "Set an inf-clojure buffer as the active (default) REPL.
+If in a REPL buffer already, use that unless a prefix is used (or
 ALWAYS-ASK).  Otherwise get a list of all active inf-clojure
-repls and offer a choice.  Recommended to rename buffers as they
-are created with `rename-buffer`."
+REPLS and offer a choice.  It's recommended to rename REPL
+buffers after they are created with `rename-buffer'."
   (interactive "P")
   (if (and (not always-ask)
            (inf-clojure-repl-p))
       (setq inf-clojure-buffer (current-buffer))
-    (let ((repl-buffers (inf-clojure-repls-list)))
+    (let ((repl-buffers (inf-clojure-repls)))
      (if (> (length repl-buffers) 0)
-         (when-let ((repl-buffer (completing-read "Use for repl: " repl-buffers nil t)))
+         (when-let ((repl-buffer (completing-read "Select default REPL: " repl-buffers nil t)))
            (setq inf-clojure-buffer (get-buffer repl-buffer)))
        (user-error "No buffers have an inf-clojure process")))))
 
@@ -275,13 +275,13 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
   :type 'regexp)
 
 (defun inf-clojure--modeline-info ()
-  "Return modeline info.
-Either \"not connected\" or \"repl-type: buffer-name\""
+  "Return modeline info for `inf-clojure-minor-mode'.
+Either \"no process\" or \"buffer-name(repl-type)\""
   (if (and (bufferp inf-clojure-buffer)
            (buffer-live-p inf-clojure-buffer))
       (with-current-buffer inf-clojure-buffer
-        (format "%s: %s" inf-clojure-repl-type (buffer-name (current-buffer))))
-    "not connected"))
+        (format "%s(%s)" (buffer-name (current-buffer)) inf-clojure-repl-type))
+    "no process"))
 
 (defvar inf-clojure-mode-map
   (let ((map (copy-keymap comint-mode-map)))
@@ -378,7 +378,7 @@ about mode line templates.
 
 Customize this variable to change how inf-clojure-minor-mode
 displays its status in the mode line.  The default value displays
-the current connection.  Set this variable to nil to disable the
+the current REPL.  Set this variable to nil to disable the
 mode line entirely."
   :type 'sexp
   :risky t)
