@@ -720,6 +720,11 @@ to suppress the usage of the target buffer discovery logic."
     (call-interactively #'inf-clojure)
     (rename-buffer target-buffer-name)))
 
+(defun inf-clojure--project-name (dir)
+  "Extract a project name from a project DIR.
+The name is simply the final segment of the path."
+  (file-name-nondirectory (directory-file-name dir)))
+
 ;;;###autoload
 (defun inf-clojure (cmd)
   "Run an inferior Clojure process, input and output via buffer `*inf-clojure*'.
@@ -744,26 +749,29 @@ process buffer for a list of commands.)"
                                           (mapcar #'cdr inf-clojure-startup-forms)
                                           nil
                                           'confirm-after-completion))))
-  (if (not (comint-check-proc "*inf-clojure*"))
-      ;; run the new process in the project's root when in a project folder
-      (let ((default-directory (or (clojure-project-dir) default-directory))
-            (cmdlist (if (consp cmd)
-                         (list cmd)
-                       (split-string cmd)))
-            (repl-type (or (unless prefix-arg
-                             inf-clojure-custom-repl-type)
-                           (car (rassoc cmd inf-clojure-startup-forms))
-                           (inf-clojure--prompt-repl-type))))
-        (message "Starting Clojure REPL via `%s'..." cmd)
-        (with-current-buffer (apply #'make-comint
-                                    "inf-clojure" (car cmdlist) nil (cdr cmdlist))
-          (inf-clojure-mode)
-          (setq-local inf-clojure-repl-type repl-type)
-          (hack-dir-local-variables-non-file-buffer))))
-  (setq inf-clojure-buffer (get-buffer "*inf-clojure*"))
-  (if inf-clojure-repl-use-same-window
-      (pop-to-buffer-same-window "*inf-clojure*")
-    (pop-to-buffer "*inf-clojure*")))
+  (let* ((project-dir (clojure-project-dir))
+         (repl-buffer-name (if project-dir (format "*inf-clojure %s*" (inf-clojure--project-name project-dir)) "*inf-clojure*"))
+         (comint-name (string-trim repl-buffer-name "*" "*")))
+    (if (not (comint-check-proc repl-buffer-name))
+             ;; run the new process in the project's root when in a project folder
+             (let ((default-directory (or project-dir default-directory))
+                   (cmdlist (if (consp cmd)
+                                (list cmd)
+                              (split-string cmd)))
+                   (repl-type (or (unless prefix-arg
+                                    inf-clojure-custom-repl-type)
+                                  (car (rassoc cmd inf-clojure-startup-forms))
+                                  (inf-clojure--prompt-repl-type))))
+               (message "Starting Clojure REPL via `%s'..." cmd)
+               (with-current-buffer (apply #'make-comint
+                                           comint-name (car cmdlist) nil (cdr cmdlist))
+                 (inf-clojure-mode)
+                 (setq-local inf-clojure-repl-type repl-type)
+                 (hack-dir-local-variables-non-file-buffer))))
+    (setq inf-clojure-buffer (get-buffer repl-buffer-name))
+    (if inf-clojure-repl-use-same-window
+        (pop-to-buffer-same-window repl-buffer-name)
+      (pop-to-buffer repl-buffer-name))))
 
 ;;;###autoload
 (defun inf-clojure-connect (host port)
@@ -1436,7 +1444,7 @@ Useful for commands that can invoked outside of an ‘inf-clojure’ buffer
   "Send FORM and apply MATCH-P on the result of sending it to PROC.
 Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
-  (funcall match-p (inf-clojure--process-response form proc nil)))
+p  (funcall match-p (inf-clojure--process-response form proc nil)))
 
 (provide 'inf-clojure)
 

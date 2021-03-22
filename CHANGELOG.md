@@ -6,6 +6,7 @@
 
 * [#190](https://github.com/clojure-emacs/inf-clojure/pull/190): Helper function `inf-clojure-set-repl` to select inf-clojure process buffer.
 * Auto-enable `inf-clojure-minor-mode` after invoking `inf-clojure`. This behaviour is controlled via `inf-clojure-auto-mode`.
+* Include the project name automatically in the REPL buffer name.
 
 ### Bugs fixed
 
