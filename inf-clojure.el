@@ -753,22 +753,24 @@ process buffer for a list of commands.)"
          (repl-buffer-name (if project-dir
                                (format "*inf-clojure %s*" (inf-clojure--project-name project-dir))
                              "*inf-clojure*")))
-    (if (not (comint-check-proc repl-buffer-name))
-             ;; run the new process in the project's root when in a project folder
-             (let ((default-directory (or project-dir default-directory))
-                   (cmdlist (if (consp cmd)
-                                (list cmd)
-                              (split-string cmd)))
-                   (repl-type (or (unless prefix-arg
-                                    inf-clojure-custom-repl-type)
-                                  (car (rassoc cmd inf-clojure-startup-forms))
-                                  (inf-clojure--prompt-repl-type))))
-               (message "Starting Clojure REPL via `%s'..." cmd)
-               (with-current-buffer (apply #'make-comint
-                                           "inf-clojure" (car cmdlist) nil (cdr cmdlist))
-                 (inf-clojure-mode)
-                 (setq-local inf-clojure-repl-type repl-type)
-                 (hack-dir-local-variables-non-file-buffer))))
+    ;; Create a new comint buffer if needed
+    (unless (comint-check-proc repl-buffer-name)
+      ;; run the new process in the project's root when in a project folder
+      (let ((default-directory (or project-dir default-directory))
+            (cmdlist (if (consp cmd)
+                         (list cmd)
+                       (split-string cmd)))
+            (repl-type (or (unless prefix-arg
+                             inf-clojure-custom-repl-type)
+                           (car (rassoc cmd inf-clojure-startup-forms))
+                           (inf-clojure--prompt-repl-type))))
+        (message "Starting Clojure REPL via `%s'..." cmd)
+        (with-current-buffer (apply #'make-comint
+                                    "inf-clojure" (car cmdlist) nil (cdr cmdlist))
+          (inf-clojure-mode)
+          (setq-local inf-clojure-repl-type repl-type)
+          (hack-dir-local-variables-non-file-buffer))))
+    ;; update the default comint buffer and switch to it
     (setq inf-clojure-buffer (get-buffer repl-buffer-name))
     (if inf-clojure-repl-use-same-window
         (pop-to-buffer-same-window repl-buffer-name)
