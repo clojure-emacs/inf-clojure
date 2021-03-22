@@ -212,9 +212,8 @@ Checks the mode and that there is a live process."
   "Return a list of all inf-clojure REPL buffers."
   (let (repl-buffers)
     (dolist (b (buffer-list))
-      (with-current-buffer b
-        (when (inf-clojure-repl-p)
-          (push (buffer-name b) repl-buffers))))
+      (when (inf-clojure-repl-p b)
+        (push (buffer-name b) repl-buffers)))
     repl-buffers))
 
 (defun inf-clojure-set-repl (always-ask)
