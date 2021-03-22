@@ -199,12 +199,14 @@ has been found.  See also variable `inf-clojure-buffer'."
       (unless no-error
         (error "No Clojure subprocess; see variable `inf-clojure-buffer'"))))
 
-(defun inf-clojure-repl-p ()
-  "Indicates if the current buffer is an inf-clojure REPL.
+(defun inf-clojure-repl-p (&optional buf)
+  "Indicates if BUF is an inf-clojure REPL.
+If BUF is nil then defaults to the current buffer.
 Checks the mode and that there is a live process."
-  (and (derived-mode-p 'inf-clojure-mode)
-       (get-buffer-process (current-buffer))
-       (process-live-p (get-buffer-process (current-buffer)))))
+  (let ((buf (or buf (current-buffer))))
+    (and (with-current-buffer buf (derived-mode-p 'inf-clojure-mode))
+         (get-buffer-process buf)
+         (process-live-p (get-buffer-process buf)))))
 
 (defun inf-clojure-repls ()
   "Return a list of all inf-clojure REPL buffers."
