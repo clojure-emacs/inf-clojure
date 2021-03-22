@@ -291,6 +291,10 @@ process with another `inf-clojure`.  It will be in a new buffer,
 named `*inf-clojure*`.  You can switch between the different process
 buffers with `switch-to-buffer`.
 
+**Note:** If you're starting `inf-clojure` within a Clojure project directory
+the name of the project will be incorporated into the name of the REPL buffer
+- e.g. `*inf-clojure my-project*`.
+
 Commands that send text from source buffers to Clojure processes (like `inf-clojure-eval-defun`
 or `inf-clojure-show-arglists`) have to choose a process to send to, when you have more than
 one Clojure process around. This is determined by the global variable `inf-clojure-buffer`.
