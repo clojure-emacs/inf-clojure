@@ -776,7 +776,7 @@ process buffer for a list of commands.)"
 
 ;;;###autoload
 (defun inf-clojure-connect (host port)
-  "Connect to a running socket-repl via `inf-clojure'.
+  "Connect to a running socket REPL server via `inf-clojure'.
 HOST is the host the process is running on, PORT is where it's listening."
   (interactive "shost: \nnport: ")
   (inf-clojure (cons host port)))
@@ -784,7 +784,7 @@ HOST is the host the process is running on, PORT is where it's listening."
 (defun inf-clojure--forms-without-newlines (str)
   "Remove newlines between toplevel forms.
 STR is a string of contents to be evaluated.  When sending
-multiple forms to a socket repl, each newline triggers a prompt.
+multiple forms to a REPL, each newline triggers a prompt.
 So we replace all newlines between top level forms but not inside
 of forms."
   (condition-case nil
