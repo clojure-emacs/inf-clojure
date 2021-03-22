@@ -750,8 +750,9 @@ process buffer for a list of commands.)"
                                           nil
                                           'confirm-after-completion))))
   (let* ((project-dir (clojure-project-dir))
-         (repl-buffer-name (if project-dir (format "*inf-clojure %s*" (inf-clojure--project-name project-dir)) "*inf-clojure*"))
-         (comint-name (string-trim repl-buffer-name "*" "*")))
+         (repl-buffer-name (if project-dir
+                               (format "*inf-clojure %s*" (inf-clojure--project-name project-dir))
+                             "*inf-clojure*")))
     (if (not (comint-check-proc repl-buffer-name))
              ;; run the new process in the project's root when in a project folder
              (let ((default-directory (or project-dir default-directory))
@@ -764,7 +765,7 @@ process buffer for a list of commands.)"
                                   (inf-clojure--prompt-repl-type))))
                (message "Starting Clojure REPL via `%s'..." cmd)
                (with-current-buffer (apply #'make-comint
-                                           comint-name (car cmdlist) nil (cdr cmdlist))
+                                           "inf-clojure" (car cmdlist) nil (cdr cmdlist))
                  (inf-clojure-mode)
                  (setq-local inf-clojure-repl-type repl-type)
                  (hack-dir-local-variables-non-file-buffer))))
