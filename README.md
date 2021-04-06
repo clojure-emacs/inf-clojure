@@ -68,6 +68,8 @@ Functionality like code completion and eldoc is powered by evaluation of predefi
 As different Clojure REPLs have different capabilities, `inf-clojure` tracks the type of a REPL and invokes
 the right code for each REPL type.
 
+`inf-clojure` is built on top of Emacs's [comint](https://github.com/emacs-mirror/emacs/blob/master/lisp/comint.el). Unfortunately `comint` is pretty light on official documentation, but there is a good overview/tutorial [here](https://www.masteringemacs.org/article/comint-writing-command-interpreter).
+
 ## Installation
 
 **Note:** `inf-clojure` requires Emacs 25 or newer.
