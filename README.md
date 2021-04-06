@@ -217,22 +217,23 @@ If you want to update a specific form there is a function
 
 #### Caveats
 
-It is highly recommended to use a cons pair like `("localhost" . 5555)` to
-connect to a socket REPL, terminal REPLs are inherently hard to work with and
-support will be deprecated in the foreseeable future. If you use the
-same project often, make a `.dir-locals.el` file with this information in `inf-clojure-custom-startup`.
+As `inf-clojure` is built on top of `comint` it has all the usual comint limitations -
+namely it can't handle well some fancy terminal features (e.g. ANSI colours).
+In general the "dumber" your terminal REPL is, the better (e.g. `clojure` vs `clj`).
+Connecting to a socket REPL is one simple way to avoid dealing with this type of
+problems.
 
-Note that if you decide _NOT_ to use the socket REPL, it is highly recommended
-you disable output coloring and/or readline facilities: `inf-clojure` does not
+If you decide _not_ to use the socket REPL, it is highly recommended
+you disable output coloring and/or `readline` facilities: `inf-clojure` does not
 filter out ASCII escape characters at the moment and will not behave correctly.
 
-For leiningen, there are no command line switches and you need to add
+For Leiningen, there are no command-line switches and you need to add
 a custom [`project.clj`
 option](https://github.com/technomancy/leiningen/blob/master/sample.project.clj):
 
 ```clojure
 ...
-  :repl-options {:color false}
+:repl-options {:color false}
 ...
 ```
 
