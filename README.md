@@ -20,14 +20,6 @@ the relevant git tag (e.g. 2.2.0) if you need documentation for a
 specific `inf-clojure` release.**
 ***
 
-- [Overview](#overview)
-- [Rationale](#rationale)
-- [Installation](#installation)
-- [Basic Usage](#basic-usage)
-- [Configuration](#configuration)
-- [Troubleshooting](#troubleshooting)
-- [License](#license)
-
 ## Overview
 
 `inf-clojure` aims to expose the extensive self-documenting features of Clojure
