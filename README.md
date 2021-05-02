@@ -13,6 +13,8 @@ It's based on ideas from the popular `inferior-lisp` package.
 interaction minor mode (`inf-clojure-minor-mode`), which extends `clojure-mode`
 with commands to evaluate forms directly in the REPL.
 
+-----------
+
 **This documentation tracks the `master` branch of `inf-clojure`. Some of
 the features and settings discussed here might not be available in
 older releases (including the current stable release). Please, consult
