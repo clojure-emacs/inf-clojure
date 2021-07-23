@@ -2,6 +2,8 @@
 
 ## master (unreleased)
 
+## 3.1.0 (2021-07-23)
+
 ### New features
 
 * [#190](https://github.com/clojure-emacs/inf-clojure/pull/190): Helper function `inf-clojure-set-repl` to select inf-clojure process buffer.
