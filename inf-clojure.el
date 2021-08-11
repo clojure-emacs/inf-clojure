@@ -2,7 +2,7 @@
 
 ;; Copyright © 2014-2021 Bozhidar Batsov
 
-;; Authors: Bozhidar Batsov <bozhidar@batsov.com>
+;; Authors: Bozhidar Batsov <bozhidar@batsov.dev>
 ;;       Olin Shivers <shivers@cs.cmu.edu>
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, clojure

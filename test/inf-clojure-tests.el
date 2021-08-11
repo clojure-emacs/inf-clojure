@@ -2,7 +2,7 @@
 ;;
 ;; Copyright © 2014-2021 Bozhidar Batsov
 
-;; Authors: Bozhidar Batsov <bozhidar@batsov.com>
+;; Authors: Bozhidar Batsov <bozhidar@batsov.dev>
 ;;          Andrea Richiardi <a.richiardi.work@gmail.com>
 
 ;; This file is not part of GNU Emacs.
