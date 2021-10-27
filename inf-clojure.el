@@ -770,6 +770,7 @@ process buffer for a list of commands.)"
         (with-current-buffer (apply #'make-comint
                                     process-buffer-name (car cmdlist) nil (cdr cmdlist))
           (inf-clojure-mode)
+          (set-syntax-table clojure-mode-syntax-table)
           (setq-local inf-clojure-repl-type repl-type)
           (hack-dir-local-variables-non-file-buffer))))
     ;; update the default comint buffer and switch to it
