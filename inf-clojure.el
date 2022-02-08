@@ -282,7 +282,7 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
   (interactive)
   (let ((types (mapcar #'car inf-clojure-repl-features)))
     (intern
-     (completing-read "Set REPL type:"
+     (completing-read "Set REPL type: "
                       (sort (mapcar #'symbol-name types) #'string-lessp)))))
 
 (defgroup inf-clojure nil
