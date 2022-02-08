@@ -154,6 +154,47 @@
                 (macroexpand . "(clojure.core/macroexpand '%s)")
                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))))
 
+(defvar-local inf-clojure-repl-type nil
+  "Symbol to define your REPL type.
+Its root binding is nil and it can be further customized using
+either `setq-local` or an entry in `.dir-locals.el`." )
+
+(defvar inf-clojure-buffer nil
+  "The current `inf-clojure' process buffer.
+
+MULTIPLE PROCESS SUPPORT
+===========================================================================
+To run multiple Clojure processes, you start the first up
+with \\[inf-clojure].  It will be in a buffer named `*inf-clojure*'.
+Rename this buffer with \\[rename-buffer].  You may now start up a new
+process with another \\[inf-clojure].  It will be in a new buffer,
+named `*inf-clojure*'.  You can switch between the different process
+buffers with \\[switch-to-buffer].
+
+Commands that send text from source buffers to Clojure processes --
+like `inf-clojure-eval-defun' or `inf-clojure-show-arglists' -- have to choose a
+process to send to, when you have more than one Clojure process around.  This
+is determined by the global variable `inf-clojure-buffer'.  Suppose you
+have three inferior Clojures running:
+    Buffer              Process
+    foo                 inf-clojure
+    bar                 inf-clojure<2>
+    *inf-clojure*     inf-clojure<3>
+If you do a \\[inf-clojure-eval-defun] command on some Clojure source code,
+what process do you send it to?
+
+- If you're in a process buffer (foo, bar, or *inf-clojure*),
+  you send it to that process.
+- If you're in some other buffer (e.g., a source file), you
+  send it to the process attached to buffer `inf-clojure-buffer'.
+This process selection is performed by function `inf-clojure-proc'.
+
+Whenever \\[inf-clojure] fires up a new process, it resets
+`inf-clojure-buffer' to be the new process's buffer.  If you only run
+one process, this does the right thing.  If you run multiple
+processes, you might need to change `inf-clojure-buffer' to
+whichever process buffer you want to use.")
+
 (defun inf-clojure--get-feature (repl-type feature no-error)
   "Get FEATURE for REPL-TYPE from repl-features.
 If no-error is truthy don't error if feature is not present."
@@ -231,11 +272,6 @@ buffers after they are created with `rename-buffer'."
          (when-let ((repl-buffer (completing-read "Select default REPL: " repl-buffers nil t)))
            (setq inf-clojure-buffer (get-buffer repl-buffer)))
        (user-error "No buffers have an inf-clojure process")))))
-
-(defvar-local inf-clojure-repl-type nil
-  "Symbol to define your REPL type.
-Its root binding is nil and it can be further customized using
-either `setq-local` or an entry in `.dir-locals.el`." )
 
 (defvar inf-clojure--repl-type-lock nil
   "Global lock for protecting against proc filter race conditions.
@@ -543,42 +579,6 @@ See command `inf-clojure-minor-mode'."
   (dolist (buffer (inf-clojure--clojure-buffers))
     (with-current-buffer buffer
       (inf-clojure-minor-mode -1))))
-
-(defvar inf-clojure-buffer nil
-  "The current `inf-clojure' process buffer.
-
-MULTIPLE PROCESS SUPPORT
-===========================================================================
-To run multiple Clojure processes, you start the first up
-with \\[inf-clojure].  It will be in a buffer named `*inf-clojure*'.
-Rename this buffer with \\[rename-buffer].  You may now start up a new
-process with another \\[inf-clojure].  It will be in a new buffer,
-named `*inf-clojure*'.  You can switch between the different process
-buffers with \\[switch-to-buffer].
-
-Commands that send text from source buffers to Clojure processes --
-like `inf-clojure-eval-defun' or `inf-clojure-show-arglists' -- have to choose a
-process to send to, when you have more than one Clojure process around.  This
-is determined by the global variable `inf-clojure-buffer'.  Suppose you
-have three inferior Clojures running:
-    Buffer              Process
-    foo                 inf-clojure
-    bar                 inf-clojure<2>
-    *inf-clojure*     inf-clojure<3>
-If you do a \\[inf-clojure-eval-defun] command on some Clojure source code,
-what process do you send it to?
-
-- If you're in a process buffer (foo, bar, or *inf-clojure*),
-  you send it to that process.
-- If you're in some other buffer (e.g., a source file), you
-  send it to the process attached to buffer `inf-clojure-buffer'.
-This process selection is performed by function `inf-clojure-proc'.
-
-Whenever \\[inf-clojure] fires up a new process, it resets
-`inf-clojure-buffer' to be the new process's buffer.  If you only run
-one process, this does the right thing.  If you run multiple
-processes, you might need to change `inf-clojure-buffer' to
-whichever process buffer you want to use.")
 
 (define-derived-mode inf-clojure-mode comint-mode "Inferior Clojure"
   "Major mode for interacting with an inferior Clojure process.
@@ -1253,19 +1253,6 @@ every other EXPR will be discarded and nil will be returned."
     (inf-clojure--read-or-nil)
     (inf-clojure--list-or-nil)))
 
-(defun inf-clojure-completions (expr)
-  "Return completions for the Clojure expression starting with EXPR.
-
-Under the hood it calls the function
-\\[inf-clojure-completions-fn] passing in the result of
-evaluating \\[inf-clojure-completion-form] at the REPL."
-  (let* ((proc (inf-clojure-proc 'no-error))
-         (completion-form (inf-clojure-get-feature proc 'completion t)))
-    (when (and proc completion-form (not (string-blank-p expr)))
-      (let ((completion-expr (format completion-form (substring-no-properties expr))))
-        (funcall inf-clojure-completions-fn
-                 (inf-clojure--process-response completion-expr proc  "(" ")"))))))
-
 (defcustom inf-clojure-completions-fn 'inf-clojure-list-completions
   "The function that parses completion results.
 
@@ -1289,6 +1276,19 @@ at its implementation for getting to know some utility functions
 you might want to use in your customization."
   :type 'function
   :package-version '(inf-clojure . "2.1.0"))
+
+(defun inf-clojure-completions (expr)
+  "Return completions for the Clojure expression starting with EXPR.
+
+Under the hood it calls the function
+\\[inf-clojure-completions-fn] passing in the result of
+evaluating \\[inf-clojure-completion-form] at the REPL."
+  (let* ((proc (inf-clojure-proc 'no-error))
+         (completion-form (inf-clojure-get-feature proc 'completion t)))
+    (when (and proc completion-form (not (string-blank-p expr)))
+      (let ((completion-expr (format completion-form (substring-no-properties expr))))
+        (funcall inf-clojure-completions-fn
+                 (inf-clojure--process-response completion-expr proc  "(" ")"))))))
 
 (defconst inf-clojure-clojure-expr-break-chars "^[] \"'`><,;|&{()[@\\^]"
   "Regexp are hard.
