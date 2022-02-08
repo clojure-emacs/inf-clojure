@@ -507,7 +507,7 @@ Clojure to load that file."
 ;; :reload-all implies :reload and also forces loading of all libs that the
 ;; identified libs directly or indirectly load via require or use
 
-(defun inf-clojure-reload-form (proc)
+(defun inf-clojure-reload-form (_proc)
   "Return the form to query the Inf-Clojure PROC for reloading a namespace.
 If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-reload-form` variant."
@@ -525,7 +525,7 @@ Clojure to load that file."
   :safe #'stringp
   :package-version '(inf-clojure . "2.2.0"))
 
-(defun inf-clojure-reload-all-form (proc)
+(defun inf-clojure-reload-all-form (_proc)
   "Return the form to query the Inf-Clojure PROC for :reload-all of a namespace.
 If you are using REPL types, it will pickup the most appropriate
 `inf-clojure-reload-all-form` variant."
