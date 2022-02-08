@@ -1450,7 +1450,7 @@ Useful for commands that can invoked outside of an ‘inf-clojure’ buffer
   "Send FORM and apply MATCH-P on the result of sending it to PROC.
 Note that this function will add a \n to the end of the string
 for evaluation, therefore FORM should not include it."
-p  (funcall match-p (inf-clojure--process-response form proc nil)))
+  (funcall match-p (inf-clojure--process-response form proc nil)))
 
 (provide 'inf-clojure)
 
