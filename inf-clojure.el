@@ -1403,10 +1403,18 @@ Return the number of nested sexp the point was over or after."
           (setq inf-clojure-eldoc-last-symbol (cons thing arglists))
           arglists)))))
 
+(defvar inf-clojure-eldoc-enabledp t
+  "Var that allows disabling `eldoc-mode` in `inf-clojure`.
+
+Set to `nil` to disable eldoc.  Eldoc can be quite useful by
+displaying funciton signatures in the modeline, but can also
+cause multiple prompts to appear and mess with `*1`, `*2`, etc.")
+
 (defun inf-clojure-eldoc ()
   "Backend function for eldoc to show argument list in the echo area."
   ;; todo: this never gets unset once connected and is a lie
-  (when (and (inf-clojure-connected-p)
+  (when (and inf-clojure-eldoc-enabledp
+             (inf-clojure-connected-p)
              ;; don't clobber an error message in the minibuffer
              (not (member last-command '(next-error previous-error))))
     (let* ((info (inf-clojure-eldoc-info-in-current-sexp))
