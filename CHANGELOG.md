@@ -2,6 +2,10 @@
 
 ## master (unreleased)
 
+### New features
+
+* [#187](https://github.com/clojure-emacs/inf-clojure/pull/197): Defvar `inf-clojure-eldoc-enabledp` to disable eldoc interaction.
+
 ## 3.1.0 (2021-07-23)
 
 ### New features
