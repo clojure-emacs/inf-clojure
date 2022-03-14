@@ -388,7 +388,7 @@ mode line entirely."
   "Var that allows disabling `eldoc-mode` in `inf-clojure`.
 
 Set to `nil` to disable eldoc.  Eldoc can be quite useful by
-displaying funciton signatures in the modeline, but can also
+displaying function signatures in the modeline, but can also
 cause multiple prompts to appear and mess with `*1`, `*2`, etc.")
 
 ;;;###autoload
