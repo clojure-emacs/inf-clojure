@@ -364,7 +364,7 @@ list of the function call you are currently editing in the echo area. It
 accomplishes this by evaluating forms to get the metadata for the vars under
 your cursor. One side effect of this is that it can mess with repl vars like
 `*1` and `*2`. You can disable inf-clojure's Eldoc functionality with `(setq
-inf-clojure-eldoc-enabledp nil)`.
+inf-clojure-enable-eldoc nil)`.
 
 
 ElDoc should be enabled by default in Emacs 26.1+. If it is not active by

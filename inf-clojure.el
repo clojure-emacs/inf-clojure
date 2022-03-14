@@ -384,7 +384,7 @@ mode line entirely."
   :type 'sexp
   :risky t)
 
-(defcustom inf-clojure-eldoc-enabledp t
+(defcustom inf-clojure-enable-eldoc t
   "Var that allows disabling `eldoc-mode` in `inf-clojure`.
 
 Set to `nil` to disable eldoc.  Eldoc can be quite useful by
@@ -401,7 +401,7 @@ The following commands are available:
   :lighter inf-clojure-mode-line
   :keymap inf-clojure-minor-mode-map
   (setq-local comint-input-sender 'inf-clojure--send-string)
-  (when inf-clojure-eldoc-enabledp
+  (when inf-clojure-enable-eldoc
     (inf-clojure-eldoc-setup))
   (make-local-variable 'completion-at-point-functions)
   (add-to-list 'completion-at-point-functions
@@ -639,7 +639,7 @@ to continue it."
   (setq mode-line-process '(":%s"))
   (clojure-mode-variables)
   (clojure-font-lock-setup)
-  (when inf-clojure-eldoc-enabledp
+  (when inf-clojure-enable-eldoc
     (inf-clojure-eldoc-setup))
   (setq comint-get-old-input #'inf-clojure-get-old-input)
   (setq comint-input-filter #'inf-clojure-input-filter)
@@ -1416,7 +1416,7 @@ Return the number of nested sexp the point was over or after."
   "Backend function for eldoc to show argument list in the echo area."
   ;; todo: this never gets unset once connected and is a lie
   (when (and (inf-clojure-connected-p)
-             inf-clojure-eldoc-enabledp
+             inf-clojure-enable-eldoc
              ;; don't clobber an error message in the minibuffer
              (not (member last-command '(next-error previous-error))))
     (let* ((info (inf-clojure-eldoc-info-in-current-sexp))
