@@ -1416,6 +1416,7 @@ Return the number of nested sexp the point was over or after."
   "Backend function for eldoc to show argument list in the echo area."
   ;; todo: this never gets unset once connected and is a lie
   (when (and (inf-clojure-connected-p)
+             inf-clojure-eldoc-enabledp
              ;; don't clobber an error message in the minibuffer
              (not (member last-command '(next-error previous-error))))
     (let* ((info (inf-clojure-eldoc-info-in-current-sexp))
