@@ -384,7 +384,7 @@ mode line entirely."
   :type 'sexp
   :risky t)
 
-(defvar inf-clojure-eldoc-enabledp t
+(defcustom inf-clojure-eldoc-enabledp t
   "Var that allows disabling `eldoc-mode` in `inf-clojure`.
 
 Set to `nil` to disable eldoc.  Eldoc can be quite useful by
