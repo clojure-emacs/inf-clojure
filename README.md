@@ -356,18 +356,20 @@ startup when using the `inf-clojure` command or is specified manually when using
 
 #### ElDoc
 
-**Note:** You can skip this section if you're using Emacs 26.1+, as `eldoc-mode`
-is enabled by default there.
-
 `eldoc-mode` is supported in Clojure source buffers and `*inferior-clojure*`
 buffers which are running a Clojure REPL.
 
-When ElDoc is enabled and there is an active REPL, it will show the
-argument list of the function call you are currently editing in the
-echo area.
+When ElDoc is enabled and there is an active REPL, it will show the argument
+list of the function call you are currently editing in the echo area. It
+accomplishes this by evaluating forms to get the metadata for the vars under
+your cursor. One side effect of this is that it can mess with repl vars like
+`*1` and `*2`. You can disable inf-clojure's Eldoc functionality with `(setq
+inf-clojure-enable-eldoc nil)`.
 
-You can activate ElDoc with `M-x eldoc-mode` or by adding the
-following to you Emacs config:
+
+ElDoc should be enabled by default in Emacs 26.1+. If it is not active by
+default, you can activate ElDoc with `M-x eldoc-mode` or by adding the following
+to you Emacs config:
 
 ```emacs-lisp
 (add-hook 'clojure-mode-hook #'eldoc-mode)
