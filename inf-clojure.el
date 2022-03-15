@@ -425,7 +425,10 @@ mode line entirely."
 
 Set to `nil` to disable eldoc.  Eldoc can be quite useful by
 displaying function signatures in the modeline, but can also
-cause multiple prompts to appear and mess with `*1`, `*2`, etc.")
+cause multiple prompts to appear and mess with `*1`, `*2`, etc."
+  :type 'boolean
+  :safe 'booleanp
+  :package-version '(inf-clojure . "3.2.0"))
 
 ;;;###autoload
 (define-minor-mode inf-clojure-minor-mode
