@@ -775,7 +775,7 @@ process buffer for a list of commands.)"
       (let ((default-directory (or project-dir default-directory))
             (cmdlist (if (consp cmd)
                          (list cmd)
-                       (split-string cmd)))
+                       (split-string-and-unquote cmd)))
             (repl-type (or (unless prefix-arg
                              inf-clojure-custom-repl-type)
                            (car (rassoc cmd inf-clojure-startup-forms))
