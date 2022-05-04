@@ -330,6 +330,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
     (define-key map (kbd "C-c M-o") #'inf-clojure-clear-repl-buffer)
     (define-key map (kbd "C-c C-q") #'inf-clojure-quit)
+    (define-key map (kbd "C-c C-z") #'inf-clojure-switch-to-recent-buffer)
     (easy-menu-define inf-clojure-mode-menu map
       "Inferior Clojure REPL Menu"
       '("Inf-Clojure REPL"
@@ -694,21 +695,36 @@ to continue it."
     (let ((comint-buffer-maximum-size 0))
       (comint-truncate-buffer))))
 
+(defvar inf-clojure--recent-buffer nil)
+
+(defun inf-clojure--swap-to-buffer-window (to-buffer)
+  "Switch to `TO-BUFFER''s window."
+  (let ((pop-up-frames
+         ;; Be willing to use another frame
+         ;; that already has the window in it.
+         (or pop-up-frames
+             (get-buffer-window to-buffer t))))
+    (pop-to-buffer to-buffer)))
+
 (defun inf-clojure-switch-to-repl (eob-p)
   "Switch to the inferior Clojure process buffer.
 With prefix argument EOB-P, positions cursor at end of buffer."
   (interactive "P")
   (if (get-buffer-process inf-clojure-buffer)
-      (let ((pop-up-frames
-             ;; Be willing to use another frame
-             ;; that already has the window in it.
-             (or pop-up-frames
-                 (get-buffer-window inf-clojure-buffer t))))
-        (pop-to-buffer inf-clojure-buffer))
+      (progn
+        (setq inf-clojure--recent-buffer (current-buffer))
+        (inf-clojure--swap-to-buffer-window inf-clojure-buffer))
     (call-interactively #'inf-clojure))
   (when eob-p
     (push-mark)
     (goto-char (point-max))))
+
+(defun inf-clojure-switch-to-recent-buffer ()
+  "Switch to `inf-clojure--recent-buffer''s window."
+  (interactive)
+  (if inf-clojure--recent-buffer
+      (inf-clojure--swap-to-buffer-window inf-clojure--recent-buffer)
+    (message "inf-clojure: No recent buffer known.")))
 
 (defun inf-clojure-quit (&optional buffer)
   "Kill the REPL buffer and its underlying process.
@@ -787,6 +803,8 @@ process buffer for a list of commands.)"
           (set-syntax-table clojure-mode-syntax-table)
           (setq-local inf-clojure-repl-type repl-type)
           (hack-dir-local-variables-non-file-buffer))))
+    ;; keep the initial buffer in case we want to swap back to it
+    (setq inf-clojure--recent-buffer (current-buffer))
     ;; update the default comint buffer and switch to it
     (setq inf-clojure-buffer (get-buffer repl-buffer-name))
     (if inf-clojure-repl-use-same-window

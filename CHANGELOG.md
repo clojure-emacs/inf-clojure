@@ -4,6 +4,7 @@
 
 ### New features
 
+* [#168](https://github.com/clojure-emacs/inf-clojure/pull/197): Helper function `inf-clojure-switch-to-recent-buffer` to select the last buffer an inf-clojure process buffer was swapped to from.
 * [#187](https://github.com/clojure-emacs/inf-clojure/pull/197): Defcustom `inf-clojure-enable-eldoc` to disable eldoc interaction.
 
 ## 3.1.0 (2021-07-23)
