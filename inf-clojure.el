@@ -816,7 +816,9 @@ process buffer for a list of commands.)"
   "Connect to a running socket REPL server via `inf-clojure'.
 HOST is the host the process is running on, PORT is where it's listening."
   (interactive "shost: \nnport: ")
-  (inf-clojure (cons host port)))
+  (progn
+    (setq inf-clojure--recent-buffer (current-buffer))
+    (inf-clojure (cons host port))))
 
 (defun inf-clojure--forms-without-newlines (str)
   "Remove newlines between toplevel forms.
