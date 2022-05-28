@@ -684,12 +684,19 @@ to continue it."
   (let* ((last-line (car (last (split-string str "\n"))))
          (response-was-one-line (string= last-line str))
          (last-line-was-prompt (string-match inf-clojure-prompt last-line))
-         (filtered (if (and inf-clojure--previous-response-ended-with-prompt
-                            response-was-one-line
-                            last-line-was-prompt)
-                       ;; Prevent prompts from stacking in the same line.
-                       ""
-                     (inf-clojure-chomp (concat "\n" str)))))
+         (filtered (cond
+                    ;; Just a prompt.
+                    ((and inf-clojure--previous-response-ended-with-prompt
+                          response-was-one-line
+                          last-line-was-prompt)
+                     "")
+                    ;; Not just a prompt, not the beginning of a response, don't insert unnecessary lines.
+                    ;; This should be a continuation of a previous response.
+                    ((not inf-clojure--previous-response-ended-with-prompt)
+                     str)
+                    ;; This should be the beginning of a response.
+                    (t
+                     (concat "\n" str)))))
     (set 'inf-clojure--previous-response-ended-with-prompt last-line-was-prompt)
     filtered))
 
