@@ -695,8 +695,6 @@ to continue it."
     (let ((comint-buffer-maximum-size 0))
       (comint-truncate-buffer))))
 
-(defvar inf-clojure--recent-buffer nil)
-
 (defun inf-clojure--swap-to-buffer-window (to-buffer)
   "Switch to `TO-BUFFER''s window."
   (let ((pop-up-frames
@@ -711,20 +709,21 @@ to continue it."
 With prefix argument EOB-P, positions cursor at end of buffer."
   (interactive "P")
   (if (get-buffer-process inf-clojure-buffer)
-      (progn
-        (setq inf-clojure--recent-buffer (current-buffer))
-        (inf-clojure--swap-to-buffer-window inf-clojure-buffer))
+      (inf-clojure--swap-to-buffer-window inf-clojure-buffer)
     (call-interactively #'inf-clojure))
   (when eob-p
     (push-mark)
     (goto-char (point-max))))
 
 (defun inf-clojure-switch-to-recent-buffer ()
-  "Switch to `inf-clojure--recent-buffer''s window."
+  "Switch to the most recently used `inf-clojure-minor-mode' buffer."
   (interactive)
-  (if inf-clojure--recent-buffer
-      (inf-clojure--swap-to-buffer-window inf-clojure--recent-buffer)
-    (message "inf-clojure: No recent buffer known.")))
+  (let ((recent-inf-clojure-minor-mode-buffer (seq-find (lambda (buf)
+                                                          (with-current-buffer buf (bound-and-true-p inf-clojure-minor-mode)))
+                                                        (buffer-list))))
+    (if recent-inf-clojure-minor-mode-buffer
+        (inf-clojure--swap-to-buffer-window recent-inf-clojure-minor-mode-buffer)
+      (message "inf-clojure: No recent buffer known."))))
 
 (defun inf-clojure-quit (&optional buffer)
   "Kill the REPL buffer and its underlying process.
@@ -803,8 +802,6 @@ process buffer for a list of commands.)"
           (set-syntax-table clojure-mode-syntax-table)
           (setq-local inf-clojure-repl-type repl-type)
           (hack-dir-local-variables-non-file-buffer))))
-    ;; keep the initial buffer in case we want to swap back to it
-    (setq inf-clojure--recent-buffer (current-buffer))
     ;; update the default comint buffer and switch to it
     (setq inf-clojure-buffer (get-buffer repl-buffer-name))
     (if inf-clojure-repl-use-same-window
@@ -816,9 +813,7 @@ process buffer for a list of commands.)"
   "Connect to a running socket REPL server via `inf-clojure'.
 HOST is the host the process is running on, PORT is where it's listening."
   (interactive "shost: \nnport: ")
-  (progn
-    (setq inf-clojure--recent-buffer (current-buffer))
-    (inf-clojure (cons host port))))
+  (inf-clojure (cons host port)))
 
 (defun inf-clojure--forms-without-newlines (str)
   "Remove newlines between toplevel forms.
