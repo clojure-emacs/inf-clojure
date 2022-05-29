@@ -702,7 +702,7 @@ to continue it."
          ;; that already has the window in it.
          (or pop-up-frames
              (get-buffer-window to-buffer t))))
-    (pop-to-buffer to-buffer)))
+    (pop-to-buffer to-buffer '(display-buffer-reuse-window . ()))))
 
 (defun inf-clojure-switch-to-repl (eob-p)
   "Switch to the inferior Clojure process buffer.
