@@ -330,6 +330,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
     (define-key map (kbd "C-c M-o") #'inf-clojure-clear-repl-buffer)
     (define-key map (kbd "C-c C-q") #'inf-clojure-quit)
+    (define-key map (kbd "C-c C-z") #'inf-clojure-switch-to-recent-buffer)
     (easy-menu-define inf-clojure-mode-menu map
       "Inferior Clojure REPL Menu"
       '("Inf-Clojure REPL"
@@ -694,21 +695,35 @@ to continue it."
     (let ((comint-buffer-maximum-size 0))
       (comint-truncate-buffer))))
 
+(defun inf-clojure--swap-to-buffer-window (to-buffer)
+  "Switch to `TO-BUFFER''s window."
+  (let ((pop-up-frames
+         ;; Be willing to use another frame
+         ;; that already has the window in it.
+         (or pop-up-frames
+             (get-buffer-window to-buffer t))))
+    (pop-to-buffer to-buffer '(display-buffer-reuse-window . ()))))
+
 (defun inf-clojure-switch-to-repl (eob-p)
   "Switch to the inferior Clojure process buffer.
 With prefix argument EOB-P, positions cursor at end of buffer."
   (interactive "P")
   (if (get-buffer-process inf-clojure-buffer)
-      (let ((pop-up-frames
-             ;; Be willing to use another frame
-             ;; that already has the window in it.
-             (or pop-up-frames
-                 (get-buffer-window inf-clojure-buffer t))))
-        (pop-to-buffer inf-clojure-buffer))
+      (inf-clojure--swap-to-buffer-window inf-clojure-buffer)
     (call-interactively #'inf-clojure))
   (when eob-p
     (push-mark)
     (goto-char (point-max))))
+
+(defun inf-clojure-switch-to-recent-buffer ()
+  "Switch to the most recently used `inf-clojure-minor-mode' buffer."
+  (interactive)
+  (let ((recent-inf-clojure-minor-mode-buffer (seq-find (lambda (buf)
+                                                          (with-current-buffer buf (bound-and-true-p inf-clojure-minor-mode)))
+                                                        (buffer-list))))
+    (if recent-inf-clojure-minor-mode-buffer
+        (inf-clojure--swap-to-buffer-window recent-inf-clojure-minor-mode-buffer)
+      (message "inf-clojure: No recent buffer known."))))
 
 (defun inf-clojure-quit (&optional buffer)
   "Kill the REPL buffer and its underlying process.
