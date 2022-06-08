@@ -676,8 +676,6 @@ to continue it."
   "Remove subprompts from STRING."
   (replace-regexp-in-string inf-clojure-subprompt "" string))
 
-(defvar inf-clojure--previous-response-ended-with-prompt nil)
-
 (defun inf-clojure-preoutput-filter (str)
   "Preprocess the output STR from interactive commands."
   (inf-clojure--log-string str "<-RES----")
@@ -801,6 +799,7 @@ process buffer for a list of commands.)"
           (inf-clojure-mode)
           (set-syntax-table clojure-mode-syntax-table)
           (setq-local inf-clojure-repl-type repl-type)
+          (defvar-local inf-clojure--previous-response-ended-with-prompt nil)
           (hack-dir-local-variables-non-file-buffer))))
     ;; update the default comint buffer and switch to it
     (setq inf-clojure-buffer (get-buffer repl-buffer-name))
