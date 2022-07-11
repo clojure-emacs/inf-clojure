@@ -385,13 +385,13 @@ Code completion is a tricky aspect if you are trying to be as close to
 a generic REPL as possible. Planck and lumo REPL implementations
 explicitly provide completion functions in their REPL namespaces. For
 clojure, you will need to have a library on your classpath. If you are
-using lein, you already have
-[clojure-complete](https://github.com/ninjudd/clojure-complete). You
+using a recent version of Leiningen, you already have
+[incomplete](https://github.com/nrepl/incomplete). You
 could alternatively use `compliment {:mvn/version "0.3.10"}`.
 
 ```emacs-lisp
-;; for clojure-complete
-(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
+;; for incomplete
+(inf-clojure-update-feature 'clojure 'completion "(incomplete.core/completions \"%s\")")
 
 ;; or
 ;; for compliment
@@ -401,16 +401,13 @@ could alternatively use `compliment {:mvn/version "0.3.10"}`.
 
 If you give a form for the completion form, it is your responsibility
 to ensure that this namespace is on the classpath and required. If
-using lein, this is done for you with clojure-complete. If adding
-compliment, the following sample deps.edn can conveniently add the dep
-to your program.
-
-Sample deps.edn:
+using Leiningen, this is done for you with `incomplete`. If adding
+`compliment`, the following sample `deps.edn` can conveniently add the dep
+to your program:
 
 ```clojure
 {:aliases {:compliment {:extra-deps {compliment {:mvn/version "0.3.10"}}}}}
 ```
-
 
 Use the startup command: `clojure -A:compliment`. Then require the ns
 once so that the completion machinery will work: `(require
@@ -422,7 +419,7 @@ to customization. Not only you can `setq` the customary
 `inf-clojure-completion-form-planck` and
 `inf-clojure-completion-form-joker` - the form to send to the REPL -
 but you can also use `inf-clojure-completions-fn` for specifying a
-function that given the REPL response should return elisp data
+function that given the REPL response should return Elisp data
 compatible with
 [`completion-at-point-functions`](https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html).
 For more info run `M-x describe-variable RET
@@ -434,7 +431,7 @@ it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765d
 
 For an optimal Lumo experience the `-d` needs to be passed to Lumo
 when launched from the command line. This disable `readline` support
-in order to play nicely with emacs.
+in order to play nicely with Emacs.
 
 ## Troubleshooting
 
