@@ -10,7 +10,7 @@
 This package provides basic interaction with a Clojure subprocess (REPL).
 It's based on ideas from the popular `inferior-lisp` package.
 
-`inf-clojure` has two components - a nice REPL buffer (`inf-clojure`) and a REPL
+`inf-clojure` has two components - a nice REPL buffer (`inf-clojure-mode`) and a REPL
 interaction minor mode (`inf-clojure-minor-mode`), which extends `clojure-mode`
 with commands to evaluate forms directly in the REPL.
 
@@ -70,18 +70,18 @@ the right code for each REPL type.
 
 **Note:** `inf-clojure` requires Emacs 25 or newer.
 
-`inf-clojure` is available on the community-maintained `package.el` repos -
+`inf-clojure` is available on the official [NonGNU ELPA](https://elpa.nongnu.org/nongnu/inf-clojure.html) `package.el` repo and on the community-maintained
 [MELPA Stable][] and [MELPA][] repos.
 
-MELPA Stable is recommended as it has the latest stable version.
+NonGNU ELPA and MELPA Stable are recommended as they have the latest stable version.
 MELPA has a development snapshot for users who don't mind breakage but
-don't want to run from a git checkout.
+don't want to run `inf-clojure` from a git checkout.
 
 You can install `inf-clojure` using the following command:
 
 <kbd>M-x package-install [RET] inf-clojure [RET]</kbd>
 
-or if you'd rather keep it in your dotfiles:
+or if you'd rather keep it in your Emacs config:
 
 ```emacs-lisp
 (unless (package-installed-p 'inf-clojure)
@@ -122,11 +122,11 @@ and enter its host and port numbers.
 Inf-clojure aims to be very simple and offer tooling that the REPL
 itself exposes. A few commands are:
 
-- eval last sexp `C-x C-e`
-- show arglists for function `C-c C-a`
-- show var documentation `C-c C-v`
-- show source `C-c C-s`
-- insert top level form into REPL `C-c C-j d`
+- eval last sexp (`C-x C-e`)
+- show arglists for function (`C-c C-a`)
+- show var documentation (`C-c C-v`)
+- show source (`C-c C-s`)
+- insert top level form into REPL (`C-c C-j d`)
 
 For a list of all available commands in `inf-clojure-mode` (a.k.a. the
 REPL) and `inf-clojure-minor-mode` you can either invoke `C-h f RET
