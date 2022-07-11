@@ -210,7 +210,7 @@ If you want to update a specific form there is a function
 `inf-clojure-update-repl-feature` which can be used like so:
 
 ```emacs-lisp
-(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
+(inf-clojure-update-feature 'clojure 'completion "(incomplete.core/completions \"%s\")")
 ```
 
 #### Caveats
