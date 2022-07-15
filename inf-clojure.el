@@ -5,7 +5,7 @@
 ;; Authors: Bozhidar Batsov <bozhidar@batsov.dev>
 ;;       Olin Shivers <shivers@cs.cmu.edu>
 ;; URL: http://github.com/clojure-emacs/inf-clojure
-;; Keywords: processes, clojure
+;; Keywords: processes, comint, clojure
 ;; Version: 3.2.0-snapshot
 ;; Package-Requires: ((emacs "25.1") (clojure-mode "5.11"))
 
