@@ -293,8 +293,9 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
   :link '(emacs-commentary-link :tag "Commentary" "inf-clojure"))
 
 (defconst inf-clojure-version
-  (eval-when-compile
-    (lm-version (or load-file-name buffer-file-name)))
+  (or (if (fboundp 'package-get-version)
+          (package-get-version))
+      "3.2.0")
   "The current version of `inf-clojure'.")
 
 (defcustom inf-clojure-prompt-read-only t
