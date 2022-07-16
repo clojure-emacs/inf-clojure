@@ -10,3 +10,7 @@ TAGS
 dist
 .vagrant/
 .dir-locals?.el
+
+# ELPA-generated files
+/inf-clojure-autoloads.el
+/inf-clojure-pkg.el

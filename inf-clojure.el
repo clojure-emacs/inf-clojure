@@ -4,6 +4,7 @@
 
 ;; Authors: Bozhidar Batsov <bozhidar@batsov.dev>
 ;;       Olin Shivers <shivers@cs.cmu.edu>
+;; Maintainer: Bozhidar Batsov <bozhidar@batsov.dev>
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, comint, clojure
 ;; Version: 3.2.0
@@ -212,8 +213,8 @@ If no-error is truthy don't error if feature is not present."
 
 (defun inf-clojure--update-feature (repl-type feature form)
   "Return a copy of the datastructure containing the repl features.
-Given a REPL-TYPE ('clojure, 'lumo, ...) and a FEATURE ('doc,
-'apropos, ...) and a FORM this will return a new datastructure
+Given a REPL-TYPE (`clojure', `lumo', ...) and a FEATURE (`doc',
+`apropos', ...) and a FORM this will return a new datastructure
 that can be set as `inf-clojure-repl-features'."
   (let ((original (alist-get repl-type inf-clojure-repl-features)))
     (if original
@@ -225,8 +226,8 @@ that can be set as `inf-clojure-repl-features'."
 
 (defun inf-clojure-update-feature (repl-type feature form)
   "Mutate the repl features to the new FORM.
-Given a REPL-TYPE ('clojure, 'lumo, ...) and a FEATURE ('doc,
-'apropos, ...) and a FORM this will set
+Given a REPL-TYPE (`clojure', `lumo', ...) and a FEATURE (`doc',
+`apropos', ...) and a FORM this will set
 `inf-clojure-repl-features' with these new values."
   (setq inf-clojure-repl-features (inf-clojure--update-feature repl-type feature form)))
 
@@ -352,7 +353,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
     map))
 
 (defvar inf-clojure-insert-commands-map
-  (let ((map (define-prefix-command 'inf-clojure-insert-commands-map)))
+  (let ((map (make-sparse-keymap)))
     (define-key map (kbd "d") #'inf-clojure-insert-defun)
     (define-key map (kbd "C-d") #'inf-clojure-insert-defun)
     (define-key map (kbd "e") #'inf-clojure-insert-last-sexp)
@@ -369,7 +370,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
     (define-key map (kbd "C-c C-r") #'inf-clojure-eval-region)
     (define-key map (kbd "C-c M-r") #'inf-clojure-reload)
     (define-key map (kbd "C-c C-n") #'inf-clojure-eval-form-and-next)
-    (define-key map (kbd "C-c C-j") 'inf-clojure-insert-commands-map)
+    (define-key map (kbd "C-c C-j") inf-clojure-insert-commands-map)
     (define-key map (kbd "C-c C-z") #'inf-clojure-switch-to-repl)
     (define-key map (kbd "C-c C-i") #'inf-clojure-show-ns-vars)
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
@@ -430,7 +431,7 @@ displaying function signatures in the modeline, but can also
 cause multiple prompts to appear in the REPL and mess with *1,
 *2, etc."
   :type 'boolean
-  :safe 'booleanp
+  :safe #'booleanp
   :package-version '(inf-clojure . "3.2.0"))
 
 ;;;###autoload
@@ -926,10 +927,10 @@ Indent FORM.  FORM is expected to have been trimmed."
    (buffer-substring-no-properties (save-excursion (backward-sexp) (point))
                                    (point))))
 
-;;; Now that inf-clojure-eval-/defun/region takes an optional prefix arg,
-;;; these commands are redundant. But they are kept around for the user
-;;; to bind if he wishes, for backwards functionality, and because it's
-;;; easier to type C-c e than C-u C-c C-e.
+;; Now that inf-clojure-eval-/defun/region takes an optional prefix arg,
+;; these commands are redundant. But they are kept around for the user
+;; to bind if he wishes, for backwards functionality, and because it's
+;; easier to type C-c e than C-u C-c C-e.
 
 (defun inf-clojure-eval-region-and-go (start end)
   "Send the current region to the inferior Clojure, and switch to its buffer.
@@ -1017,7 +1018,7 @@ display."
           (if (zerop (length ans)) default ans))))
 
 
-;;; Adapted from function-called-at-point in help.el.
+;; Adapted from function-called-at-point in help.el.
 (defun inf-clojure-fn-called-at-pt ()
   "Return the name of the function called in the current call.
 The value is nil if it can't find one."
