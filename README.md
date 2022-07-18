@@ -10,7 +10,7 @@
 This package provides basic interaction with a Clojure subprocess (REPL).
 It's based on ideas from the popular `inferior-lisp` package.
 
-`inf-clojure` has two components - a nice REPL buffer (`inf-clojure`) and a REPL
+`inf-clojure` has two components - a nice REPL buffer (`inf-clojure-mode`) and a REPL
 interaction minor mode (`inf-clojure-minor-mode`), which extends `clojure-mode`
 with commands to evaluate forms directly in the REPL.
 
@@ -70,18 +70,18 @@ the right code for each REPL type.
 
 **Note:** `inf-clojure` requires Emacs 25 or newer.
 
-`inf-clojure` is available on the community-maintained `package.el` repos -
+`inf-clojure` is available on the official [NonGNU ELPA](https://elpa.nongnu.org/nongnu/inf-clojure.html) `package.el` repo and on the community-maintained
 [MELPA Stable][] and [MELPA][] repos.
 
-MELPA Stable is recommended as it has the latest stable version.
+NonGNU ELPA and MELPA Stable are recommended as they have the latest stable version.
 MELPA has a development snapshot for users who don't mind breakage but
-don't want to run from a git checkout.
+don't want to run `inf-clojure` from a git checkout.
 
 You can install `inf-clojure` using the following command:
 
 <kbd>M-x package-install [RET] inf-clojure [RET]</kbd>
 
-or if you'd rather keep it in your dotfiles:
+or if you'd rather keep it in your Emacs config:
 
 ```emacs-lisp
 (unless (package-installed-p 'inf-clojure)
@@ -122,11 +122,11 @@ and enter its host and port numbers.
 Inf-clojure aims to be very simple and offer tooling that the REPL
 itself exposes. A few commands are:
 
-- eval last sexp `C-x C-e`
-- show arglists for function `C-c C-a`
-- show var documentation `C-c C-v`
-- show source `C-c C-s`
-- insert top level form into REPL `C-c C-j d`
+- eval last sexp (`C-x C-e`)
+- show arglists for function (`C-c C-a`)
+- show var documentation (`C-c C-v`)
+- show source (`C-c C-s`)
+- insert top level form into REPL (`C-c C-j d`)
 
 For a list of all available commands in `inf-clojure-mode` (a.k.a. the
 REPL) and `inf-clojure-minor-mode` you can either invoke `C-h f RET
@@ -210,7 +210,7 @@ If you want to update a specific form there is a function
 `inf-clojure-update-repl-feature` which can be used like so:
 
 ```emacs-lisp
-(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
+(inf-clojure-update-feature 'clojure 'completion "(incomplete.core/completions \"%s\")")
 ```
 
 #### Caveats
@@ -385,13 +385,13 @@ Code completion is a tricky aspect if you are trying to be as close to
 a generic REPL as possible. Planck and lumo REPL implementations
 explicitly provide completion functions in their REPL namespaces. For
 clojure, you will need to have a library on your classpath. If you are
-using lein, you already have
-[clojure-complete](https://github.com/ninjudd/clojure-complete). You
+using a recent version of Leiningen, you already have
+[incomplete](https://github.com/nrepl/incomplete). You
 could alternatively use `compliment {:mvn/version "0.3.10"}`.
 
 ```emacs-lisp
-;; for clojure-complete
-(inf-clojure-update-feature 'clojure 'completion "(complete.core/completions \"%s\")")
+;; for incomplete
+(inf-clojure-update-feature 'clojure 'completion "(incomplete.core/completions \"%s\")")
 
 ;; or
 ;; for compliment
@@ -401,16 +401,13 @@ could alternatively use `compliment {:mvn/version "0.3.10"}`.
 
 If you give a form for the completion form, it is your responsibility
 to ensure that this namespace is on the classpath and required. If
-using lein, this is done for you with clojure-complete. If adding
-compliment, the following sample deps.edn can conveniently add the dep
-to your program.
-
-Sample deps.edn:
+using Leiningen, this is done for you with `incomplete`. If adding
+`compliment`, the following sample `deps.edn` can conveniently add the dep
+to your program:
 
 ```clojure
 {:aliases {:compliment {:extra-deps {compliment {:mvn/version "0.3.10"}}}}}
 ```
-
 
 Use the startup command: `clojure -A:compliment`. Then require the ns
 once so that the completion machinery will work: `(require
@@ -422,7 +419,7 @@ to customization. Not only you can `setq` the customary
 `inf-clojure-completion-form-planck` and
 `inf-clojure-completion-form-joker` - the form to send to the REPL -
 but you can also use `inf-clojure-completions-fn` for specifying a
-function that given the REPL response should return elisp data
+function that given the REPL response should return Elisp data
 compatible with
 [`completion-at-point-functions`](https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html).
 For more info run `M-x describe-variable RET
@@ -434,7 +431,7 @@ it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765d
 
 For an optimal Lumo experience the `-d` needs to be passed to Lumo
 when launched from the command line. This disable `readline` support
-in order to play nicely with emacs.
+in order to play nicely with Emacs.
 
 ## Troubleshooting
 
