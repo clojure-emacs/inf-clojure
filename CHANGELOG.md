@@ -2,6 +2,12 @@
 
 ## master (unreleased)
 
+## 3.2.1 (2022-07-22)
+
+### Bugs fixed
+
+* Address some small issues with NonGNU ELPA (e.g. missing maintainer metadata).
+
 ## 3.2.0 (2022-07-15)
 
 ### New features
