@@ -75,7 +75,7 @@
                                     (boot . "boot repl")
                                     (clojure . "clojure")
                                     (cljs . "clojure -m cljs.main -r")
-                                    (cljr . "lein clr repl")
+                                    (lein-clr . "lein clr repl")
                                     (planck . "planck -d")
                                     (babashka . "bb")
                                     (lumo . "lumo -d")
@@ -155,21 +155,21 @@
                 (set-ns . "(clojure.core/in-ns '%s)")
                 (macroexpand . "(clojure.core/macroexpand '%s)")
                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))
-    (cljr . ((load . "(clojure.core/load-file \"%s\")")
-             (doc . "(clojure.repl/doc %s)")
-             (source . "(clojure.repl/source %s)")
-             (arglists .
-                       "(try
-                         (:arglists
-                          (clojure.core/meta
-                           (clojure.core/resolve
-                            (clojure.core/read-string \"%s\"))))
-                         (catch Exception e nil))")
-             (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
-             (ns-vars . "(clojure.repl/dir %s)")
-             (set-ns . "(clojure.core/in-ns '%s)")
-             (macroexpand . "(clojure.core/macroexpand '%s)")
-             (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))))
+    (lein-clr . ((load . "(clojure.core/load-file \"%s\")")
+                 (doc . "(clojure.repl/doc %s)")
+                 (source . "(clojure.repl/source %s)")
+                 (arglists .
+                           "(try
+                             (:arglists
+                              (clojure.core/meta
+                               (clojure.core/resolve
+                                (clojure.core/read-string \"%s\"))))
+                             (catch Exception e nil))")
+                 (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
+                 (ns-vars . "(clojure.repl/dir %s)")
+                 (set-ns . "(clojure.core/in-ns '%s)")
+                 (macroexpand . "(clojure.core/macroexpand '%s)")
+                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))))
 
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.

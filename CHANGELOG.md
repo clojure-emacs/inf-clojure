@@ -123,3 +123,4 @@
 ### New Features
 
 * [#22](https://github.com/clojure-emacs/inf-clojure/pull/22): Add ElDoc support.
+* [#202](https://github.com/clojure-emacs/inf-clojure/issues/202): Add ClojureCLR support.
