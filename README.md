@@ -31,13 +31,14 @@ It supports the following REPLs:
 
 - Clojure
 - ClojureScript
+- ClojureCLR (via [lein-clr](https://github.com/kumarshantanu/lein-clr))
 - [Planck](http://planck-repl.org/)
 - [Lumo](https://github.com/anmonteiro/lumo)
 - [Joker](https://joker-lang.org/)
 - [babashka](https://github.com/borkdude/babashka)
 
 `inf-clojure` provides a set of essential features for interactive
-Clojure(Script) development:
+Clojure/ClojureScript/ClojureCLR development:
 
 * Enhanced REPL
 * Interactive code evaluation

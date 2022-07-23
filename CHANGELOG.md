@@ -1,6 +1,7 @@
 # Changelog
 
 ## master (unreleased)
+* [#202](https://github.com/clojure-emacs/inf-clojure/issues/202): Add ClojureCLR support.
 
 ## 3.2.1 (2022-07-22)
 
