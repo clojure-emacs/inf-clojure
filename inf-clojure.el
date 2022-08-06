@@ -920,16 +920,19 @@ Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   "Insert FORM into process and evaluate.
 Indent FORM.  FORM is expected to have been trimmed."
   (let ((clojure-process (inf-clojure-proc)))
-    (with-current-buffer (process-buffer clojure-process)
-      (comint-goto-process-mark)
-      (let ((beginning (point)))
-        (insert (format "%s" form))
-        (let ((end (point)))
-          (goto-char beginning)
-          (indent-sexp end)
-          ;; font-lock the inserted code
-          (font-lock-ensure beginning end)))
-      (comint-send-input t t))))
+    (with-selected-window (or (get-buffer-window inf-clojure-buffer)
+                              (selected-window))
+      (with-current-buffer (process-buffer clojure-process)
+        (comint-goto-process-mark)
+        (let ((beginning (point)))
+          (insert form)
+          (let ((end (point)))
+            (goto-char beginning)
+            (indent-sexp end)
+            ;; font-lock the inserted code
+            (font-lock-ensure beginning end)
+            (goto-char end)))
+        (comint-send-input t t)))))
 
 (defun inf-clojure-insert-defun ()
   "Send current defun to process."
