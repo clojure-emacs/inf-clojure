@@ -920,6 +920,8 @@ Prefix argument AND-GO means switch to the Clojure buffer afterwards."
   "Insert FORM into process and evaluate.
 Indent FORM.  FORM is expected to have been trimmed."
   (let ((clojure-process (inf-clojure-proc)))
+    ;; ensure the repl buffer scrolls. See similar fix in CIDER:
+    ;; https://github.com/clojure-emacs/cider/pull/2590
     (with-selected-window (or (get-buffer-window inf-clojure-buffer)
                               (selected-window))
       (with-current-buffer (process-buffer clojure-process)
