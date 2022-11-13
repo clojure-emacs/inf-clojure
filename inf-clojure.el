@@ -339,7 +339,8 @@ Either \"no process\" or \"buffer-name(repl-type)\""
     "no process"))
 
 (defvar inf-clojure-mode-map
-  (let ((map (copy-keymap comint-mode-map)))
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map comint-mode-map)
     (define-key map (kbd "C-x C-e") #'inf-clojure-eval-last-sexp)
     (define-key map (kbd "C-c C-l") #'inf-clojure-load-file)
     (define-key map (kbd "C-c C-a") #'inf-clojure-show-arglists)
