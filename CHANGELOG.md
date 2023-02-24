@@ -3,6 +3,7 @@
 ## master (unreleased)
 * [#202](https://github.com/clojure-emacs/inf-clojure/issues/202): Add ClojureCLR support.
 * [#204](https://github.com/clojure-emacs/inf-clojure/issues/204): Scroll repl buffer on insert commands
+* [#208](https://github.com/clojure-emacs/inf-clojure/pull/208) Display message after setting repl.
 
 
 ## 3.2.1 (2022-07-22)
