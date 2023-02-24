@@ -281,14 +281,17 @@ ALWAYS-ASK).  Otherwise get a list of all active inf-clojure
 REPLS and offer a choice.  It's recommended to rename REPL
 buffers after they are created with `rename-buffer'."
   (interactive "P")
-  (if (and (not always-ask)
-           (inf-clojure-repl-p))
-      (setq inf-clojure-buffer (current-buffer))
-    (let ((repl-buffers (inf-clojure-repls)))
-     (if (> (length repl-buffers) 0)
-         (when-let ((repl-buffer (completing-read "Select default REPL: " repl-buffers nil t)))
-           (setq inf-clojure-buffer (get-buffer repl-buffer)))
-       (user-error "No buffers have an inf-clojure process")))))
+  (let ((new-repl-buffer
+         (if (and (not always-ask)
+                  (inf-clojure-repl-p))
+             (setq inf-clojure-buffer (current-buffer))
+           (let ((repl-buffers (inf-clojure-repls)))
+             (if (> (length repl-buffers) 0)
+                 (when-let ((repl-buffer (completing-read "Select default REPL: " repl-buffers nil t)))
+                   (setq inf-clojure-buffer (get-buffer repl-buffer)))
+               (user-error "No buffers have an inf-clojure process"))))))
+    (when new-repl-buffer
+      (message "Current inf-clojure REPL set to %s" new-repl-buffer))))
 
 (defvar inf-clojure--repl-type-lock nil
   "Global lock for protecting against proc filter race conditions.
