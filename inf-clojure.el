@@ -274,6 +274,16 @@ Checks the mode and that there is a live process."
         (push (buffer-name b) repl-buffers)))
     repl-buffers))
 
+(defun inf-clojure--prompt-repl-buffer (prompt)
+  "Prompt the user to select an inf-clojure repl buffer.
+PROMPT is a string to prompt the user.
+Returns nil when no buffer is selected."
+  (let ((repl-buffers (inf-clojure-repls)))
+    (if (> (length repl-buffers) 0)
+        (when-let ((repl-buffer (completing-read prompt repl-buffers nil t)))
+          (get-buffer repl-buffer))
+      (user-error "No buffers have an inf-clojure process"))))
+
 (defun inf-clojure-set-repl (always-ask)
   "Set an inf-clojure buffer as the active (default) REPL.
 If in a REPL buffer already, use that unless a prefix is used (or
@@ -281,17 +291,13 @@ ALWAYS-ASK).  Otherwise get a list of all active inf-clojure
 REPLS and offer a choice.  It's recommended to rename REPL
 buffers after they are created with `rename-buffer'."
   (interactive "P")
-  (if (and (not always-ask)
-           (inf-clojure-repl-p))
-      (progn
-        (setq inf-clojure-buffer (current-buffer))
-        (message "Current inf-clojure REPL set to %s" inf-clojure-buffer))
-    (let ((repl-buffers (inf-clojure-repls)))
-      (if (> (length repl-buffers) 0)
-          (when-let ((repl-buffer (completing-read "Select default REPL: " repl-buffers nil t)))
-            (setq inf-clojure-buffer (get-buffer repl-buffer))
-            (message "Current inf-clojure REPL set to %s" inf-clojure-buffer))
-        (user-error "No buffers have an inf-clojure process")))))
+  (when-let ((new-repl-buffer
+              (if (or always-ask
+                      (not (inf-clojure-repl-p)))
+                  (inf-clojure--prompt-repl-buffer "Select default REPL: ")
+                (current-buffer))))
+    (setq inf-clojure-buffer new-repl-buffer)
+    (message "Current inf-clojure REPL set to %s" new-repl-buffer)))
 
 (defvar inf-clojure--repl-type-lock nil
   "Global lock for protecting against proc filter race conditions.
