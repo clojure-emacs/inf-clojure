@@ -4,4 +4,7 @@
 (eldev-use-package-archive 'nongnu)
 (eldev-use-package-archive 'melpa-stable)
 
+;; the tests depend on the assess library
+(eldev-add-extra-dependencies 'test 'assess)
+
 (eldev-use-plugin 'autoloads)
