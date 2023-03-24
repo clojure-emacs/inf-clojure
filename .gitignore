@@ -8,6 +8,7 @@ elpa*
 TAGS
 .DS_STORE
 dist
+.eldev
 .vagrant/
 .dir-locals?.el
 
