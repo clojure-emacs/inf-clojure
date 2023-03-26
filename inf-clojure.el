@@ -8,7 +8,7 @@
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, comint, clojure
 ;; Version: 3.2.1
-;; Package-Requires: ((emacs "25.1") (clojure-mode "5.11"))
+;; Package-Requires: ((emacs "26.2") (clojure-mode "5.11"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -74,7 +74,7 @@
 (defvar inf-clojure-startup-forms '((lein . "lein repl")
                                     (boot . "boot repl")
                                     (clojure . "clojure")
-                                    (cljs . "clojure -m cljs.main -r")
+                                    (cljs . "clojure -M -m cljs.main -r")
                                     (lein-clr . "lein clr repl")
                                     (planck . "planck -d")
                                     (babashka . "bb")
@@ -130,6 +130,17 @@
               (macroexpand . "(macroexpand '%s)")
               (macroexpand-1 . "(macroexpand-1 '%s)")))
     (babashka . ((load . "(clojure.core/load-file \"%s\")")
+                 (doc . "(clojure.repl/doc %s)")
+                 (source . "(clojure.repl/source %s)")
+                 (arglists .
+                           "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists)
+                              (catch Throwable e nil))")
+                 (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
+                 (ns-vars . "(clojure.repl/dir %s)")
+                 (set-ns . "(clojure.core/in-ns '%s)")
+                 (macroexpand . "(clojure.core/macroexpand '%s)")
+                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))
+    (node-babashka . ((load . "(clojure.core/load-file \"%s\")")
                  (doc . "(clojure.repl/doc %s)")
                  (source . "(clojure.repl/source %s)")
                  (arglists .
@@ -641,33 +652,34 @@ Customization: Entry to this mode runs the hooks on `comint-mode-hook' and
 
 You can send text to the inferior Clojure process from other buffers containing
 Clojure source.
-    `inf-clojure-switch-to-repl' switches the current buffer to the Clojure process buffer.
+    `inf-clojure-switch-to-repl' switches the current buffer to the Clojure
+    process buffer.
     `inf-clojure-eval-defun' sends the current defun to the Clojure process.
     `inf-clojure-eval-region' sends the current region to the Clojure process.
 
     Prefixing the inf-clojure-eval/defun/region commands with
-    a \\[universal-argument] causes a switch to the Clojure process buffer after sending
-    the text.
+    a \\[universal-argument] causes a switch to the Clojure process buffer after
+    sending the text.
 
 Commands:\\<inf-clojure-mode-map>
-\\[comint-send-input] after the end of the process' output sends the text from the
-    end of process to point.
-\\[comint-send-input] before the end of the process' output copies the sexp ending at point
-    to the end of the process' output, and sends it.
-\\[comint-copy-old-input] copies the sexp ending at point to the end of the process' output,
-    allowing you to edit it before sending it.
-If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on old input
-   copies the entire old input to the end of the process' output, allowing
-   you to edit it before sending it.  When not used on old input, or if
-   `comint-use-prompt-regexp' is non-nil, \\[comint-insert-input] behaves according to
-   its global binding.
+\\[comint-send-input] after the end of the process' output sends the text from
+    the end of process to point.
+\\[comint-send-input] before the end of the process' output copies the sexp
+    ending at point to the end of the process' output, and sends it.
+\\[comint-copy-old-input] copies the sexp ending at point to the end of the
+    process' output,allowing you to edit it before sending it.
+If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
+   old input copies the entire old input to the end of the process' output,
+   allowing you to edit it before sending it.  When not used on old input, or if
+   `comint-use-prompt-regexp' is non-nil, \\[comint-insert-input] behaves
+   according to its global binding.
 \\[backward-delete-char-untabify] converts tabs to spaces as it moves back.
 \\[clojure-indent-line] indents for Clojure; with argument, shifts rest
     of expression rigidly with the current line.
-\\[indent-sexp] does \\[clojure-indent-line] on each line starting within following expression.
-Paragraphs are separated only by blank lines.  Semicolons start comments.
-If you accidentally suspend your process, use \\[comint-continue-subjob]
-to continue it."
+\\[indent-sexp] does \\[clojure-indent-line] on each line starting within
+  following expression.  Paragraphs are separated only by blank lines.
+  Semicolons start comments.  If you accidentally suspend your process,
+  use \\[comint-continue-subjob] to continue it."
   (setq comint-input-sender 'inf-clojure--send-string)
   (setq comint-prompt-regexp inf-clojure-comint-prompt-regexp)
   (setq mode-line-process '(":%s"))
@@ -807,9 +819,11 @@ process buffer for a list of commands.)"
                                           nil
                                           'confirm-after-completion))))
   (let* ((project-dir (clojure-project-dir))
-         (process-buffer-name (if project-dir
-                                  (format "inf-clojure %s" (inf-clojure--project-name project-dir))
-                                "inf-clojure"))
+         (process-buffer-name (or
+                               inf-clojure-custom-repl-name
+                               (if project-dir
+                                   (format "inf-clojure %s" (inf-clojure--project-name project-dir))
+                                 "inf-clojure")))
          ;; comint adds the asterisks to both sides
          (repl-buffer-name (format "*%s*" process-buffer-name)))
     ;; Create a new comint buffer if needed
@@ -819,10 +833,11 @@ process buffer for a list of commands.)"
             (cmdlist (if (consp cmd)
                          (list cmd)
                        (split-string-and-unquote cmd)))
-            (repl-type (or (unless prefix-arg
+            (repl-type (or inf-clojure-socket-repl-type
+                           (unless prefix-arg
                              inf-clojure-custom-repl-type)
-                           (car (rassoc cmd inf-clojure-startup-forms))
-                           (inf-clojure--prompt-repl-type))))
+                        (car (rassoc cmd inf-clojure-startup-forms))
+                        (inf-clojure--prompt-repl-type))))
         (message "Starting Clojure REPL via `%s'..." cmd)
         (with-current-buffer (apply #'make-comint
                                     process-buffer-name (car cmdlist) nil (cdr cmdlist))
@@ -842,6 +857,117 @@ process buffer for a list of commands.)"
 HOST is the host the process is running on, PORT is where it's listening."
   (interactive "shost: \nnport: ")
   (inf-clojure (cons host port)))
+
+(defvar-local inf-clojure-socket-callback nil
+  "Used to transfer state between the socket process buffer & REPL buffer.")
+
+(defvar-local inf-clojure-socket-buffer nil
+  "Used to kill the associated socket buffer when it's REPL buffer is killed.")
+
+(defun inf-clojure-socket-filter (process output)
+  "A filter that gets triggered each time the socket receives new OUTPUT.
+This function prints out the output received but also
+watches for a prompt using the `inf-clojure-prompt' regexp, once
+this happens a callback is triggered if available.  The callback
+is intended to be used to trigger a `inf-clojure-connect' once we
+can determine that a socket REPL is ready to receive a
+connection.
+
+PROCESS is the process object that is being filtered.
+
+OUTPUT is the latest data received from the process"
+  (let ((server-buffer (process-buffer process)))
+    (when (buffer-live-p server-buffer)
+      (with-current-buffer server-buffer
+        (insert output)))
+    (let ((prompt-displayed (string-match inf-clojure-prompt output)))
+      (when prompt-displayed
+	(message (format "Socket REPL startup detected for %s" (process-name process)))
+	(with-current-buffer server-buffer
+	  (when inf-clojure-socket-callback
+	    (funcall inf-clojure-socket-callback)))))))
+
+(defun inf-clojure-socket-repl-sentinel (process event)
+  "Ensures socket REPL are cleaned up when the REPL buffer is closed.
+
+PROCESS is the process object that is connected to a socket REPL.
+
+EVENT is the event that triggered this function to be called."
+  (when (not (process-live-p process))
+    (let ((repl-buffer (process-buffer process)))
+      (with-current-buffer repl-buffer
+        (when inf-clojure-socket-buffer
+          (kill-buffer inf-clojure-socket-buffer))))))
+
+(defvar inf-clojure-socket-repl-startup-forms
+  '((lein . "JVM_OPTS='-Dclojure.server.repl={:port %d :accept clojure.core.server/repl}' lein repl")
+    (boot . "export BOOT_JVM_OPTIONS='-Dclojure.server.repl=\"{:port %d :accept clojure.core.server/repl}\"' boot repl")
+    (clojure . "clojure -J-Dclojure.server.repl=\"{:port %d :accept clojure.core.server/repl}\"")
+    (cljs . "clojure -J-Dclojure.server.repl=\"{:port %d :accept cljs.server.browser/repl}\"")
+    (lein-clr . "JVM_OPTS='-Dclojure.server.repl={:port %d :accept clojure.core.server/repl}' lein clr repl")
+    (planck . "planck -n %d")
+    (babashka . "bb socket-repl %d")))
+
+(defcustom inf-clojure-socket-repl-port
+  nil
+  "Port to be used when creating a socket REPL via `inf-clojure-socket-repl'.
+If left as nil a random port will be selected between 5500-6000."
+  :type '(choice integer (const nil))
+  :package-version '(inf-clojure . "3.3"))
+
+;;;###autoload
+(defun inf-clojure-socket-repl (cmd)
+  "Start a socket REPL server and connect to it via `inf-clojure'.
+CMD is the command line used to start the socket REPL, if this
+isn't provided you will be prompted to select from the defaults
+provided in `inf-clojure-socket-repl-startup-forms' or
+`inf-clojure-custom-startup' if this is defined."
+  (interactive (list (or (unless current-prefix-arg
+                           inf-clojure-custom-startup)
+                         (completing-read "Select Clojure socket REPL startup command: "
+                                          (mapcar #'cdr inf-clojure-socket-repl-startup-forms)
+                                          nil
+                                          'confirm-after-completion))))
+  (let* ((host "localhost")
+         (port (or inf-clojure-socket-repl-port (+ 5500 (random 500))))
+         (project-dir (clojure-project-dir))
+         (repl-type (or (unless prefix-arg
+                          inf-clojure-custom-repl-type)
+                        (car (rassoc cmd inf-clojure-socket-repl-startup-forms))
+                        (inf-clojure--prompt-repl-type)))
+         (project-name (inf-clojure--project-name (or project-dir "standalone")))
+         (socket-process-name (format "*%s-%s-socket-server*" project-name repl-type))
+         (socket-buffer-name (format "*%s-%s-socket*" project-name repl-type))
+         (socket-buffer (get-buffer-create socket-buffer-name))
+         (repl-buffer-name (format "%s-%s-repl" project-name repl-type))
+         (socket-form (or cmd
+                          (cdr (assoc repl-type inf-clojure-socket-repl-startup-forms))
+                          inf-clojure-custom-startup))
+         (socket-cmd (format socket-form port))
+         (sock (let ((default-directory (or project-dir default-directory)))
+                 (start-file-process-shell-command
+                  socket-process-name socket-buffer
+                  socket-cmd))))
+    (with-current-buffer socket-buffer
+      (setq-local
+       inf-clojure-socket-callback
+       (lambda ()
+         (let ((with-process-repl-buffer-name (concat "*" repl-buffer-name "*")))
+           (setq inf-clojure-socket-repl-type
+                 repl-type
+                 inf-clojure-custom-repl-name
+                 repl-buffer-name
+                 repl-buffer
+                 (get-buffer-create with-process-repl-buffer-name))
+           (inf-clojure-connect host port)
+           (with-current-buffer with-process-repl-buffer-name
+             (setq inf-clojure-socket-buffer socket-buffer))
+           (set-process-sentinel
+            (get-buffer-process (get-buffer with-process-repl-buffer-name))
+            #'inf-clojure-socket-repl-sentinel)))))
+    (set-process-filter sock #'inf-clojure-socket-filter)
+    (message "Starting %s socket REPL server at %s:%d with %s" repl-type host port socket-cmd)))
+
 
 (defun inf-clojure--forms-without-newlines (str)
   "Remove newlines between toplevel forms.

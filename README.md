@@ -117,6 +117,9 @@ common startup forms. You can select one of these or type in your own
 custom startup. This will start a REPL process for the current project
 and you can start interacting with it.
 
+If you want to use a socket REPL server, use `M-x inf-clojure-socket-repl`
+which will start a socket server and connect to it for you.
+
 If you've already started a socket REPL server, use `M-x inf-clojure-connect`
 and enter its host and port numbers.
 
