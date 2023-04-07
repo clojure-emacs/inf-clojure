@@ -609,7 +609,9 @@ This should usually be a combination of `inf-clojure-prompt' and
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-auto-mode t
-  "When non-nil, automatically enable inf-clojure-minor-mode for all Clojure buffers."
+  "Automatically enable inf-clojure-minor-mode.
+All buffers will automatically be in `inf-clojure-minor-mode'
+unless set to nil.."
   :type 'boolean
   :safe #'booleanp
   :package-version '(inf-clojure . "3.1.0"))
@@ -895,7 +897,7 @@ OUTPUT is the latest data received from the process"
 	  (when inf-clojure-socket-callback
 	    (funcall inf-clojure-socket-callback)))))))
 
-(defun inf-clojure-socket-repl-sentinel (process event)
+(defun inf-clojure-socket-repl-sentinel (process _event)
   "Ensures socket REPL are cleaned up when the REPL buffer is closed.
 
 PROCESS is the process object that is connected to a socket REPL.
