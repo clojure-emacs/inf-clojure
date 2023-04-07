@@ -610,8 +610,8 @@ This should usually be a combination of `inf-clojure-prompt' and
 
 (defcustom inf-clojure-auto-mode t
   "Automatically enable inf-clojure-minor-mode.
-All buffers will automatically be in `inf-clojure-minor-mode'
-unless set to nil."
+All buffers in `clojure-mode' will automatically be in
+`inf-clojure-minor-mode' unless set to nil."
   :type 'boolean
   :safe #'booleanp
   :package-version '(inf-clojure . "3.1.0"))
