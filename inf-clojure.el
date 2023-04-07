@@ -518,6 +518,12 @@ Should be a symbol that is a key in `inf-clojure-repl-features'."
                  (const :tag "babashka" babashka)
                  (const :tag "determine at startup" nil)))
 
+(defvar inf-clojure-custom-repl-name nil
+  "A string to be used as the repl buffer name.")
+
+(defvar inf-clojure--suppress-connect-message-p nil
+  "A boolean of whether to suppress the message on connect.")
+
 (defun inf-clojure--whole-comment-line-p (string)
   "Return non-nil iff STRING is a whole line semicolon comment."
   (string-match-p "^\s*;" string))
@@ -833,12 +839,12 @@ process buffer for a list of commands.)"
             (cmdlist (if (consp cmd)
                          (list cmd)
                        (split-string-and-unquote cmd)))
-            (repl-type (or inf-clojure-socket-repl-type
-                           (unless prefix-arg
+            (repl-type (or (unless prefix-arg
                              inf-clojure-custom-repl-type)
-                        (car (rassoc cmd inf-clojure-startup-forms))
-                        (inf-clojure--prompt-repl-type))))
-        (message "Starting Clojure REPL via `%s'..." cmd)
+                           (car (rassoc cmd inf-clojure-startup-forms))
+                           (inf-clojure--prompt-repl-type))))
+        (unless inf-clojure--suppress-connect-message-p
+          (message "Starting Clojure REPL via `%s'..." cmd))
         (with-current-buffer (apply #'make-comint
                                     process-buffer-name (car cmdlist) nil (cdr cmdlist))
           (inf-clojure-mode)
@@ -849,7 +855,8 @@ process buffer for a list of commands.)"
     (setq inf-clojure-buffer (get-buffer repl-buffer-name))
     (if inf-clojure-repl-use-same-window
         (pop-to-buffer-same-window repl-buffer-name)
-      (pop-to-buffer repl-buffer-name))))
+      (pop-to-buffer repl-buffer-name))
+    repl-buffer-name))
 
 ;;;###autoload
 (defun inf-clojure-connect (host port)
@@ -882,7 +889,6 @@ OUTPUT is the latest data received from the process"
         (insert output)))
     (let ((prompt-displayed (string-match inf-clojure-prompt output)))
       (when prompt-displayed
-	(message (format "Socket REPL startup detected for %s" (process-name process)))
 	(with-current-buffer server-buffer
 	  (when inf-clojure-socket-callback
 	    (funcall inf-clojure-socket-callback)))))))
@@ -917,11 +923,11 @@ If left as nil a random port will be selected between 5500-6000."
 
 ;;;###autoload
 (defun inf-clojure-socket-repl (cmd)
-  "Start a socket REPL server and connect to it via `inf-clojure'.
-CMD is the command line used to start the socket REPL, if this
-isn't provided you will be prompted to select from the defaults
-provided in `inf-clojure-socket-repl-startup-forms' or
-`inf-clojure-custom-startup' if this is defined."
+  "Start a socket REPL server and connects to it via `inf-clojure-connect'.
+CMD is the command line instruction used to start the socket
+REPL.  It should be a string with \"%d\" in it to take a random
+port.  Set `inf-clojure-custom-startup' or choose from the
+defaults provided in `inf-clojure-socket-repl-startup-forms'"
   (interactive (list (or (unless current-prefix-arg
                            inf-clojure-custom-startup)
                          (completing-read "Select Clojure socket REPL startup command: "
@@ -937,13 +943,9 @@ provided in `inf-clojure-socket-repl-startup-forms' or
                         (inf-clojure--prompt-repl-type)))
          (project-name (inf-clojure--project-name (or project-dir "standalone")))
          (socket-process-name (format "*%s-%s-socket-server*" project-name repl-type))
-         (socket-buffer-name (format "*%s-%s-socket*" project-name repl-type))
-         (socket-buffer (get-buffer-create socket-buffer-name))
-         (repl-buffer-name (format "%s-%s-repl" project-name repl-type))
-         (socket-form (or cmd
-                          (cdr (assoc repl-type inf-clojure-socket-repl-startup-forms))
-                          inf-clojure-custom-startup))
-         (socket-cmd (format socket-form port))
+         (socket-buffer (get-buffer-create
+                         (format "*%s-%s-socket*" project-name repl-type)))
+         (socket-cmd (format cmd port))
          (sock (let ((default-directory (or project-dir default-directory)))
                  (start-file-process-shell-command
                   socket-process-name socket-buffer
@@ -952,19 +954,14 @@ provided in `inf-clojure-socket-repl-startup-forms' or
       (setq-local
        inf-clojure-socket-callback
        (lambda ()
-         (let ((with-process-repl-buffer-name (concat "*" repl-buffer-name "*")))
-           (setq inf-clojure-socket-repl-type
-                 repl-type
-                 inf-clojure-custom-repl-name
-                 repl-buffer-name
-                 repl-buffer
-                 (get-buffer-create with-process-repl-buffer-name))
-           (inf-clojure-connect host port)
-           (with-current-buffer with-process-repl-buffer-name
-             (setq inf-clojure-socket-buffer socket-buffer))
-           (set-process-sentinel
-            (get-buffer-process (get-buffer with-process-repl-buffer-name))
-            #'inf-clojure-socket-repl-sentinel)))))
+         (let* ((inf-clojure-custom-repl-type repl-type)
+                (inf-clojure--suppress-connect-message-p t)
+                (created-repl-buffer (inf-clojure-connect host port)))
+           (with-current-buffer (get-buffer created-repl-buffer)
+             (setq-local inf-clojure-socket-buffer socket-buffer)
+             (set-process-sentinel
+              (get-buffer-process (current-buffer))
+              #'inf-clojure-socket-repl-sentinel))))))
     (set-process-filter sock #'inf-clojure-socket-filter)
     (message "Starting %s socket REPL server at %s:%d with %s" repl-type host port socket-cmd)))
 
