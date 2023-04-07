@@ -521,9 +521,6 @@ Should be a symbol that is a key in `inf-clojure-repl-features'."
 (defvar inf-clojure-custom-repl-name nil
   "A string to be used as the repl buffer name.")
 
-(defvar inf-clojure--suppress-connect-message-p nil
-  "A boolean of whether to suppress the message on connect.")
-
 (defun inf-clojure--whole-comment-line-p (string)
   "Return non-nil iff STRING is a whole line semicolon comment."
   (string-match-p "^\s*;" string))
@@ -801,7 +798,7 @@ The name is simply the final segment of the path."
   (file-name-nondirectory (directory-file-name dir)))
 
 ;;;###autoload
-(defun inf-clojure (cmd)
+(defun inf-clojure (cmd &optional suppress-message)
   "Run an inferior Clojure process, input and output via buffer `*inf-clojure*'.
 If there is a process already running in `*inf-clojure*', just
 switch to that buffer.
@@ -814,6 +811,9 @@ inferrable from startup command.  Uses `inf-clojure-custom-repl-type'
 and `inf-clojure-custom-startup' if those are set.
 Use a prefix to prevent using these when they
 are set.
+
+Prints a message that it has connected to the host and port
+unless SUPPRESS-MESSAGE is truthy.
 
  Runs the hooks from `inf-clojure-mode-hook' (after the
 `comint-mode-hook' is run).  \(Type \\[describe-mode] in the
@@ -843,7 +843,7 @@ process buffer for a list of commands.)"
                              inf-clojure-custom-repl-type)
                            (car (rassoc cmd inf-clojure-startup-forms))
                            (inf-clojure--prompt-repl-type))))
-        (unless inf-clojure--suppress-connect-message-p
+        (unless suppress-message
           (message "Starting Clojure REPL via `%s'..." cmd))
         (with-current-buffer (apply #'make-comint
                                     process-buffer-name (car cmdlist) nil (cdr cmdlist))
@@ -858,12 +858,14 @@ process buffer for a list of commands.)"
       (pop-to-buffer repl-buffer-name))
     repl-buffer-name))
 
-;;;###autoload
-(defun inf-clojure-connect (host port)
+;;;###autol
+(defun inf-clojure-connect (host port &optional suppress-message)
   "Connect to a running socket REPL server via `inf-clojure'.
-HOST is the host the process is running on, PORT is where it's listening."
+HOST is the host the process is running on, PORT is where it's
+listening.  SUPPRESS-MESSAGE is optional and if truthy will
+prevent showing the startup message."
   (interactive "shost: \nnport: ")
-  (inf-clojure (cons host port)))
+  (inf-clojure (cons host port) suppress-message))
 
 (defvar-local inf-clojure-socket-callback nil
   "Used to transfer state between the socket process buffer & REPL buffer.")
@@ -927,7 +929,7 @@ If left as nil a random port will be selected between 5500-6000."
 CMD is the command line instruction used to start the socket
 REPL.  It should be a string with \"%d\" in it to take a random
 port.  Set `inf-clojure-custom-startup' or choose from the
-defaults provided in `inf-clojure-socket-repl-startup-forms'"
+defaults provided in `inf-clojure-socket-repl-startup-forms'."
   (interactive (list (or (unless current-prefix-arg
                            inf-clojure-custom-startup)
                          (completing-read "Select Clojure socket REPL startup command: "
@@ -955,8 +957,7 @@ defaults provided in `inf-clojure-socket-repl-startup-forms'"
        inf-clojure-socket-callback
        (lambda ()
          (let* ((inf-clojure-custom-repl-type repl-type)
-                (inf-clojure--suppress-connect-message-p t)
-                (created-repl-buffer (inf-clojure-connect host port)))
+                (created-repl-buffer (inf-clojure-connect host port :suppress-message)))
            (with-current-buffer (get-buffer created-repl-buffer)
              (setq-local inf-clojure-socket-buffer socket-buffer)
              (set-process-sentinel
