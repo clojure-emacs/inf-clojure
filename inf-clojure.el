@@ -722,6 +722,10 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
   "Remove subprompts from STRING."
   (replace-regexp-in-string inf-clojure-subprompt "" string))
 
+(defun inf-clojure--empty-prompt-p (str)
+  "Returns t if STR is an empty prompt, e.g. \"user=> \"."
+  (eq 0 (string-match (concat inf-clojure-prompt "$") str)))
+
 (defun inf-clojure-preoutput-filter (str)
   "Preprocess the output STR from interactive commands."
   (inf-clojure--log-string str "<-RES----")
@@ -729,6 +733,9 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
    ((string-prefix-p "inf-clojure-" (symbol-name (or this-command last-command)))
     ;; Remove subprompts and prepend a newline to the output string
     (inf-clojure-chomp (concat "\n" (inf-clojure-remove-subprompts str))))
+   ((inf-clojure--empty-prompt-p str)
+    ;; Skip empty prompts instead of polluting the buffer.
+    "")
    (t str)))
 
 (defun inf-clojure-clear-repl-buffer ()
