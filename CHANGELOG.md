@@ -1,6 +1,7 @@
 # Changelog
 
 ## master (unreleased)
+* Improve support for multiple forms in the same line by replacing beginning-of-defun fn.
 * [#202](https://github.com/clojure-emacs/inf-clojure/issues/202): Add ClojureCLR support.
 * [#204](https://github.com/clojure-emacs/inf-clojure/issues/204): Scroll repl buffer on insert commands
 * [#208](https://github.com/clojure-emacs/inf-clojure/pull/208) Display message after setting repl.

@@ -1018,7 +1018,7 @@ current defun else return the string.."
     (let ((end (point))
           (case-fold-search t)
           (func (if bounds #'cons #'buffer-substring-no-properties)))
-      (beginning-of-defun)
+      (beginning-of-defun-raw)
       (funcall func (point) end))))
 
 (defun inf-clojure-eval-defun (&optional and-go)
