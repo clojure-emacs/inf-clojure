@@ -64,7 +64,8 @@
 ;;; Code:
 
 (require 'comint)
-(require 'clojure-mode)
+(require 'clojure-mode nil 'no-error)
+(require 'clojure-ts-mode nil 'no-error)
 (require 'eldoc)
 (require 'thingatpt)
 (require 'ansi-color)
@@ -616,17 +617,26 @@ All buffers in `clojure-mode' will automatically be in
   :safe #'booleanp
   :package-version '(inf-clojure . "3.1.0"))
 
+(defun inf-clojure--clojure-buffer-p ()
+  "Return t if the current buffer is derived from `clojure-mode' or
+`clojure-ts-mode'."
+  (or (derived-mode-p 'clojure-mode)
+      (derived-mode-p 'clojure-ts-mode)))
+
 (defun inf-clojure--clojure-buffers ()
   "Return a list of all existing `clojure-mode' buffers."
   (cl-remove-if-not
-   (lambda (buffer) (with-current-buffer buffer (derived-mode-p 'clojure-mode)))
+   (lambda (buffer) (with-current-buffer buffer (inf-clojure--clojure-buffer-p)))
    (buffer-list)))
 
 (defun inf-clojure-enable-on-existing-clojure-buffers ()
   "Enable inf-clojure's minor mode on existing Clojure buffers.
 See command `inf-clojure-minor-mode'."
   (interactive)
-  (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
+  (when (featurep 'clojure-mode)
+    (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode))
+  (when (featurep 'clojure-ts-mode)
+    (add-hook 'clojure-ts-mode-hook #'inf-clojure-minor-mode))
   (dolist (buffer (inf-clojure--clojure-buffers))
     (with-current-buffer buffer
       (inf-clojure-minor-mode +1))))
