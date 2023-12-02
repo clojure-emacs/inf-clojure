@@ -64,7 +64,7 @@
 ;;; Code:
 
 (require 'comint)
-(require 'clojure-mode nil 'no-error)
+(require 'clojure-mode)
 (require 'clojure-ts-mode nil 'no-error)
 (require 'eldoc)
 (require 'thingatpt)
