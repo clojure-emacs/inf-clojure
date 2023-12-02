@@ -98,6 +98,10 @@ If the installation doesn't work try refreshing the package list:
 `M-x inf-clojure`. You can disable this behavior by setting `inf-clojure-auto-mode` to
 `nil`.
 
+**Note:** `inf-clojure` supports `clojure-ts-mode`, the Clojure major mode that uses
+tree-sitter. In order to use it, replace `clojure-mode` by `clojure-ts-mode` in all
+instructions below.
+
 You can also add the following to your Emacs config to enable
 `inf-clojure-minor-mode` for Clojure source buffers, regardless of whether there's an `inf-clojure` REPL running:
 
