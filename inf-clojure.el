@@ -65,11 +65,13 @@
 
 (require 'comint)
 (require 'clojure-mode)
+(require 'clojure-ts-mode nil :no-error)
 (require 'eldoc)
 (require 'thingatpt)
 (require 'ansi-color)
 (require 'cl-lib)
 (require 'subr-x)
+(require 'project)
 
 (defvar inf-clojure-startup-forms '((lein . "lein repl")
                                     (boot . "boot repl")
@@ -193,10 +195,10 @@ either `setq-local` or an entry in `.dir-locals.el`." )
 MULTIPLE PROCESS SUPPORT
 ===========================================================================
 To run multiple Clojure processes, you start the first up
-with \\[inf-clojure].  It will be in a buffer named `*inf-clojure*'.
+with \\[inf-clojure].  It will be in a buffer named *inf-clojure*.
 Rename this buffer with \\[rename-buffer].  You may now start up a new
 process with another \\[inf-clojure].  It will be in a new buffer,
-named `*inf-clojure*'.  You can switch between the different process
+named *inf-clojure*.  You can switch between the different process
 buffers with \\[switch-to-buffer].
 
 Commands that send text from source buffers to Clojure processes --
@@ -205,7 +207,7 @@ process to send to, when you have more than one Clojure process around.  This
 is determined by the global variable `inf-clojure-buffer'.  Suppose you
 have three inferior Clojures running:
     Buffer              Process
-    foo                 inf-clojure
+    foo                 `inf-clojure'
     bar                 inf-clojure<2>
     *inf-clojure*     inf-clojure<3>
 If you do a \\[inf-clojure-eval-defun] command on some Clojure source code,
@@ -269,7 +271,7 @@ has been found.  See also variable `inf-clojure-buffer'."
         (error "No Clojure subprocess; see variable `inf-clojure-buffer'"))))
 
 (defun inf-clojure-repl-p (&optional buf)
-  "Indicates if BUF is an inf-clojure REPL.
+  "Indicates if BUF is an `inf-clojure' REPL.
 If BUF is nil then defaults to the current buffer.
 Checks the mode and that there is a live process."
   (let ((buf (or buf (current-buffer))))
@@ -278,7 +280,7 @@ Checks the mode and that there is a live process."
          (process-live-p (get-buffer-process buf)))))
 
 (defun inf-clojure-repls ()
-  "Return a list of all inf-clojure REPL buffers."
+  "Return a list of all `inf-clojure' REPL buffers."
   (let (repl-buffers)
     (dolist (b (buffer-list))
       (when (inf-clojure-repl-p b)
@@ -286,27 +288,27 @@ Checks the mode and that there is a live process."
     repl-buffers))
 
 (defun inf-clojure--prompt-repl-buffer (prompt)
-  "Prompt the user to select an inf-clojure repl buffer.
+  "Prompt the user to select an `inf-clojure' repl buffer.
 PROMPT is a string to prompt the user.
 Returns nil when no buffer is selected."
   (let ((repl-buffers (inf-clojure-repls)))
     (if (> (length repl-buffers) 0)
-        (when-let ((repl-buffer (completing-read prompt repl-buffers nil t)))
+        (when-let* ((repl-buffer (completing-read prompt repl-buffers nil t)))
           (get-buffer repl-buffer))
       (user-error "No buffers have an inf-clojure process"))))
 
 (defun inf-clojure-set-repl (always-ask)
-  "Set an inf-clojure buffer as the active (default) REPL.
+  "Set an `inf-clojure' buffer as the active (default) REPL.
 If in a REPL buffer already, use that unless a prefix is used (or
-ALWAYS-ASK).  Otherwise get a list of all active inf-clojure
+ALWAYS-ASK).  Otherwise get a list of all active `inf-clojure'
 REPLS and offer a choice.  It's recommended to rename REPL
 buffers after they are created with `rename-buffer'."
   (interactive "P")
-  (when-let ((new-repl-buffer
-              (if (or always-ask
-                      (not (inf-clojure-repl-p)))
-                  (inf-clojure--prompt-repl-buffer "Select default REPL: ")
-                (current-buffer))))
+  (when-let* ((new-repl-buffer
+               (if (or always-ask
+                       (not (inf-clojure-repl-p)))
+                   (inf-clojure--prompt-repl-buffer "Select default REPL: ")
+                 (current-buffer))))
     (setq inf-clojure-buffer new-repl-buffer)
     (message "Current inf-clojure REPL set to %s" new-repl-buffer)))
 
@@ -348,6 +350,14 @@ Input matching this regexp is not saved on the input history in Inferior Clojure
 mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 \(as in :a, :c, etc.)"
   :type 'regexp)
+
+(defcustom inf-clojure-source-modes '(clojure-ts-mode clojure-mode)
+  "Used to determine if a buffer contains Clojure source code.
+
+Any buffer with one of these major modes, it's considered a Clojure
+source file by all `inf-clojure' commands."
+  :type '(repeat symbol)
+  :safe #'symbolp)
 
 (defun inf-clojure--modeline-info ()
   "Return modeline info for `inf-clojure-minor-mode'.
@@ -453,7 +463,7 @@ The value of this variable is a mode line template as in
 `mode-line-format'.  See Info Node `(elisp)Mode Line Format' for details
 about mode line templates.
 
-Customize this variable to change how inf-clojure-minor-mode
+Customize this variable to change how `inf-clojure-minor-mode'
 displays its status in the mode line.  The default value displays
 the current REPL.  Set this variable to nil to disable the
 mode line entirely."
@@ -609,24 +619,35 @@ This should usually be a combination of `inf-clojure-prompt' and
   :package-version '(inf-clojure . "2.0.0"))
 
 (defcustom inf-clojure-auto-mode t
-  "Automatically enable inf-clojure-minor-mode.
+  "Automatically enable `inf-clojure-minor-mode'.
 All buffers in `clojure-mode' will automatically be in
 `inf-clojure-minor-mode' unless set to nil."
   :type 'boolean
   :safe #'booleanp
   :package-version '(inf-clojure . "3.1.0"))
 
+(defun inf-clojure--get-preferred-major-modes ()
+  "Return list of preferred major modes that are actually available."
+  (cl-remove-if-not (lambda (mode) (featurep mode))
+                    inf-clojure-source-modes))
+
+(defun inf-clojure--clojure-buffer-p ()
+  "Return TRUE if the current buffer is a Clojure buffer."
+  (derived-mode-p (inf-clojure--get-preferred-major-modes)))
+
 (defun inf-clojure--clojure-buffers ()
   "Return a list of all existing `clojure-mode' buffers."
-  (cl-remove-if-not
-   (lambda (buffer) (with-current-buffer buffer (derived-mode-p 'clojure-mode)))
-   (buffer-list)))
+  (cl-remove-if-not (lambda (buffer)
+                      (with-current-buffer buffer
+                        (inf-clojure--clojure-buffer-p)))
+                    (buffer-list)))
 
 (defun inf-clojure-enable-on-existing-clojure-buffers ()
   "Enable inf-clojure's minor mode on existing Clojure buffers.
 See command `inf-clojure-minor-mode'."
   (interactive)
-  (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
+  (dolist (mode (inf-clojure--get-preferred-major-modes))
+    (add-hook (derived-mode-hook-name mode) #'inf-clojure-minor-mode))
   (dolist (buffer (inf-clojure--clojure-buffers))
     (with-current-buffer buffer
       (inf-clojure-minor-mode +1))))
@@ -688,6 +709,8 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
   (setq comint-input-sender 'inf-clojure--send-string)
   (setq comint-prompt-regexp inf-clojure-comint-prompt-regexp)
   (setq mode-line-process '(":%s"))
+  ;; NOTE: Using Tree-sitter based syntax highlighting in comint
+  ;; buffer is currently not possible.
   (clojure-mode-variables)
   (clojure-font-lock-setup)
   (when inf-clojure-enable-eldoc
@@ -799,10 +822,24 @@ to suppress the usage of the target buffer discovery logic."
 The name is simply the final segment of the path."
   (file-name-nondirectory (directory-file-name dir)))
 
+(defun inf-clojure--project-dir ()
+  "Return current Clojure project root."
+  (let ((project-vc-extra-root-markers '("project.clj"      ; Leiningen
+                                         "build.boot"       ; Boot
+                                         "build.gradle"     ; Gradle
+                                         "build.gradle.kts" ; Gradle
+                                         "deps.edn"         ; Clojure CLI (a.k.a. tools.deps)
+                                         "shadow-cljs.edn"  ; shadow-cljs
+                                         "bb.edn"           ; babashka
+                                         "nbb.edn"          ; nbb
+                                         "basilisp.edn"     ; Basilisp (Python)
+                                         )))
+    (project-root (project-current))))
+
 ;;;###autoload
 (defun inf-clojure (cmd &optional suppress-message)
-  "Run an inferior Clojure process, input and output via buffer `*inf-clojure*'.
-If there is a process already running in `*inf-clojure*', just
+  "Run an inferior Clojure process, input and output via buffer *inf-clojure*.
+If there is a process already running in *inf-clojure*, just
 switch to that buffer.
 
 CMD is a string which serves as the startup command or a cons of
@@ -826,7 +863,7 @@ process buffer for a list of commands.)"
                                           (mapcar #'cdr inf-clojure-startup-forms)
                                           nil
                                           'confirm-after-completion))))
-  (let* ((project-dir (clojure-project-dir))
+  (let* ((project-dir (inf-clojure--project-dir))
          (process-buffer-name (or
                                inf-clojure-custom-repl-name
                                (if project-dir
@@ -850,7 +887,9 @@ process buffer for a list of commands.)"
         (with-current-buffer (apply #'make-comint
                                     process-buffer-name (car cmdlist) nil (cdr cmdlist))
           (inf-clojure-mode)
-          (set-syntax-table clojure-mode-syntax-table)
+          (set-syntax-table (pcase (car (inf-clojure--get-preferred-major-modes))
+                              ('clojure-ts-mode clojure-ts-mode-syntax-table)
+                              (_ clojure-mode-syntax-table)))
           (setq-local inf-clojure-repl-type repl-type)
           (hack-dir-local-variables-non-file-buffer))))
     ;; update the default comint buffer and switch to it
@@ -940,7 +979,7 @@ defaults provided in `inf-clojure-socket-repl-startup-forms'."
                                           'confirm-after-completion))))
   (let* ((host "localhost")
          (port (or inf-clojure-socket-repl-port (+ 5500 (random 500))))
-         (project-dir (clojure-project-dir))
+         (project-dir (inf-clojure--project-dir))
          (repl-type (or (unless prefix-arg
                           inf-clojure-custom-repl-type)
                         (car (rassoc cmd inf-clojure-socket-repl-startup-forms))
@@ -978,7 +1017,8 @@ of forms."
   (condition-case nil
       (with-temp-buffer
         (progn
-          (clojurec-mode)
+          ;; Activate preferred major mode.
+          (funcall (car (inf-clojure--get-preferred-major-modes)))
           (insert str)
           (whitespace-cleanup)
           (goto-char (point-min))
@@ -986,8 +1026,10 @@ of forms."
             (while (looking-at "\n")
               (delete-char 1))
             (unless (eobp)
-              (clojure-forward-logical-sexp))
-            (unless (eobp)
+              ;; NOTE: There is no special API for that in
+              ;; `clojure-ts-mode', so probably for now lets keep this
+              ;; `clojure-mode' function.
+              (clojure-forward-logical-sexp)
               (forward-char)))
           (buffer-substring-no-properties (point-min) (point-max))))
     (scan-error str)))
@@ -1105,13 +1147,6 @@ START and END are the beginning and end positions in the buffer to send."
 This holds a cons cell of the form `(DIRECTORY . FILE)'
 describing the last `inf-clojure-load-file' command.")
 
-(defcustom inf-clojure-source-modes '(clojure-mode)
-  "Used to determine if a buffer contains Clojure source code.
-If it's loaded into a buffer that is in one of these major modes, it's
-considered a Clojure source file by `inf-clojure-load-file'.
-Used by this command to determine defaults."
-  :type '(repeat symbol))
-
 (defun inf-clojure-load-file (&optional switch-to-repl file-name)
   "Load a Clojure file into the inferior Clojure process.
 
@@ -1123,7 +1158,7 @@ is present it will be used instead of the current file."
          (file-name (or file-name
                         (car (comint-get-source "Load Clojure file: " inf-clojure-prev-l/c-dir/file
                                                 ;; nil because doesn't need an exact name
-                                                inf-clojure-source-modes nil))))
+                                                (inf-clojure--get-preferred-major-modes) nil))))
          (load-form (inf-clojure-get-feature proc 'load)))
     (comint-check-source file-name) ; Check to see if buffer needs saved.
     (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
@@ -1132,23 +1167,32 @@ is present it will be used instead of the current file."
     (when switch-to-repl
       (inf-clojure-switch-to-repl t))))
 
+(defun inf-clojure--find-ns ()
+  "Return the namespace of the current Clojure buffer.
+
+This function delegates its job to an appropritate function, considering
+`inf-clojure-source-modes'."
+  (pcase (car (inf-clojure--get-preferred-major-modes))
+    ('clojure-ts-mode (clojure-ts-find-ns))
+    (_ (clojure-find-ns))))
+
 (defun inf-clojure-reload (arg)
   "Send a query to the inferior Clojure for reloading the namespace.
-See variable `inf-clojure-reload-form' and
+See variable `inf-clojure-reload-form' and variable
 `inf-clojure-reload-all-form'.
 
 The prefix argument ARG can change the behavior of the command:
 
-  - C-u M-x `inf-clojure-reload': prompts for a namespace name.
-  - M-- M-x `inf-clojure-reload': executes (require ... :reload-all).
-  - M-- C-u M-x `inf-clojure-reload': reloads all AND prompts."
+  - \\`C-u' \\[inf-clojure-reload]: prompts for a namespace name.
+  - \\`M--' \\[inf-clojure-reload]: executes (require ... :reload-all).
+  - \\`M--' \\`C-u' \\[inf-clojure-reload]: reloads all AND prompts."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (reload-all-p (or (equal arg '-) (equal arg '(-4))))
          (prompt-p (or (equal arg '(4)) (equal arg '(-4))))
          (ns (if prompt-p
-                (car (inf-clojure-symprompt "Namespace" (clojure-find-ns)))
-              (clojure-find-ns)))
+                (car (inf-clojure-symprompt "Namespace" (inf-clojure--find-ns)))
+              (inf-clojure--find-ns)))
          (form (if (not reload-all-p)
                    (inf-clojure-reload-form proc)
                  (inf-clojure-reload-all-form proc))))
@@ -1249,7 +1293,7 @@ STRING if present."
                             (prin1-to-string (substring-no-properties string))))
                   nil
                   (expand-file-name inf-clojure--log-file-name
-                                    (clojure-project-dir))
+                                    (inf-clojure--project-dir))
                   'append
                   'no-annoying-write-file-in-minibuffer)))
 
@@ -1357,11 +1401,11 @@ for evaluation, therefore FORM should not include it."
 (defun inf-clojure-arglists (fn)
   "Send a query to the inferior Clojure for the arglists for function FN.
 See variable `inf-clojure-arglists-form'."
-  (when-let ((proc (inf-clojure-proc 'no-error)))
-    (when-let ((arglists-form (inf-clojure-get-feature proc 'arglists)))
-      (thread-first (format arglists-form fn)
-        (inf-clojure--process-response proc "(" ")")
-        (inf-clojure--some)))))
+  (when-let* ((proc (inf-clojure-proc 'no-error))
+              (arglists-form (inf-clojure-get-feature proc 'arglists)))
+    (thread-first (format arglists-form fn)
+                  (inf-clojure--process-response proc "(" ")")
+                  (inf-clojure--some))))
 
 (defun inf-clojure-show-arglists (prompt-for-symbol)
   "Show the arglists for function FN in the mini-buffer.
@@ -1383,8 +1427,8 @@ prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (ns (if prompt-for-ns
-                 (car (inf-clojure-symprompt "Ns vars" (clojure-find-ns)))
-               (clojure-find-ns)))
+                 (car (inf-clojure-symprompt "Ns vars" (inf-clojure--find-ns)))
+               (inf-clojure--find-ns)))
          (ns-vars-form (inf-clojure-get-feature proc 'ns-vars)))
     (inf-clojure--send-string proc (format ns-vars-form ns))))
 
@@ -1396,8 +1440,8 @@ PROMPT-FOR-NS, it prompts for a namespace name."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (ns (if prompt-for-ns
-                 (car (inf-clojure-symprompt "Set ns to" (clojure-find-ns)))
-               (clojure-find-ns)))
+                 (car (inf-clojure-symprompt "Set ns to" (inf-clojure--find-ns)))
+               (inf-clojure--find-ns)))
          (set-ns-form (inf-clojure-get-feature proc 'set-ns)))
     (when (or (not ns) (equal ns ""))
       (user-error "No namespace selected"))

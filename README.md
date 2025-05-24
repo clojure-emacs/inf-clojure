@@ -103,6 +103,10 @@ You can also add the following to your Emacs config to enable
 
 ```emacs-lisp
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
+
+;; or if you're a `clojure-ts-mode' user:
+
+(add-hook 'clojure-ts-mode-hook #'inf-clojure-minor-mode)
 ```
 
 **Warning:** Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same time. They
@@ -215,6 +219,18 @@ If you want to update a specific form there is a function
 
 ```emacs-lisp
 (inf-clojure-update-feature 'clojure 'completion "(incomplete.core/completions \"%s\")")
+```
+
+### `clojure-ts-mode` support
+
+`inf-clojure` will try to use `clojure-ts-mode` by default if it's
+available with fallback to `clojure-mode`.
+
+If you want to use `inf-clojure` with `clojure-mode` exclusively, you
+can set it to:
+
+```emacs-lisp
+(setopt inf-clojure-source-modes '(clojure-mode))
 ```
 
 #### Caveats
