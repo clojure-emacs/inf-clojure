@@ -1120,7 +1120,7 @@ START and END are the beginning and end positions in the buffer to send."
   (interactive)
   (inf-clojure-eval-defun t))
 
-(defvar inf-clojure-prev-l/c-dir/file nil
+(defvar inf-clojure-prev-loaded-dir-and-file nil
   "Record last directory and file used in loading or compiling.
 This holds a cons cell of the form `(DIRECTORY . FILE)'
 describing the last `inf-clojure-load-file' command.")
@@ -1134,12 +1134,12 @@ is present it will be used instead of the current file."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (file-name (or file-name
-                        (car (comint-get-source "Load Clojure file: " inf-clojure-prev-l/c-dir/file
+                        (car (comint-get-source "Load Clojure file: " inf-clojure-prev-loaded-dir-and-file
                                                 ;; nil because doesn't need an exact name
                                                 (inf-clojure--get-preferred-major-modes) nil))))
          (load-form (inf-clojure-get-feature proc 'load)))
     (comint-check-source file-name) ; Check to see if buffer needs saved.
-    (setq inf-clojure-prev-l/c-dir/file (cons (file-name-directory    file-name)
+    (setq inf-clojure-prev-loaded-dir-and-file (cons (file-name-directory    file-name)
                                               (file-name-nondirectory file-name)))
     (inf-clojure--send-string proc (format load-form file-name))
     (when switch-to-repl
