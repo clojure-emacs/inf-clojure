@@ -88,9 +88,8 @@
     (ict-with-assess-buffers
      ((a (insert "@")))
      (with-current-buffer a
-       (expect
-        (ict-bounds-string (inf-clojure-completion-bounds-of-expr-at-point))
-        :not :to-be nil))))
+       (expect (inf-clojure-completion-bounds-of-expr-at-point)
+               :to-be nil))))
 
   (it "computes bounds for [symbol"
     (ict-with-assess-buffers
