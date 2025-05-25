@@ -68,7 +68,7 @@ the right code for each REPL type.
 
 ## Installation
 
-**Note:** `inf-clojure` requires Emacs 25 or newer.
+**Note:** `inf-clojure` requires Emacs 27 or newer.
 
 `inf-clojure` is available on the official [NonGNU ELPA](https://elpa.nongnu.org/nongnu/inf-clojure.html) `package.el` repo and on the community-maintained
 [MELPA Stable][] and [MELPA][] repos.
