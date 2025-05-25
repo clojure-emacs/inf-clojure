@@ -47,7 +47,6 @@
 ;; * Apropos
 ;; * Macroexpansion
 ;; * Support connecting to socket REPLs
-;; * Support for Lumo
 ;; * Support for Planck
 ;; * Support for Joker
 ;;
@@ -80,7 +79,6 @@
                                     (lein-clr . "lein clr repl")
                                     (planck . "planck -d")
                                     (babashka . "bb")
-                                    (lumo . "lumo -d")
                                     (joker . "joker")))
 
 (defvar inf-clojure-repl-features
@@ -92,23 +90,6 @@
              (set-ns . "(in-ns '%s)")
              (macroexpand . "(cljs.core/macroexpand '%s)")
              (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)")))
-    (lumo . ((load . "(clojure.core/load-file \"%s\")")
-             (doc . "(lumo.repl/doc %s)")
-             (source . "(lumo.repl/source %s)")
-             (arglists .
-                       "(let [old-value lumo.repl/*pprint-results*]
-                          (set! lumo.repl/*pprint-results* false)
-                          (js/setTimeout #(set! lumo.repl/*pprint-results* old-value) 0)
-                          (lumo.repl/get-arglists \"%s\"))")
-             (apropos . "(lumo.repl/apropos \"%s\")")
-             (ns-vars . "(lumo.repl/dir %s)")
-             (set-ns . "(in-ns '%s)")
-             (macroexpand . "(macroexpand-1 '%s)")
-             (macroexpand-1 . "(macroexpand-1 '%s)")
-             (completion .
-                         "(let [ret (atom nil)]
-                            (lumo.repl/get-completions \"%s\" (fn [res] (reset! ret (map str res))))
-                             @ret)")))
     (planck . ((load . "(load-file \"%s\")")
                (doc . "(planck.repl/doc %s)")
                (source . "(planck.repl/source %s)")
@@ -242,7 +223,7 @@ If no-error is truthy don't error if feature is not present."
 
 (defun inf-clojure--update-feature (repl-type feature form)
   "Return a copy of the datastructure containing the repl features.
-Given a REPL-TYPE (`clojure', `lumo', ...) and a FEATURE (`doc',
+Given a REPL-TYPE (`clojure', `planck', ...) and a FEATURE (`doc',
 `apropos', ...) and a FORM this will return a new datastructure
 that can be set as `inf-clojure-repl-features'."
   (let ((original (alist-get repl-type inf-clojure-repl-features)))
@@ -255,7 +236,7 @@ that can be set as `inf-clojure-repl-features'."
 
 (defun inf-clojure-update-feature (repl-type feature form)
   "Mutate the repl features to the new FORM.
-Given a REPL-TYPE (`clojure', `lumo', ...) and a FEATURE (`doc',
+Given a REPL-TYPE (`clojure', `planck', ...) and a FEATURE (`doc',
 `apropos', ...) and a FORM this will set
 `inf-clojure-repl-features' with these new values."
   (setq inf-clojure-repl-features (inf-clojure--update-feature repl-type feature form)))
@@ -520,7 +501,6 @@ Should be a symbol that is a key in `inf-clojure-repl-features'."
   :package-version '(inf-clojure . "3.0.0")
   :type '(choice (const :tag "clojure" clojure)
                  (const :tag "cljs" cljs)
-                 (const :tag "lumo" lumo)
                  (const :tag "planck" planck)
                  (const :tag "joker" joker)
                  (const :tag "babashka" babashka)

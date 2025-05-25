@@ -33,7 +33,6 @@ It supports the following REPLs:
 - ClojureScript
 - ClojureCLR (via [lein-clr](https://github.com/kumarshantanu/lein-clr))
 - [Planck](http://planck-repl.org/)
-- [Lumo](https://github.com/anmonteiro/lumo)
 - [Joker](https://joker-lang.org/)
 - [babashka](https://github.com/borkdude/babashka)
 
@@ -181,7 +180,7 @@ There are two important configuration variables here:
 
 1. `inf-clojure-custom-startup`: Which startup command to use so
    inf-clojure can run the inferior Clojure process (REPL).
-2. `inf-clojure-custom-repl-type`: The type of the REPL started by the above command (e.g. `lumo`).
+2. `inf-clojure-custom-repl-type`: The type of the REPL started by the above command (e.g. `planck`).
 
 If these are set and you wish to prevent inf-clojure from using them,
 use a prefix arg when invoking `inf-clojure` (`C-u M-x inf-clojure`).
@@ -290,18 +289,6 @@ information on how connect:
 
 The socket server REPL configuration options are described [here](https://clojure.org/reference/repl_and_main#_launching_a_socket_server).
 
-#### Lumo Socket REPL
-
-Lumo is decoupled from `inf-clojure-project-type` and therefore the command used depends on what you are using for dependency resolution.
-
-For example if a `project.clj` is present in the project root folder, `inf-clojure-lein-cmd` will be used.
-
-After you launch `lumo ... -n 5555`, as customary, either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
-
-```emacs-lisp
-((nil (inf-clojure-custom-startup "localhost" . 5555)))
-```
-
 #### Multiple Process Support
 
 To run multiple Clojure processes, you start the first up
@@ -365,7 +352,7 @@ obtained from `inf-clojure-repl-features`:
 ```emacs-lisp
 (mapcar 'car inf-clojure-repl-features)
 
-;; => (cljs lumo planck joker clojure babashka)
+;; => (cljs planck joker clojure babashka)
 ```
 
 What does it mean that a REPL type is supported? Well, it means that
@@ -402,7 +389,7 @@ You can leave it enabled, it just won't show anything in the echo area.
 #### Code Completion
 
 Code completion is a tricky aspect if you are trying to be as close to
-a generic REPL as possible. Planck and lumo REPL implementations
+a generic REPL as possible. Some runtimes (e.g. Planck)
 explicitly provide completion functions in their REPL namespaces. For
 clojure, you will need to have a library on your classpath. If you are
 using a recent version of Leiningen, you already have
@@ -434,7 +421,7 @@ once so that the completion machinery will work: `(require
 
 For more advanced customization, code completion is particularly open
 to customization. Not only you can `setq` the customary
-`inf-clojure-completion-form`, `inf-clojure-completion-form-lumo`,
+`inf-clojure-completion-form`,
 `inf-clojure-completion-form-planck` and
 `inf-clojure-completion-form-joker` - the form to send to the REPL -
 but you can also use `inf-clojure-completions-fn` for specifying a
@@ -446,12 +433,6 @@ inf-clojure-completions-fn`.  Another option is to have a look at [how
 cider does
 it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765dc9bff5d6/cider-interaction.el#L595).
 
-#### Lumo Setup
-
-For an optimal Lumo experience the `-d` needs to be passed to Lumo
-when launched from the command line. This disable `readline` support
-in order to play nicely with Emacs.
-
 ## Troubleshooting
 
 ### Things seem broken
@@ -459,7 +440,7 @@ in order to play nicely with Emacs.
 Inf-clojure is intentionally quite simple and just sends commands to a
 REPL on your behalf to provide features. In order to do this
 inf-clojure largely needs to know the REPL type so it can format the
-correct calls. Most end up in `(lumo.repl/doc [symbol])` or
+correct calls. Most end up in `(planck.repl/doc [symbol])` or
 `(cljs.repl/doc ...)` so its important that the REPL type is set
 correctly. This REPL type exists in the process buffer (REPL) and the
 source buffers as a cache. If you have problems, run `m-x
