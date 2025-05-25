@@ -1508,21 +1508,12 @@ evaluating \\[inf-clojure-completion-form] at the REPL."
                  (inf-clojure--process-response completion-expr proc  "(" ")"))))))
 
 (defconst inf-clojure-clojure-expr-break-chars "^][ \"'`><,;|&{()@\\^"
-  "Regexp are hard.
+  "A list of characters that serve as expression boundaries.
 
-This regex has been built in order to match the first of the
-listed chars.  There are a couple of quirks to consider:
-
-- the ] is always a special in elisp regex so you have to put it
-  directly AFTER [ if you want to match it as literal.
-- The ^ needs to be escaped with \\^.
-
-Tests and `re-builder' are your friends.")
+See `inf-clojure-completion-bounds-of-expr-at-point'.")
 
 (defun inf-clojure--kw-to-symbol (kw)
-  "Convert the keyword KW to a symbol.
-
-This guy was taken from CIDER, thanks folks."
+  "Convert the keyword KW to a symbol."
   (when kw
     (replace-regexp-in-string "\\`:+" "" kw)))
 
