@@ -40,18 +40,18 @@ It supports the following REPLs:
 `inf-clojure` provides a set of essential features for interactive
 Clojure/ClojureScript/ClojureCLR development:
 
-* Enhanced REPL
-* Interactive code evaluation
-* Code completion
-* Definition lookup
-* Documentation lookup
-* ElDoc
-* Apropos
-* Macroexpansion
-* Reloading a namespace (via `require :reload`/`require :reload-all`)
-* Connecting to socket REPLs
+- Enhanced REPL
+- Interactive code evaluation
+- Code completion
+- Definition lookup
+- Documentation lookup
+- ElDoc
+- Apropos
+- Macroexpansion
+- Reloading a namespace (via `require :reload`/`require :reload-all`)
+- Connecting to socket REPLs
 
-For a more powerful/full-featured solution see [CIDER](https://github.com/clojure-emacs/cider).
+For a more powerful/full-featured solution see [CIDER][].
 
 ## Rationale
 
@@ -156,7 +156,7 @@ configurable.
 You can set custom values to `inf-clojure` variables on a
 per-project basis using [directory
 variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html)
-or by setting them in in your init file.
+or by setting them in in your [init file][Emacs init file].
 
 You can see all the configuration options available using the command
 `M-x customize-group RET inf-clojure`.
@@ -245,7 +245,7 @@ If you decide _not_ to use the socket REPL, it is highly recommended
 you disable output coloring and/or `readline` facilities: `inf-clojure` does not
 filter out ASCII escape characters at the moment and will not behave correctly.
 
-For Leiningen, there are no command-line switches and you need to add
+For [Leiningen][], there are no command-line switches and you need to add
 a custom [`project.clj`
 option](https://github.com/technomancy/leiningen/blob/master/sample.project.clj):
 
@@ -261,8 +261,8 @@ If you have the new [Clojure CLI tools][] installed you can use the `clojure` co
 
 _do not use `clj` because it adds readline support_
 
-``` shellsession
-$ clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
+``` shell
+clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
 ```
 
 Then either `C-c M-c RET localhost RET 5555` from within Emacs or add the following to your `.dir-locals.el`:
@@ -270,6 +270,7 @@ Then either `C-c M-c RET localhost RET 5555` from within Emacs or add the follow
 ```emacs-lisp
 ((nil . ((inf-clojure-custom-startup . ("localhost" . 5555)))))
 ```
+
 #### Leiningen Socket REPL
 
 For Leiningen, add the following option to your `~/.lein/profiles.clj` or your `project.clj`:
@@ -386,7 +387,6 @@ your cursor. One side effect of this is that it can mess with repl vars like
 `*1` and `*2`. You can disable inf-clojure's Eldoc functionality with `(setq
 inf-clojure-enable-eldoc nil)`.
 
-
 ElDoc should be enabled by default in Emacs 26.1+. If it is not active by
 default, you can activate ElDoc with `M-x eldoc-mode` or by adding the following
 to you Emacs config:
@@ -416,7 +416,6 @@ could alternatively use `compliment {:mvn/version "0.3.10"}`.
 ;; or
 ;; for compliment
 (inf-clojure-update-feature 'clojure 'completion "(compliment.core/completions \"%s\")")
-
 ```
 
 If you give a form for the completion form, it is your responsibility
@@ -479,7 +478,7 @@ The explanation of this problem and solution can be found [here](https://groups.
 The solution is to create a file named `.jline.rc` in your `$HOME`
 directory and add this line to that file:
 
-```
+```ini
 jline.terminal=unsupported
 ```
 
@@ -514,4 +513,3 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [melpa stable]: http://stable.melpa.org
 [Emacs init file]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Init-File.html
 [Clojure cli tools]: https://clojure.org/guides/getting_started
-[Boot]: http://boot-clj.com
