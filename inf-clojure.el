@@ -824,7 +824,7 @@ switch to that buffer.
 CMD is a string which serves as the startup command or a cons of
 host and port.
 
- Prompts user for repl startup command and repl type if not
+ Prompts user for REPL startup command and REPL type if not
 inferrable from startup command.  Uses `inf-clojure-custom-repl-type'
 and `inf-clojure-custom-startup' if those are set.
 Use a prefix to prevent using these when they
