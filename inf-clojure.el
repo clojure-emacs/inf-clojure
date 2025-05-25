@@ -814,6 +814,8 @@ The name is simply the final segment of the path."
                                          )))
     (project-root (project-current))))
 
+(defvar clojure-ts-mode-syntax-table)
+
 ;;;###autoload
 (defun inf-clojure (cmd &optional suppress-message)
   "Run an inferior Clojure process, input and output via buffer *inf-clojure*.
@@ -1144,6 +1146,8 @@ is present it will be used instead of the current file."
     (inf-clojure--send-string proc (format load-form file-name))
     (when switch-to-repl
       (inf-clojure-switch-to-repl t))))
+
+(declare-function clojure-ts-find-ns "clojure-ts-mode")
 
 (defun inf-clojure--find-ns ()
   "Return the namespace of the current Clojure buffer.
