@@ -14,14 +14,13 @@ It's based on ideas from the popular `inferior-lisp` package.
 interaction minor mode (`inf-clojure-minor-mode`), which extends `clojure-mode`
 with commands to evaluate forms directly in the REPL.
 
------------
-
-**This documentation tracks the `master` branch of `inf-clojure`. Some of
-the features and settings discussed here might not be available in
-older releases (including the current stable release). Please, consult
-the relevant git tag (e.g. 2.2.0) if you need documentation for a
-specific `inf-clojure` release.**
-***
+> [!IMPORTANT]
+>
+> This documentation tracks the `master` branch of `inf-clojure`. Some of
+> the features and settings discussed here might not be available in
+> older releases (including the current stable release). Please, consult
+> the relevant git tag (e.g. 2.2.0) if you need documentation for a
+> specific `inf-clojure` release.
 
 ## Overview
 
@@ -54,21 +53,31 @@ For a more powerful/full-featured solution see [CIDER][].
 
 ## Rationale
 
-`inf-clojure`'s goal is to provide the simplest possible way to interact with a Clojure REPL.
-In Emacs terminology "inferior" process is a subprocess started by Emacs (it being the "superior" process, of course).
+`inf-clojure`'s goal is to provide the simplest possible way to interact with a
+Clojure REPL.  In Emacs terminology "inferior" process is a subprocess started
+by Emacs (it being the "superior" process, of course).
 
-`inf-clojure` doesn't require much of setup, as at its core it simply runs a terminal REPL process, pipes input to it, and
-processes its output. As the Clojure socket REPL works in exactly the same manner `inf-clojure` can also interact with it.
+`inf-clojure` doesn't require much of setup, as at its core it simply runs a
+terminal REPL process, pipes input to it, and processes its output. As the
+Clojure socket REPL works in exactly the same manner `inf-clojure` can also
+interact with it.
 
-Functionality like code completion and eldoc is powered by evaluation of predefined code snippets that provide the necessary results.
-As different Clojure REPLs have different capabilities, `inf-clojure` tracks the type of a REPL and invokes
-the right code for each REPL type.
+Functionality like code completion and eldoc is powered by evaluation of
+predefined code snippets that provide the necessary results.  As different
+Clojure REPLs have different capabilities, `inf-clojure` tracks the type of a
+REPL and invokes the right code for each REPL type.
 
-`inf-clojure` is built on top of Emacs's [comint](https://github.com/emacs-mirror/emacs/blob/master/lisp/comint.el). Unfortunately `comint` is pretty light on official documentation, but there is a good overview/tutorial [here](https://www.masteringemacs.org/article/comint-writing-command-interpreter).
+`inf-clojure` is built on top of Emacs's
+[comint](https://github.com/emacs-mirror/emacs/blob/master/lisp/comint.el). Unfortunately
+`comint` is pretty light on official documentation, but there is a good
+overview/tutorial
+[here](https://www.masteringemacs.org/article/comint-writing-command-interpreter).
 
 ## Installation
 
-**Note:** `inf-clojure` requires Emacs 27 or newer.
+> [!IMPORTANT]
+>
+> `inf-clojure` requires Emacs 27 or newer.
 
 `inf-clojure` is available on the official [NonGNU ELPA](https://elpa.nongnu.org/nongnu/inf-clojure.html) `package.el` repo and on the community-maintained
 [MELPA Stable][] and [MELPA][] repos.
@@ -98,7 +107,8 @@ If the installation doesn't work try refreshing the package list:
 `nil`.
 
 You can also add the following to your Emacs config to enable
-`inf-clojure-minor-mode` for Clojure source buffers, regardless of whether there's an `inf-clojure` REPL running:
+`inf-clojure-minor-mode` for Clojure source buffers, regardless of whether
+there's an `inf-clojure` REPL running:
 
 ```emacs-lisp
 (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
@@ -108,9 +118,11 @@ You can also add the following to your Emacs config to enable
 (add-hook 'clojure-ts-mode-hook #'inf-clojure-minor-mode)
 ```
 
-**Warning:** Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same time. They
-have overlapping functionality and keybindings and the result will be nothing
-short of havoc.
+> [!WARNING]
+>
+> Don't enable `inf-clojure-minor-mode` and `cider-mode` at the same time. They
+> have overlapping functionality and keybindings and the result will be nothing
+> short of havoc.
 
 ## Basic Usage
 
@@ -147,8 +159,6 @@ for the symbol you want to show the docstring for.
 
 ## Configuration
 
-**Note:** The configuration options were changed massively in `inf-clojure` 3.0.
-
 In the time-honoured Emacs tradition `inf-clojure`'s behaviour is extremely
 configurable.
 
@@ -173,8 +183,10 @@ that goes with it. This is most easily achieved with the following `.dir-locals.
   (inf-clojure-custom-repl-type . clojure)))
 ```
 
-**Note:** This file has to be in the directory in which you're invoking `inf-clojure` or a parent
-directory.
+> [!IMPORTANT]
+>
+> This file has to be in the directory in which you're invoking
+> `inf-clojure` or a parent directory.
 
 There are two important configuration variables here:
 
@@ -298,9 +310,11 @@ process with another `inf-clojure`.  It will be in a new buffer,
 named `*inf-clojure*`.  You can switch between the different process
 buffers with `switch-to-buffer`.
 
-**Note:** If you're starting `inf-clojure` within a Clojure project directory
-the name of the project will be incorporated into the name of the REPL buffer
-- e.g. `*inf-clojure my-project*`.
+> [!NOTE]
+>
+> If you're starting `inf-clojure` within a Clojure project directory
+> the name of the project will be incorporated into the name of the REPL buffer
+> - e.g. `*inf-clojure my-project*`.
 
 Commands that send text from source buffers to Clojure processes (like `inf-clojure-eval-defun`
 or `inf-clojure-show-arglists`) have to choose a process to send to, when you have more than
