@@ -7,7 +7,7 @@
 ;; Maintainer: Bozhidar Batsov <bozhidar@batsov.dev>
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, comint, clojure
-;; Version: 3.3.0-snapshot
+;; Version: 3.3.0
 ;; Package-Requires: ((emacs "28.1") (clojure-mode "5.11"))
 
 ;; This file is not part of GNU Emacs.

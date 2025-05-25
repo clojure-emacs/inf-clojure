@@ -2,6 +2,8 @@
 
 ## master (unreleased)
 
+## 3.3.0 (2025-05-25)
+
 ### New features
 
 - [#202](https://github.com/clojure-emacs/inf-clojure/issues/202): Add ClojureCLR support.

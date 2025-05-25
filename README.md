@@ -76,7 +76,7 @@ overview/tutorial
 
 > [!IMPORTANT]
 >
-> `inf-clojure` requires Emacs 27 or newer.
+> `inf-clojure` requires Emacs 28 or newer.
 
 `inf-clojure` is available on the official [NonGNU ELPA](https://elpa.nongnu.org/nongnu/inf-clojure.html) `package.el` repo and on the community-maintained
 [MELPA Stable][] and [MELPA][] repos.
