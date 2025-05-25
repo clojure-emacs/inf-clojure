@@ -8,7 +8,7 @@
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, comint, clojure
 ;; Version: 3.3.0-snapshot
-;; Package-Requires: ((emacs "27.1") (clojure-mode "5.11"))
+;; Package-Requires: ((emacs "28.1") (clojure-mode "5.11"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -1004,12 +1004,16 @@ of forms."
           (while (not (eobp))
             (while (looking-at "\n")
               (delete-char 1))
+            ;; NOTE: There is no special API for that in
+            ;; `clojure-ts-mode', so probably for now lets keep this
+            ;; `clojure-mode' function.
             (unless (eobp)
-              ;; NOTE: There is no special API for that in
-              ;; `clojure-ts-mode', so probably for now lets keep this
-              ;; `clojure-mode' function.
-              (clojure-forward-logical-sexp)
-              (forward-char)))
+              (clojure-forward-logical-sexp))
+            (unless (eobp)
+              (forward-char)
+              ;; Remove an empty line at the end of the buffer.
+              (when (eobp)
+                (delete-char -1))))
           (buffer-substring-no-properties (point-min) (point-max))))
     (scan-error str)))
 
@@ -1503,7 +1507,7 @@ evaluating \\[inf-clojure-completion-form] at the REPL."
         (funcall inf-clojure-completions-fn
                  (inf-clojure--process-response completion-expr proc  "(" ")"))))))
 
-(defconst inf-clojure-clojure-expr-break-chars "^[] \"'`><,;|&{()[@\\^]"
+(defconst inf-clojure-clojure-expr-break-chars "^][ \"'`><,;|&{()@\\^"
   "Regexp are hard.
 
 This regex has been built in order to match the first of the
