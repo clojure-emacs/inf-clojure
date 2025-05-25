@@ -15,7 +15,7 @@
 - Improve support for multiple forms in the same line by replacing `beginning-of-defun` fn.
 - [#204](https://github.com/clojure-emacs/inf-clojure/issues/204): Scroll repl buffer on insert commands
 - [#208](https://github.com/clojure-emacs/inf-clojure/pull/208) Display message after setting REPL.
-- Require Emacs 27.
+- Require Emacs 28.
 - Drop support for Lumo.
 
 ## 3.2.1 (2022-07-22)
