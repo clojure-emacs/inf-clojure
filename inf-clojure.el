@@ -1,4 +1,4 @@
-;;; inf-clojure.el --- Run an external Clojure process in an Emacs buffer -*- lexical-binding: t; -*-
+;;; inf-clojure.el --- Basic interaction with a Clojure REPL -*- lexical-binding: t; -*-
 
 ;; Copyright © 2014-2025 Bozhidar Batsov
 
@@ -8,7 +8,7 @@
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, comint, clojure
 ;; Version: 3.3.0-snapshot
-;; Package-Requires: ((emacs "27") (clojure-mode "5.11"))
+;; Package-Requires: ((emacs "27.1") (clojure-mode "5.11"))
 
 ;; This file is not part of GNU Emacs.
 
