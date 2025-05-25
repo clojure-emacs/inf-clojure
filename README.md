@@ -2,7 +2,6 @@
 [![MELPA][melpa-badge]][melpa-package]
 [![MELPA Stable][melpa-stable-badge]][melpa-stable-package]
 [![NonGNU ELPA](https://elpa.nongnu.org/nongnu/inf-clojure.svg)](https://elpa.nongnu.org/nongnu/inf-clojure.html)
-[![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.com/invite/nFPpynQPME)
 [![License GPL 3][badge-license]][copying]
 
 # inf-clojure
@@ -301,7 +300,8 @@ information on how connect:
 ((nil (inf-clojure-custom-startup "localhost" . 5555)))
 ```
 
-The socket server REPL configuration options are described [here](https://clojure.org/reference/repl_and_main#_launching_a_socket_server).
+The socket server REPL configuration options are described
+[here](https://clojure.org/reference/repl_and_main#_launching_a_socket_server).
 
 #### Multiple Process Support
 
@@ -314,9 +314,9 @@ buffers with `switch-to-buffer`.
 
 > [!NOTE]
 >
-> If you're starting `inf-clojure` within a Clojure project directory
-> the name of the project will be incorporated into the name of the REPL buffer
-> - e.g. `*inf-clojure my-project*`.
+> If you're starting `inf-clojure` within a Clojure project directory the name
+> of the project will be incorporated into the name of the REPL buffer -
+> e.g. `*inf-clojure my-project*`.
 
 Commands that send text from source buffers to Clojure processes (like `inf-clojure-eval-defun`
 or `inf-clojure-show-arglists`) have to choose a process to send to, when you have more than
@@ -355,10 +355,12 @@ acceptable buffers to set as the REPL buffer. If called with a prefix,
 it will always give the list even if you are currently in an
 acceptable REPL buffer.
 
-**Tip:** Renaming buffers will greatly improve the
-functionality of this list; the list "project-1: clojure repl",
-"project-2: cljs repl" is far more understandable than "inf-clojure",
-"inf-clojure<2>".
+> [!TIP]
+>
+> Renaming buffers will greatly improve the
+> functionality of this list; the list "project-1: clojure repl",
+> "project-2: cljs repl" is far more understandable than "inf-clojure",
+> "inf-clojure<2>".
 
 #### REPL Type
 
@@ -444,9 +446,10 @@ but you can also use `inf-clojure-completions-fn` for specifying a
 function that given the REPL response should return Elisp data
 compatible with
 [`completion-at-point-functions`](https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html).
+
 For more info run `M-x describe-variable RET
 inf-clojure-completions-fn`.  Another option is to have a look at [how
-cider does
+CIDER does
 it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765dc9bff5d6/cider-interaction.el#L595).
 
 ## Troubleshooting
