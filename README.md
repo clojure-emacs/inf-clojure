@@ -270,7 +270,9 @@ option](https://github.com/technomancy/leiningen/blob/master/sample.project.clj)
 
 If you have the new [Clojure CLI tools][] installed you can use the `clojure` command:
 
-_do not use `clj` because it adds readline support_
+> [!IMPORTANT]
+>
+> Do not use `clj` because it adds readline support.
 
 ``` shell
 clojure -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
