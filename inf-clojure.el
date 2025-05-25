@@ -8,7 +8,7 @@
 ;; URL: http://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, comint, clojure
 ;; Version: 3.3.0-snapshot
-;; Package-Requires: ((emacs "26.2") (clojure-mode "5.11"))
+;; Package-Requires: ((emacs "27") (clojure-mode "5.11"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -332,9 +332,7 @@ See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filte
   :link '(emacs-commentary-link :tag "Commentary" "inf-clojure"))
 
 (defconst inf-clojure-version
-  (or (if (fboundp 'package-get-version)
-          (package-get-version))
-      "3.2.1")
+  (package-get-version)
   "The current version of `inf-clojure'.")
 
 (defcustom inf-clojure-prompt-read-only t

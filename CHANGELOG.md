@@ -7,7 +7,8 @@
 * [#204](https://github.com/clojure-emacs/inf-clojure/issues/204): Scroll repl buffer on insert commands
 * [#208](https://github.com/clojure-emacs/inf-clojure/pull/208) Display message after setting repl.
 * [#210](https://github.com/clojure-emacs/inf-clojure/pull/210) Include `inf-clojure-socket-repl` to create a socket REPL and connect to it from inside Emacs.
-- [#217](https://github.com/clojure-emacs/inf-clojure/pull/217): Add `clojure-ts-mode` support.
+* [#217](https://github.com/clojure-emacs/inf-clojure/pull/217): Add `clojure-ts-mode` support.
+* Require Emacs 27.
 
 ## 3.2.1 (2022-07-22)
 
