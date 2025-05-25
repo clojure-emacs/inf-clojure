@@ -1504,7 +1504,7 @@ evaluating \\[inf-clojure-completion-form] at the REPL."
         (funcall inf-clojure-completions-fn
                  (inf-clojure--process-response completion-expr proc  "(" ")"))))))
 
-(defconst inf-clojure-clojure-expr-break-chars "^[] \"'`><,;|&{()[@\\^]"
+(defconst inf-clojure-clojure-expr-break-chars "^[] \"'`><,;|&{()@\\^"
   "Regexp are hard.
 
 This regex has been built in order to match the first of the
