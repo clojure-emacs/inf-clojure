@@ -803,7 +803,6 @@ The name is simply the final segment of the path."
 (defun inf-clojure--project-dir ()
   "Return current Clojure project root."
   (let ((project-vc-extra-root-markers '("project.clj"      ; Leiningen
-                                         "build.boot"       ; Boot
                                          "build.gradle"     ; Gradle
                                          "build.gradle.kts" ; Gradle
                                          "deps.edn"         ; Clojure CLI (a.k.a. tools.deps)
