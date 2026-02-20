@@ -12,6 +12,7 @@
 - Unify `reload` and `reload-all` forms with `inf-clojure-repl-features`, enabling per-REPL-type dispatch. The standalone `inf-clojure-reload-form` and `inf-clojure-reload-all-form` defcustoms have been removed.
 - Deduplicate Clojure-family REPL feature definitions via a shared base alist.
 - [#143](https://github.com/clojure-emacs/inf-clojure/issues/143): `inf-clojure-show-arglists` now displays results in the REPL buffer instead of the minibuffer.
+- Drop support for `lein-clr` (abandonware).
 
 ### Bugs fixed
 

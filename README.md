@@ -29,7 +29,7 @@ It supports the following REPLs:
 
 - Clojure
 - ClojureScript
-- ClojureCLR (via [clr.tools.deps](https://github.com/clojure/clr.tools.deps) or [lein-clr](https://github.com/kumarshantanu/lein-clr))
+- ClojureCLR (via [clr.tools.deps](https://github.com/clojure/clr.tools.deps))
 - [Planck](http://planck-repl.org/)
 - [Joker](https://joker-lang.org/)
 - [babashka](https://github.com/borkdude/babashka)
@@ -446,7 +446,7 @@ obtained from `inf-clojure-repl-features`:
 ```emacs-lisp
 (mapcar 'car inf-clojure-repl-features)
 
-;; => (cljs planck joker babashka node-babashka clojure clojure-clr lein-clr)
+;; => (cljs planck joker babashka node-babashka clojure clojure-clr)
 ```
 
 What does it mean that a REPL type is supported? Well, it means that

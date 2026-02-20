@@ -78,7 +78,6 @@
                                     (clojure . "clojure")
                                     (cljs . "clojure -M -m cljs.main -r")
                                     (clojure-clr . "Clojure.Main")
-                                    (lein-clr . "lein clr repl")
                                     (planck . "planck -d")
                                     (babashka . "bb")
                                     (joker . "joker")))
@@ -155,10 +154,7 @@ via `inf-clojure--merge-repl-features'.")
                      inf-clojure--clojure-repl-base-features
                      '((arglists .
                                  "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))
-    (lein-clr . ,(inf-clojure--merge-repl-features
-                  inf-clojure--clojure-repl-base-features
-                  '((arglists .
-                              "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))))
+))
 
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
@@ -924,7 +920,6 @@ EVENT is the event that triggered this function to be called."
     (boot . "export BOOT_JVM_OPTIONS='-Dclojure.server.repl=\"{:port %d :accept clojure.core.server/repl}\"' boot repl")
     (clojure . "clojure -J-Dclojure.server.repl=\"{:port %d :accept clojure.core.server/repl}\"")
     (cljs . "clojure -J-Dclojure.server.repl=\"{:port %d :accept cljs.server.browser/repl}\"")
-    (lein-clr . "JVM_OPTS='-Dclojure.server.repl={:port %d :accept clojure.core.server/repl}' lein clr repl")
     (planck . "planck -n %d")
     (babashka . "bb socket-repl %d")))
 
