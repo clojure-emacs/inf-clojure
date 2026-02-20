@@ -19,7 +19,7 @@ commands:
           name: Install Emacs latest
           command: |
             echo "HOMEBREW_NO_AUTO_UPDATE=1" >> $BASH_ENV
-            brew install homebrew/cask/emacs
+            brew install --cask emacs
       - run:
           name: Install Eldev
           command: curl -fsSL https://raw.github.com/doublep/eldev/master/webinstall/circle-eldev > x.sh && source ./x.sh
@@ -30,11 +30,6 @@ commands:
       - run:
           name: Install Eldev
           command: |
-            # Remove expired DST Root CA X3 certificate. Workaround
-            # for https://debbugs.gnu.org/cgi/bugreport.cgi?bug=51038
-            # bug on Emacs 27.2.
-            gci cert:\LocalMachine\Root\DAC9024F54D8F6DF94935FB1732638CA6AD77C13
-            gci cert:\LocalMachine\Root\DAC9024F54D8F6DF94935FB1732638CA6AD77C13 | Remove-Item
             (iwr https://raw.github.com/doublep/eldev/master/webinstall/circle-eldev.ps1).Content | powershell -command -
   test:
     steps:
@@ -85,7 +80,7 @@ jobs:
 
   test-macos-emacs-latest:
     macos:
-      xcode: "14.0.0"
+      xcode: "16.2.0"
     steps:
       - macos-setup
       - test
@@ -103,6 +98,7 @@ jobs:
   test-lint:
     docker:
       - image: silex/emacs:30-ci
+        entrypoint: bash
     steps:
       - setup
       - lint
