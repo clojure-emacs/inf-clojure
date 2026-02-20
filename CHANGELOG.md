@@ -13,12 +13,15 @@
 - Deduplicate Clojure-family REPL feature definitions via a shared base alist.
 - [#143](https://github.com/clojure-emacs/inf-clojure/issues/143): `inf-clojure-show-arglists` now displays results in the REPL buffer instead of the minibuffer.
 - Drop support for `lein-clr` (abandonware).
+- Use the modern `eldoc-documentation-functions` hook instead of the deprecated `eldoc-documentation-function`.
+- Remove unused `inf-clojure-chomp` function.
 
 ### Bugs fixed
 
 - Fix `inf-clojure-connected-p` to check for a live process.
 - Fix truncated autoload cookie on `inf-clojure-connect`.
 - Fix `prefix-arg` vs `current-prefix-arg` in REPL startup.
+- Fix `inf-clojure--clojure-buffer-p` to work on Emacs 28-29 (`derived-mode-p` does not accept a list before Emacs 30).
 - [#219](https://github.com/clojure-emacs/inf-clojure/issues/219): Fix `project-root` error when no project is detected (e.g. Squint REPL outside a project).
 - [#136](https://github.com/clojure-emacs/inf-clojure/issues/136): Fix preoutput filter to handle chunked comint output correctly, preventing spurious newlines (#153) and improving reliability of output filtering.
 
