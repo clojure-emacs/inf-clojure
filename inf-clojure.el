@@ -707,9 +707,7 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
 
 (defun inf-clojure-chomp (string)
   "Remove final newline from STRING."
-  (if (string-match "[\n]\\'" string)
-      (replace-match "" t t string)
-    string))
+  (string-trim-right string "\n"))
 
 (defun inf-clojure-remove-subprompts (string)
   "Remove subprompts from STRING."
