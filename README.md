@@ -50,6 +50,31 @@ Clojure/ClojureScript/ClojureCLR development:
 
 For a more powerful/full-featured solution see [CIDER][].
 
+### inf-clojure vs CIDER
+
+Both `inf-clojure` and [CIDER][] are Emacs packages for interactive Clojure
+development, but they differ significantly in scope and approach:
+
+| | inf-clojure | CIDER |
+|---|---|---|
+| **Architecture** | Talks to a standard REPL (process or socket) | Requires an [nREPL](https://nrepl.org) server + [cider-nrepl](https://github.com/clojure-emacs/cider-nrepl) middleware |
+| **Setup** | Minimal — works out of the box with any Clojure REPL | Requires adding middleware dependencies to your project |
+| **Code evaluation** | Yes | Yes |
+| **Code completion** | Basic (requires a completion library on the classpath) | Rich, context-aware (via `compliment` or `clj-suitable`) |
+| **Documentation lookup** | Yes | Yes, with more formatting options |
+| **Source lookup** | Yes | Yes |
+| **Debugger** | No | Yes (step debugger) |
+| **Inspector** | No | Yes (value inspector) |
+| **Test runner** | No | Yes (integrated test runner) |
+| **Refactoring** | No | Via [clj-refactor](https://github.com/clojure-emacs/clj-refactor.el) |
+| **Multiple REPLs** | Basic support | Rich support (per-project, sibling REPLs) |
+
+**Choose `inf-clojure`** if you want a lightweight, simple setup that works with
+any Clojure REPL (including socket REPLs) without adding project dependencies.
+
+**Choose CIDER** if you want a full-featured IDE experience with debugging,
+inspection, test running, and rich completion.
+
 ## Rationale
 
 `inf-clojure`'s goal is to provide the simplest possible way to interact with a
