@@ -191,15 +191,17 @@ processes, you might need to change `inf-clojure-buffer' to
 whichever process buffer you want to use.")
 
 (defun inf-clojure--get-feature (repl-type feature no-error)
-  "Get FEATURE for REPL-TYPE from repl-features.
-If no-error is truthy don't error if feature is not present."
+  "Get FEATURE for REPL-TYPE from `inf-clojure-repl-features'.
+If NO-ERROR is non-nil, return nil instead of signaling an error
+when the feature is not present."
   (let ((feature-form (alist-get feature (alist-get repl-type inf-clojure-repl-features))))
     (cond (feature-form feature-form)
           (no-error nil)
           (t (error "%s not configured for %s" feature repl-type)))))
 
 (defun inf-clojure-get-feature (proc feature &optional no-error)
-  "Get FEATURE based on repl type for PROC."
+  "Get FEATURE from `inf-clojure-repl-features' for PROC's REPL type.
+When NO-ERROR is non-nil, return nil instead of signaling an error."
   (let* ((repl-type (or (with-current-buffer (process-buffer proc)
                           inf-clojure-repl-type)
                         (error "REPL type is not known"))))
@@ -313,7 +315,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 (defcustom inf-clojure-source-modes '(clojure-ts-mode clojure-mode)
   "Used to determine if a buffer contains Clojure source code.
 
-Any buffer with one of these major modes, it's considered a Clojure
+If a buffer has one of these major modes, it's considered a Clojure
 source file by all `inf-clojure' commands."
   :type '(repeat symbol)
   :safe #'symbolp)
@@ -437,7 +439,7 @@ mode line entirely."
   "Var that allows disabling `eldoc-mode' in `inf-clojure'.
 
 Set to nil to disable eldoc.  Eldoc can be quite useful by
-displaying function signatures in the modeline, but can also
+displaying function signatures in the mode line, but can also
 cause multiple prompts to appear in the REPL and mess with *1,
 *2, etc."
   :type 'boolean
