@@ -141,9 +141,13 @@ Inf-clojure aims to be very simple and offer tooling that the REPL
 itself exposes. A few commands are:
 
 - eval last sexp (`C-x C-e`)
+- load file (`C-c C-l`)
+- reload namespace (`C-c M-r`, with `M--` prefix for `:reload-all`)
+- set REPL namespace (`C-c M-n`)
 - show arglists for function (`C-c C-a`)
 - show var documentation (`C-c C-v`)
 - show source (`C-c C-s`)
+- show var metadata (`C-c C-S-m`)
 - insert top level form into REPL (`C-c C-j d`)
 
 For a list of all available commands in `inf-clojure-mode` (a.k.a. the

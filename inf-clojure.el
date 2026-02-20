@@ -612,6 +612,10 @@ Clojure source.
     process buffer.
     `inf-clojure-eval-defun' sends the current defun to the Clojure process.
     `inf-clojure-eval-region' sends the current region to the Clojure process.
+    `inf-clojure-load-file' loads a Clojure file into the REPL.
+    `inf-clojure-reload' reloads the current namespace (with `M--' prefix
+    for :reload-all).
+    `inf-clojure-set-ns' sets the REPL namespace to the ns of the current buffer.
 
     Prefixing the inf-clojure-eval/defun/region commands with
     a \\[universal-argument] causes a switch to the Clojure process buffer after
