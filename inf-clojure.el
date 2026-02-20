@@ -5,7 +5,7 @@
 ;; Authors: Bozhidar Batsov <bozhidar@batsov.dev>
 ;;       Olin Shivers <shivers@cs.cmu.edu>
 ;; Maintainer: Bozhidar Batsov <bozhidar@batsov.dev>
-;; URL: http://github.com/clojure-emacs/inf-clojure
+;; URL: https://github.com/clojure-emacs/inf-clojure
 ;; Keywords: processes, comint, clojure
 ;; Version: 3.3.0
 ;; Package-Requires: ((emacs "28.1") (clojure-mode "5.11"))
@@ -306,7 +306,7 @@ buffers after they are created with `rename-buffer'."
 (defcustom inf-clojure-prompt-read-only t
   "If non-nil, the prompt will be read-only.
 
-Also see the description of `ielm-prompt-read-only'."
+Also see the description of `comint-prompt-read-only'."
   :type 'boolean)
 
 (defcustom inf-clojure-filter-regexp
@@ -427,7 +427,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
 ;;;###autoload
 (defcustom inf-clojure-mode-line
   '(:eval (format " inf-clojure[%s]" (inf-clojure--modeline-info)))
-  "Mode line lighter for cider mode.
+  "Mode line lighter for `inf-clojure-minor-mode'.
 
 The value of this variable is a mode line template as in
 `mode-line-format'.  See Info Node `(elisp)Mode Line Format' for details
@@ -1291,7 +1291,7 @@ are going to match those."
   "Get the redirection buffer, creating it if necessary.
 
 It is the buffer used for processing REPL responses, see variable
-\\[inf-clojure--redirect-buffer-name]."
+`inf-clojure--redirect-buffer-name'."
   (or (get-buffer inf-clojure--redirect-buffer-name)
       (let ((buffer (generate-new-buffer inf-clojure--redirect-buffer-name)))
         (with-current-buffer buffer
