@@ -227,7 +227,7 @@ The `inf-clojure-repl-features` data structure is just an
 alist of alists, so you can manipulate it in numerous ways.
 
 If you want to update a specific form there is a function
-`inf-clojure-update-repl-feature` which can be used like so:
+`inf-clojure-update-feature` which can be used like so:
 
 ```emacs-lisp
 (inf-clojure-update-feature 'clojure 'completion "(incomplete.core/completions \"%s\")")
@@ -439,20 +439,13 @@ Use the startup command: `clojure -A:compliment`. Then require the ns
 once so that the completion machinery will work: `(require
 'compliment.core)`. Now tab completion should work.
 
-For more advanced customization, code completion is particularly open
-to customization. Not only you can `setq` the customary
-`inf-clojure-completion-form`,
-`inf-clojure-completion-form-planck` and
-`inf-clojure-completion-form-joker` - the form to send to the REPL -
-but you can also use `inf-clojure-completions-fn` for specifying a
-function that given the REPL response should return Elisp data
-compatible with
+You can also customize `inf-clojure-completions-fn` to specify a
+function that parses the REPL's completion response and returns Elisp
+data compatible with
 [`completion-at-point-functions`](https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html).
 
 For more info run `M-x describe-variable RET
-inf-clojure-completions-fn`.  Another option is to have a look at [how
-CIDER does
-it](https://github.com/clojure-emacs/cider/blob/3e9ed12e8cfbad04d7618e649322765dc9bff5d6/cider-interaction.el#L595).
+inf-clojure-completions-fn`.
 
 ## Troubleshooting
 

@@ -1396,7 +1396,7 @@ every other EXPR will be discarded and nil will be returned."
   "The function that parses completion results.
 
 It is a single-arity function that will receive the REPL
-evaluation result of \\[inf-clojure-completion-form] as string and
+evaluation result of the completion feature form as string and
 should return elisp data compatible with your completion mode.
 
 The easiest possible data passed in input is a list of
@@ -1421,7 +1421,7 @@ you might want to use in your customization."
 
 Under the hood it calls the function
 \\[inf-clojure-completions-fn] passing in the result of
-evaluating \\[inf-clojure-completion-form] at the REPL."
+evaluating the completion feature form at the REPL."
   (let* ((proc (inf-clojure-proc 'no-error))
          (completion-form (inf-clojure-get-feature proc 'completion t)))
     (when (and proc completion-form (not (string-blank-p expr)))
