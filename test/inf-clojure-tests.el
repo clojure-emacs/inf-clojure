@@ -300,6 +300,27 @@ is a string\")
   (it "returns nil for non-list response"
     (expect (inf-clojure-list-completions "42") :to-be nil)))
 
+(describe "inf-clojure--wrap-for-ns"
+  (it "returns code unchanged when inf-clojure-eval-ns-aware is nil"
+    (let ((inf-clojure-eval-ns-aware nil))
+      (ict-with-assess-buffers
+       ((a (insert "(ns my.app)\n(+ 1 2)")))
+       (with-current-buffer a
+         (expect (inf-clojure--wrap-for-ns "(+ 1 2)") :to-equal "(+ 1 2)")))))
+  (it "wraps code with binding when inf-clojure-eval-ns-aware is non-nil"
+    (let ((inf-clojure-eval-ns-aware t))
+      (ict-with-assess-buffers
+       ((a (insert "(ns myapp)\n(+ 1 2)")))
+       (with-current-buffer a
+         (expect (inf-clojure--wrap-for-ns "(+ 1 2)")
+                 :to-equal "(binding [*ns* (find-ns 'myapp)] (eval '(do (+ 1 2))))")))))
+  (it "returns code unchanged when no namespace is detected"
+    (let ((inf-clojure-eval-ns-aware t))
+      (ict-with-assess-buffers
+       ((a (insert "(+ 1 2)")))
+       (with-current-buffer a
+         (expect (inf-clojure--wrap-for-ns "(+ 1 2)") :to-equal "(+ 1 2)"))))))
+
 (describe "inf-clojure--string-boundaries"
   (it "returns full string bounds when no regexps given"
     (expect (inf-clojure--string-boundaries "hello" "=>")

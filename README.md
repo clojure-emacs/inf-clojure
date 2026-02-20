@@ -225,6 +225,23 @@ There are two important configuration variables here:
 If these are set and you wish to prevent inf-clojure from using them,
 use a prefix arg when invoking `inf-clojure` (`C-u M-x inf-clojure`).
 
+### Namespace-aware Evaluation
+
+By default, eval commands (`C-x C-e`, `C-M-x`, `C-c C-r`, etc.) send code
+to the REPL as-is, so it runs in whatever namespace the REPL is currently in.
+If you're evaluating code from a file with a different `ns` declaration, you
+may get "Unable to resolve symbol" errors.
+
+Setting `inf-clojure-eval-ns-aware` to non-nil makes eval commands
+automatically wrap code so it executes in the buffer's namespace:
+
+```emacs-lisp
+(setopt inf-clojure-eval-ns-aware t)
+```
+
+Alternatively, you can switch the REPL to the buffer's namespace
+explicitly with `C-c M-n` (`inf-clojure-set-ns`).
+
 ### REPL Features
 
 The supported REPL-features are in an alist called
