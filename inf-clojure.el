@@ -871,7 +871,7 @@ prevent showing the startup message."
   "Used to transfer state between the socket process buffer & REPL buffer.")
 
 (defvar-local inf-clojure-socket-buffer nil
-  "Used to kill the associated socket buffer when it's REPL buffer is killed.")
+  "Used to kill the associated socket buffer when its REPL buffer is killed.")
 
 (defun inf-clojure-socket-filter (process output)
   "A filter that gets triggered each time the socket receives new OUTPUT.
@@ -896,7 +896,7 @@ OUTPUT is the latest data received from the process"
 	    (funcall inf-clojure-socket-callback)))))))
 
 (defun inf-clojure-socket-repl-sentinel (process _event)
-  "Ensures socket REPL are cleaned up when the REPL buffer is closed.
+  "Ensures socket REPLs are cleaned up when the REPL buffer is closed.
 
 PROCESS is the process object that is connected to a socket REPL.
 
@@ -1029,7 +1029,7 @@ in the context of the buffer's namespace."
 (defun inf-clojure--defun-at-point (&optional bounds)
   "Return text or range of defun at point.
 If BOUNDS is truthy return a dotted pair of beginning and end of
-current defun else return the string.."
+current defun else return the string."
   (save-excursion
     (end-of-defun)
     (let ((end (point))
@@ -1131,7 +1131,7 @@ is present it will be used instead of the current file."
 (defun inf-clojure--find-ns ()
   "Return the namespace of the current Clojure buffer.
 
-This function delegates its job to an appropritate function, considering
+This function delegates its job to an appropriate function, considering
 `inf-clojure-source-modes'."
   (pcase (car (inf-clojure--get-preferred-major-modes))
     ('clojure-ts-mode (clojure-ts-find-ns))
@@ -1611,7 +1611,7 @@ Return the number of nested sexp the point was over or after."
   (apply #'eldoc-add-command inf-clojure-extra-eldoc-commands))
 
 (defun inf-clojure-display-version ()
-  "Display the current `inf-clojure' in the minibuffer."
+  "Display the current `inf-clojure' version in the minibuffer."
   (interactive)
   (message "inf-clojure (version %s)" inf-clojure-version))
 
