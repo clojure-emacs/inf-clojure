@@ -1589,8 +1589,9 @@ Return the number of nested sexp the point was over or after."
           (setq inf-clojure-eldoc-last-symbol (cons thing arglists))
           arglists)))))
 
-(defun inf-clojure-eldoc ()
-  "Backend function for eldoc to show argument list in the echo area."
+(defun inf-clojure-eldoc (callback &rest _ignored)
+  "Backend function for eldoc to show argument list in the echo area.
+CALLBACK is the eldoc callback to invoke with the documentation string."
   (when (and (inf-clojure-connected-p)
              inf-clojure-enable-eldoc
              ;; don't clobber an error message in the minibuffer
@@ -1599,13 +1600,13 @@ Return the number of nested sexp the point was over or after."
            (thing (car info))
            (value (inf-clojure-eldoc-arglists thing)))
       (when value
-        (format "%s: %s"
-                (inf-clojure-eldoc-format-thing thing)
-                value)))))
+        (funcall callback (format "%s: %s"
+                                  (inf-clojure-eldoc-format-thing thing)
+                                  value))))))
 
 (defun inf-clojure-eldoc-setup ()
   "Turn on eldoc mode in the current buffer."
-  (setq-local eldoc-documentation-function #'inf-clojure-eldoc)
+  (add-hook 'eldoc-documentation-functions #'inf-clojure-eldoc nil t)
   (apply #'eldoc-add-command inf-clojure-extra-eldoc-commands))
 
 (defun inf-clojure-display-version ()
