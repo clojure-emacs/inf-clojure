@@ -590,7 +590,7 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [melpa-stable-badge]: http://stable.melpa.org/packages/inf-clojure-badge.svg
 [melpa-package]: http://melpa.org/#/inf-clojure
 [melpa-stable-package]: http://stable.melpa.org/#/inf-clojure
-[COPYING]: http://www.gnu.org/copyleft/gpl.html
+[copying]: http://www.gnu.org/copyleft/gpl.html
 [circleci]: https://circleci.com/gh/clojure-emacs/inf-clojure
 [circleci-badge]: https://circleci.com/gh/clojure-emacs/inf-clojure.svg?style=svg
 [CIDER]: https://github.com/clojure-emacs/cider
