@@ -509,10 +509,6 @@ Should be a symbol that is a key in `inf-clojure-repl-features'."
 (defvar inf-clojure-custom-repl-name nil
   "A string to be used as the repl buffer name.")
 
-(defun inf-clojure--whole-comment-line-p (string)
-  "Return non-nil iff STRING is a whole line semicolon comment."
-  (string-match-p "^\s*;" string))
-
 (defun inf-clojure--sanitize-command (command)
   "Sanitize COMMAND for sending it to a process.
 An example of things that this function does is to add a final
