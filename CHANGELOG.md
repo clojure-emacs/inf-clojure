@@ -19,6 +19,7 @@
 - Fix truncated autoload cookie on `inf-clojure-connect`.
 - Fix `prefix-arg` vs `current-prefix-arg` in REPL startup.
 - [#219](https://github.com/clojure-emacs/inf-clojure/issues/219): Fix `project-root` error when no project is detected (e.g. Squint REPL outside a project).
+- [#136](https://github.com/clojure-emacs/inf-clojure/issues/136): Fix preoutput filter to handle chunked comint output correctly, preventing spurious newlines (#153) and improving reliability of output filtering.
 
 ## 3.3.0 (2025-05-25)
 
