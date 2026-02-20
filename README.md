@@ -372,7 +372,7 @@ obtained from `inf-clojure-repl-features`:
 ```emacs-lisp
 (mapcar 'car inf-clojure-repl-features)
 
-;; => (cljs planck joker clojure babashka)
+;; => (cljs planck joker babashka node-babashka clojure clojure-clr lein-clr)
 ```
 
 What does it mean that a REPL type is supported? Well, it means that
