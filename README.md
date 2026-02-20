@@ -32,7 +32,7 @@ It supports the following REPLs:
 - ClojureCLR (via [clr.tools.deps](https://github.com/clojure/clr.tools.deps))
 - [Planck](https://github.com/planck-repl/planck)
 - [Joker](https://joker-lang.org/)
-- [babashka](https://github.com/borkdude/babashka)
+- [babashka](https://github.com/babashka/babashka)
 
 `inf-clojure` provides a set of essential features for interactive
 Clojure/ClojureScript/ClojureCLR development:
