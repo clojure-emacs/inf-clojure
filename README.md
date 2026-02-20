@@ -540,11 +540,17 @@ source buffer to set the REPL type in both buffers. To see how simple
 inf-clojure is, look at `inf-clojure-repl-features` to see how things
 are laid out.
 
-### REPL not responsive in Windows OS
+### REPL not responsive in Windows OS (Leiningen)
 
 In Windows, the REPL is not returning anything. For example, type `(+
 1 1)` and press `ENTER`, the cursor just drops to a new line and
 nothing is shown.
+
+> [!NOTE]
+>
+> This issue affects Leiningen-based REPLs that use JLine for terminal
+> handling. If you're using the Clojure CLI tools or a socket REPL, this
+> workaround is not needed.
 
 The explanation of this problem and solution can be found [here](https://groups.google.com/forum/#!topic/leiningen/48M-xvcI2Ng).
 
