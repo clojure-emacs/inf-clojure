@@ -1316,14 +1316,11 @@ output from and including the `inf-clojure-prompt`."
       ;; Collect the output
       (with-current-buffer redirect-buffer-name
         (goto-char (point-min))
-        (let* ((buffer-string (buffer-substring-no-properties (point-min) (point-max)))
-               (boundaries (inf-clojure--string-boundaries buffer-string inf-clojure-prompt beg-regexp end-regexp))
-               (beg-pos (car boundaries))
-               (end-pos (car (cdr boundaries)))
-               (prompt-pos (car (cdr (cdr boundaries))))
-               (response-string (substring buffer-string beg-pos (min end-pos prompt-pos))))
-          (inf-clojure--log-string buffer-string "<-RES----")
-          response-string)))))
+        (let ((buffer-string (buffer-substring-no-properties (point-min) (point-max))))
+          (pcase-let ((`(,beg-pos ,end-pos ,prompt-pos)
+                       (inf-clojure--string-boundaries buffer-string inf-clojure-prompt beg-regexp end-regexp)))
+            (inf-clojure--log-string buffer-string "<-RES----")
+            (substring buffer-string beg-pos (min end-pos prompt-pos))))))))
 
 (defun inf-clojure--nil-string-match-p (string)
   "Return non-nil if STRING represents a nil REPL response."
