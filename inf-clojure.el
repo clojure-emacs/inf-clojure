@@ -317,7 +317,7 @@ mode.  Default is whitespace followed by 0 or 1 single-letter colon-keyword
 If a buffer has one of these major modes, it's considered a Clojure
 source file by all `inf-clojure' commands."
   :type '(repeat symbol)
-  :safe #'symbolp)
+  :safe (lambda (val) (and (listp val) (cl-every #'symbolp val))))
 
 (defun inf-clojure--modeline-info ()
   "Return modeline info for `inf-clojure-minor-mode'.
