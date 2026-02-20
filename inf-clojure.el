@@ -556,6 +556,15 @@ All buffers in `clojure-mode' will automatically be in
   :safe #'booleanp
   :package-version '(inf-clojure . "3.1.0"))
 
+(defcustom inf-clojure-eval-ns-aware nil
+  "When non-nil, evaluate code in the context of the buffer's namespace.
+Eval commands will wrap the code so that it executes in the
+namespace declared in the current buffer's `ns' form, rather than
+whatever namespace the REPL is currently in."
+  :type 'boolean
+  :safe #'booleanp
+  :package-version '(inf-clojure . "3.4.0"))
+
 (defun inf-clojure--get-preferred-major-modes ()
   "Return list of preferred major modes that are actually available."
   (cl-remove-if-not (lambda (mode) (featurep mode))
@@ -971,17 +980,30 @@ of forms."
           (buffer-substring-no-properties (point-min) (point-max))))
     (scan-error str)))
 
+(defun inf-clojure--wrap-for-ns (code)
+  "Wrap CODE to evaluate in the buffer's namespace when appropriate.
+When `inf-clojure-eval-ns-aware' is non-nil and a namespace can be
+detected in the current buffer, wrap CODE in a `binding' form that
+sets `*ns*' to that namespace.  Otherwise return CODE unchanged."
+  (let ((ns (when inf-clojure-eval-ns-aware (inf-clojure--find-ns))))
+    (if ns
+        (format "(binding [*ns* (find-ns '%s)] (eval '(do %s)))" ns code)
+      code)))
+
 (defun inf-clojure-eval-region (start end &optional and-go)
   "Send the current region to the inferior Clojure process.
 Sends substring between START and END.  Prefix argument AND-GO
-means switch to the Clojure buffer afterwards."
+means switch to the Clojure buffer afterwards.
+When `inf-clojure-eval-ns-aware' is non-nil, the code is evaluated
+in the context of the buffer's namespace."
   (interactive "r\nP")
   (let* ((str (buffer-substring-no-properties start end))
          ;; newlines over a socket repl between top level forms cause
          ;; a prompt to be returned. so here we dump the region into a
          ;; temp buffer, and delete all newlines between the forms
-         (formatted (inf-clojure--forms-without-newlines str)))
-    (inf-clojure--send-string (inf-clojure-proc) formatted))
+         (formatted (inf-clojure--forms-without-newlines str))
+         (wrapped (inf-clojure--wrap-for-ns formatted)))
+    (inf-clojure--send-string (inf-clojure-proc) wrapped))
   (when and-go (inf-clojure-switch-to-repl t)))
 
 (defun inf-clojure-eval-string (code)
