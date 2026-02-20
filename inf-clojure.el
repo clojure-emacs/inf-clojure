@@ -77,13 +77,36 @@
                                     (boot . "boot repl")
                                     (clojure . "clojure")
                                     (cljs . "clojure -M -m cljs.main -r")
+                                    (clojure-clr . "Clojure.Main")
                                     (lein-clr . "lein clr repl")
                                     (planck . "planck -d")
                                     (babashka . "bb")
                                     (joker . "joker")))
 
+(defun inf-clojure--merge-repl-features (base overrides)
+  "Return a new feature alist by merging OVERRIDES onto BASE.
+Keys in OVERRIDES take precedence over those in BASE."
+  (append overrides
+          (cl-remove-if (lambda (entry)
+                          (assq (car entry) overrides))
+                        base)))
+
+(defvar inf-clojure--clojure-repl-base-features
+  '((load . "(clojure.core/load-file \"%s\")")
+    (doc . "(clojure.repl/doc %s)")
+    (source . "(clojure.repl/source %s)")
+    (arglists . "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Throwable e nil))")
+    (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
+    (ns-vars . "(clojure.repl/dir %s)")
+    (set-ns . "(clojure.core/in-ns '%s)")
+    (macroexpand . "(clojure.core/macroexpand '%s)")
+    (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)"))
+  "Base feature forms shared by Clojure-family REPLs.
+Individual REPL types override specific entries (e.g. `arglists')
+via `inf-clojure--merge-repl-features'.")
+
 (defvar inf-clojure-repl-features
-  '((cljs . ((doc . "(cljs.repl/doc %s)")
+  `((cljs . ((doc . "(cljs.repl/doc %s)")
              (source . "(cljs.repl/source %s)")
              (arglists . "(try (->> '%s cljs.core/resolve cljs.core/meta :arglists) (catch :default _ nil))")
              (apropos . "(cljs.repl/apropos \"%s\")")
@@ -113,58 +136,17 @@
               (set-ns . "(in-ns '%s)")
               (macroexpand . "(macroexpand '%s)")
               (macroexpand-1 . "(macroexpand-1 '%s)")))
-    (babashka . ((load . "(clojure.core/load-file \"%s\")")
-                 (doc . "(clojure.repl/doc %s)")
-                 (source . "(clojure.repl/source %s)")
-                 (arglists .
-                           "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists)
-                              (catch Throwable e nil))")
-                 (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
-                 (ns-vars . "(clojure.repl/dir %s)")
-                 (set-ns . "(clojure.core/in-ns '%s)")
-                 (macroexpand . "(clojure.core/macroexpand '%s)")
-                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))
-    (node-babashka . ((load . "(clojure.core/load-file \"%s\")")
-                 (doc . "(clojure.repl/doc %s)")
-                 (source . "(clojure.repl/source %s)")
-                 (arglists .
-                           "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists)
-                              (catch Throwable e nil))")
-                 (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
-                 (ns-vars . "(clojure.repl/dir %s)")
-                 (set-ns . "(clojure.core/in-ns '%s)")
-                 (macroexpand . "(clojure.core/macroexpand '%s)")
-                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))
-    (clojure . ((load . "(clojure.core/load-file \"%s\")")
-                (doc . "(clojure.repl/doc %s)")
-                (source . "(clojure.repl/source %s)")
-                (arglists .
-                          "(try
-                             (:arglists
-                              (clojure.core/meta
-                               (clojure.core/resolve
-                                (clojure.core/read-string \"%s\"))))
-                            (catch #?(:clj Throwable :cljr Exception) e nil))")
-                (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
-                (ns-vars . "(clojure.repl/dir %s)")
-                (set-ns . "(clojure.core/in-ns '%s)")
-                (macroexpand . "(clojure.core/macroexpand '%s)")
-                (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))
-    (lein-clr . ((load . "(clojure.core/load-file \"%s\")")
-                 (doc . "(clojure.repl/doc %s)")
-                 (source . "(clojure.repl/source %s)")
-                 (arglists .
-                           "(try
-                             (:arglists
-                              (clojure.core/meta
-                               (clojure.core/resolve
-                                (clojure.core/read-string \"%s\"))))
-                             (catch Exception e nil))")
-                 (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
-                 (ns-vars . "(clojure.repl/dir %s)")
-                 (set-ns . "(clojure.core/in-ns '%s)")
-                 (macroexpand . "(clojure.core/macroexpand '%s)")
-                 (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")))))
+    (babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
+    (node-babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
+    (clojure . ,(copy-alist inf-clojure--clojure-repl-base-features))
+    (clojure-clr . ,(inf-clojure--merge-repl-features
+                     inf-clojure--clojure-repl-base-features
+                     '((arglists .
+                                 "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))
+    (lein-clr . ,(inf-clojure--merge-repl-features
+                  inf-clojure--clojure-repl-base-features
+                  '((arglists .
+                              "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))))
 
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
@@ -497,6 +479,7 @@ port is an integer, or a string to startup an interpreter like
 Should be a symbol that is a key in `inf-clojure-repl-features'."
   :package-version '(inf-clojure . "3.0.0")
   :type '(choice (const :tag "clojure" clojure)
+                 (const :tag "clojure-clr" clojure-clr)
                  (const :tag "cljs" cljs)
                  (const :tag "planck" planck)
                  (const :tag "joker" joker)

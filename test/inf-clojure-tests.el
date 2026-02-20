@@ -158,4 +158,39 @@ is a string\")
       (expect (inf-clojure--update-feature 'not-found 'doc "new doc")
               :to-throw))))
 
+(describe "inf-clojure--merge-repl-features"
+  (it "merges overrides onto a base alist"
+    (let ((base '((a . "base-a") (b . "base-b") (c . "base-c")))
+          (overrides '((b . "override-b"))))
+      (expect (inf-clojure--merge-repl-features base overrides)
+              :to-equal '((b . "override-b") (a . "base-a") (c . "base-c")))))
+  (it "preserves the base when overrides are empty"
+    (let ((base '((a . "base-a") (b . "base-b"))))
+      (expect (inf-clojure--merge-repl-features base nil)
+              :to-equal base))))
+
+(describe "inf-clojure-repl-features"
+  (it "provides all base features for clojure-family REPL types"
+    (let ((base-features '(load doc source apropos ns-vars set-ns
+                                macroexpand macroexpand-1 arglists)))
+      (dolist (repl-type '(clojure clojure-clr babashka node-babashka lein-clr))
+        (dolist (feature base-features)
+          (expect (inf-clojure--get-feature repl-type feature nil)
+                  :not :to-be nil)))))
+  (it "gives node-babashka the same features as babashka"
+    (let ((bb-features (alist-get 'babashka inf-clojure-repl-features))
+          (nbb-features (alist-get 'node-babashka inf-clojure-repl-features)))
+      (expect bb-features :to-equal nbb-features)))
+  (it "shares arglists across JVM REPL types"
+    (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
+          (bb-arglists (inf-clojure--get-feature 'babashka 'arglists nil)))
+      (expect clj-arglists :to-equal bb-arglists)))
+  (it "uses a different arglists catch clause for CLR REPL types"
+    (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
+          (clr-arglists (inf-clojure--get-feature 'clojure-clr 'arglists nil))
+          (lein-clr-arglists (inf-clojure--get-feature 'lein-clr 'arglists nil)))
+      (expect clj-arglists :not :to-equal clr-arglists)
+      (expect clr-arglists :to-equal lein-clr-arglists)
+      (expect clr-arglists :to-match "Exception"))))
+
 ;;; inf-clojure-tests.el ends here
