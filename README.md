@@ -334,6 +334,34 @@ information on how connect:
 The socket server REPL configuration options are described
 [here](https://clojure.org/reference/repl_and_main#_launching_a_socket_server).
 
+#### nREPL TTY Connection
+
+`inf-clojure` can connect to an [nREPL](https://nrepl.org) server via its
+[TTY transport](https://nrepl.org/nrepl/usage/misc.html#using-the-tty-transport),
+which exposes a plain-text REPL interface that works well with comint-based
+tools.
+
+Start an nREPL server with the TTY transport enabled:
+
+``` shell
+clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version "1.3.1"}}}' \
+  -M -m nrepl.cmdline --transport nrepl.transport/tty --port 7777
+```
+
+Or with Leiningen, add to your `project.clj`:
+
+```clojure
+:repl-options {:transport nrepl.transport/tty}
+```
+
+Then connect with `M-x inf-clojure-connect RET localhost RET 7777`.
+
+> [!NOTE]
+>
+> The TTY transport provides a standard text REPL — you get the same features as
+> a socket REPL (evaluation, completion, eldoc, etc.) but the nREPL server can
+> simultaneously serve regular nREPL clients like CIDER on its default transport.
+
 #### Multiple Process Support
 
 To run multiple Clojure processes, you start the first up
