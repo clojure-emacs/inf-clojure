@@ -639,17 +639,17 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
   following expression.  Paragraphs are separated only by blank lines.
   Semicolons start comments.  If you accidentally suspend your process,
   use \\[comint-continue-subjob] to continue it."
-  (setq comint-input-sender 'inf-clojure--send-string)
-  (setq comint-prompt-regexp inf-clojure-comint-prompt-regexp)
-  (setq mode-line-process '(":%s"))
+  (setq-local comint-input-sender 'inf-clojure--send-string)
+  (setq-local comint-prompt-regexp inf-clojure-comint-prompt-regexp)
+  (setq-local mode-line-process '(":%s"))
   ;; NOTE: Using Tree-sitter based syntax highlighting in comint
   ;; buffer is currently not possible.
   (clojure-mode-variables)
   (clojure-font-lock-setup)
   (when inf-clojure-enable-eldoc
     (inf-clojure-eldoc-setup))
-  (setq comint-get-old-input #'inf-clojure-get-old-input)
-  (setq comint-input-filter #'inf-clojure-input-filter)
+  (setq-local comint-get-old-input #'inf-clojure-get-old-input)
+  (setq-local comint-input-filter #'inf-clojure-input-filter)
   (setq-local comint-prompt-read-only inf-clojure-prompt-read-only)
   (add-hook 'comint-preoutput-filter-functions #'inf-clojure-preoutput-filter nil t)
   (add-hook 'completion-at-point-functions #'inf-clojure-completion-at-point nil t)
