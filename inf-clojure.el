@@ -597,10 +597,9 @@ See command `inf-clojure-minor-mode'."
 (define-derived-mode inf-clojure-mode comint-mode "Inferior Clojure"
   "Major mode for interacting with an inferior Clojure process.
 Runs a Clojure interpreter as a subprocess of Emacs, with Clojure
-I/O through an Emacs buffer.  Variables of the type
-`inf-clojure-*-cmd' combined with the project type controls how
-a Clojure REPL is started.  Variables `inf-clojure-prompt',
-`inf-clojure-filter-regexp' and `inf-clojure-load-form' can
+I/O through an Emacs buffer.  The REPL type and the forms used for
+various commands are controlled by `inf-clojure-repl-features'.
+Variables `inf-clojure-prompt' and `inf-clojure-filter-regexp' can
 customize this mode for different Clojure REPLs.
 
 For information on running multiple processes in multiple buffers, see
@@ -1210,8 +1209,8 @@ The value is nil if it can't find one."
 
 (defun inf-clojure-show-var-documentation (prompt-for-symbol)
   "Send a form to the inferior Clojure to give documentation for VAR.
-See function `inf-clojure-var-doc-form'.  When invoked with a
-prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
+When invoked with a prefix argument PROMPT-FOR-SYMBOL, it prompts
+for a symbol name."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (var (if prompt-for-symbol
@@ -1222,8 +1221,8 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
 
 (defun inf-clojure-show-var-source (prompt-for-symbol)
   "Send a command to the inferior Clojure to give source for VAR.
-See variable `inf-clojure-var-source-form'.  When invoked with a
-prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
+When invoked with a prefix argument PROMPT-FOR-SYMBOL, it prompts
+for a symbol name."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (var (if prompt-for-symbol
@@ -1260,7 +1259,7 @@ Inf-Clojure will create a log file in the project folder named
 in case this is not nil.")
 
 (defun inf-clojure--log-string (string &optional tag)
-  "Log STRING to file, according to `inf-clojure-log-response'.
+  "Log STRING to file, according to `inf-clojure-log-activity'.
 The optional TAG will be converted to string and printed before
 STRING if present."
   (when inf-clojure-log-activity
@@ -1376,8 +1375,7 @@ for evaluation, therefore FORM should not include it."
 ;;;; ========
 
 (defun inf-clojure-arglists (fn)
-  "Send a query to the inferior Clojure for the arglists for function FN.
-See variable `inf-clojure-arglists-form'."
+  "Send a query to the inferior Clojure for the arglists for function FN."
   (when-let* ((proc (inf-clojure-proc 'no-error))
               (arglists-form (inf-clojure-get-feature proc 'arglists)))
     (thread-first (format arglists-form fn)
@@ -1398,8 +1396,8 @@ for a symbol name."
 
 (defun inf-clojure-show-ns-vars (prompt-for-ns)
   "Send a query to the inferior Clojure for the public vars in NS.
-See variable `inf-clojure-ns-vars-form'.  When invoked with a
-prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
+When invoked with a prefix argument PROMPT-FOR-NS, it prompts for
+a namespace name."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (ns (if prompt-for-ns
@@ -1410,9 +1408,8 @@ prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
 
 (defun inf-clojure-set-ns (prompt-for-ns)
   "Set the ns of the inferior Clojure process to NS.
-See variable `inf-clojure-set-ns-form'.  It defaults to the ns of
-the current buffer.  When invoked with a prefix argument
-PROMPT-FOR-NS, it prompts for a namespace name."
+Defaults to the ns of the current buffer.  When invoked with a
+prefix argument PROMPT-FOR-NS, it prompts for a namespace name."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (ns (if prompt-for-ns
@@ -1426,8 +1423,7 @@ PROMPT-FOR-NS, it prompts for a namespace name."
 
 (defun inf-clojure-apropos (expr)
   "Send an expression to the inferior Clojure for apropos.
-EXPR can be either a regular expression or a stringable
-thing.  See variable `inf-clojure-apropos-form'."
+EXPR can be either a regular expression or a stringable thing."
   (interactive (inf-clojure-symprompt "Var apropos" (inf-clojure-symbol-at-point)))
   (let* ((proc (inf-clojure-proc))
          (apropos-form (inf-clojure-get-feature proc 'apropos)))
@@ -1435,8 +1431,7 @@ thing.  See variable `inf-clojure-apropos-form'."
 
 (defun inf-clojure-macroexpand (&optional macro-1)
   "Send a form to the inferior Clojure for macro expansion.
-See variable `inf-clojure-macroexpand-form'.
-With a prefix arg MACRO-1 uses function `inf-clojure-macroexpand-1-form'."
+With a prefix arg MACRO-1 uses `macroexpand-1' instead of `macroexpand'."
   (interactive "P")
   (let* ((proc (inf-clojure-proc))
          (last-sexp (buffer-substring-no-properties (save-excursion (backward-sexp) (point)) (point)))
