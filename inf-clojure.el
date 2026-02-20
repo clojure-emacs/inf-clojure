@@ -77,6 +77,7 @@
                                     (boot . "boot repl")
                                     (clojure . "clojure")
                                     (cljs . "clojure -M -m cljs.main -r")
+                                    (clojure-clr . "Clojure.Main")
                                     (lein-clr . "lein clr repl")
                                     (planck . "planck -d")
                                     (babashka . "bb")
@@ -138,6 +139,10 @@ via `inf-clojure--merge-repl-features'.")
     (babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
     (node-babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
     (clojure . ,(copy-alist inf-clojure--clojure-repl-base-features))
+    (clojure-clr . ,(inf-clojure--merge-repl-features
+                     inf-clojure--clojure-repl-base-features
+                     '((arglists .
+                                 "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))
     (lein-clr . ,(inf-clojure--merge-repl-features
                   inf-clojure--clojure-repl-base-features
                   '((arglists .
@@ -474,6 +479,7 @@ port is an integer, or a string to startup an interpreter like
 Should be a symbol that is a key in `inf-clojure-repl-features'."
   :package-version '(inf-clojure . "3.0.0")
   :type '(choice (const :tag "clojure" clojure)
+                 (const :tag "clojure-clr" clojure-clr)
                  (const :tag "cljs" cljs)
                  (const :tag "planck" planck)
                  (const :tag "joker" joker)

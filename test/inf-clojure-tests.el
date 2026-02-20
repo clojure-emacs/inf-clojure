@@ -173,7 +173,7 @@ is a string\")
   (it "provides all base features for clojure-family REPL types"
     (let ((base-features '(load doc source apropos ns-vars set-ns
                                 macroexpand macroexpand-1 arglists)))
-      (dolist (repl-type '(clojure babashka node-babashka lein-clr))
+      (dolist (repl-type '(clojure clojure-clr babashka node-babashka lein-clr))
         (dolist (feature base-features)
           (expect (inf-clojure--get-feature repl-type feature nil)
                   :not :to-be nil)))))
@@ -185,10 +185,12 @@ is a string\")
     (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
           (bb-arglists (inf-clojure--get-feature 'babashka 'arglists nil)))
       (expect clj-arglists :to-equal bb-arglists)))
-  (it "uses a different arglists catch clause for lein-clr"
+  (it "uses a different arglists catch clause for CLR REPL types"
     (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
-          (clr-arglists (inf-clojure--get-feature 'lein-clr 'arglists nil)))
+          (clr-arglists (inf-clojure--get-feature 'clojure-clr 'arglists nil))
+          (lein-clr-arglists (inf-clojure--get-feature 'lein-clr 'arglists nil)))
       (expect clj-arglists :not :to-equal clr-arglists)
+      (expect clr-arglists :to-equal lein-clr-arglists)
       (expect clr-arglists :to-match "Exception"))))
 
 ;;; inf-clojure-tests.el ends here
