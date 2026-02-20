@@ -30,7 +30,7 @@ It supports the following REPLs:
 - Clojure
 - ClojureScript
 - ClojureCLR (via [clr.tools.deps](https://github.com/clojure/clr.tools.deps))
-- [Planck](http://planck-repl.org/)
+- [Planck](https://github.com/planck-repl/planck)
 - [Joker](https://joker-lang.org/)
 - [babashka](https://github.com/borkdude/babashka)
 
