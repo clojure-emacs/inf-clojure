@@ -2,6 +2,10 @@
 
 ## master (unreleased)
 
+### New features
+
+- [#57](https://github.com/clojure-emacs/inf-clojure/issues/57): Add `inf-clojure-show-var-meta` command (`C-c C-S-m`) to display a var's metadata.
+
 ### Changes
 
 - Unify `reload` and `reload-all` forms with `inf-clojure-repl-features`, enabling per-REPL-type dispatch. The standalone `inf-clojure-reload-form` and `inf-clojure-reload-all-form` defcustoms have been removed.

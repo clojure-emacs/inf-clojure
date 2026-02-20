@@ -102,7 +102,8 @@ Keys in OVERRIDES take precedence over those in BASE."
     (macroexpand . "(clojure.core/macroexpand '%s)")
     (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")
     (reload . "(require '%s :reload)")
-    (reload-all . "(require '%s :reload-all)"))
+    (reload-all . "(require '%s :reload-all)")
+    (var-meta . "(clojure.core/meta (clojure.core/resolve '%s))"))
   "Base feature forms shared by Clojure-family REPLs.
 Individual REPL types override specific entries (e.g. `arglists')
 via `inf-clojure--merge-repl-features'.")
@@ -117,7 +118,8 @@ via `inf-clojure--merge-repl-features'.")
              (macroexpand . "(cljs.core/macroexpand '%s)")
              (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)")
              (reload . "(require '%s :reload)")
-             (reload-all . "(require '%s :reload-all)")))
+             (reload-all . "(require '%s :reload-all)")
+             (var-meta . "(cljs.core/meta (cljs.core/resolve '%s))")))
     (planck . ((load . "(load-file \"%s\")")
                (doc . "(planck.repl/doc %s)")
                (source . "(planck.repl/source %s)")
@@ -129,7 +131,8 @@ via `inf-clojure--merge-repl-features'.")
                (macroexpand-1 . "(macroexpand-1 '%s)")
                (completion . "(seq (js->clj (#'planck.repl/get-completions \"%s\")))")
                (reload . "(require '%s :reload)")
-               (reload-all . "(require '%s :reload-all)")))
+               (reload-all . "(require '%s :reload-all)")
+               (var-meta . "(cljs.core/meta (cljs.core/resolve '%s))")))
     (joker . ((load . "(load-file \"%s\")")
               (doc . "(joker.repl/doc %s)")
               (arglists .
@@ -143,7 +146,8 @@ via `inf-clojure--merge-repl-features'.")
               (macroexpand . "(macroexpand '%s)")
               (macroexpand-1 . "(macroexpand-1 '%s)")
               (reload . "(require '%s :reload)")
-              (reload-all . "(require '%s :reload-all)")))
+              (reload-all . "(require '%s :reload-all)")
+              (var-meta . "(joker.core/meta (joker.core/resolve '%s))")))
     (babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
     (node-babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
     (clojure . ,(copy-alist inf-clojure--clojure-repl-base-features))
@@ -342,6 +346,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
     (define-key map (kbd "C-c C-a") #'inf-clojure-show-arglists)
     (define-key map (kbd "C-c C-v") #'inf-clojure-show-var-documentation)
     (define-key map (kbd "C-c C-s") #'inf-clojure-show-var-source)
+    (define-key map (kbd "C-c C-S-m") #'inf-clojure-show-var-meta)
     (define-key map (kbd "C-c C-S-a") #'inf-clojure-apropos)
     (define-key map (kbd "C-c M-o") #'inf-clojure-clear-repl-buffer)
     (define-key map (kbd "C-c C-q") #'inf-clojure-quit)
@@ -356,6 +361,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
         ["Show arglists" inf-clojure-show-arglists t]
         ["Show documentation for var" inf-clojure-show-var-documentation t]
         ["Show source for var" inf-clojure-show-var-source t]
+        ["Show metadata for var" inf-clojure-show-var-meta t]
         ["Apropos" inf-clojure-apropos t]
         "--"
         ["Clear REPL" inf-clojure-clear-repl-buffer]
@@ -392,6 +398,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
     (define-key map (kbd "C-c C-a") #'inf-clojure-show-arglists)
     (define-key map (kbd "C-c C-v") #'inf-clojure-show-var-documentation)
     (define-key map (kbd "C-c C-s") #'inf-clojure-show-var-source)
+    (define-key map (kbd "C-c C-S-m") #'inf-clojure-show-var-meta)
     (define-key map (kbd "C-c M-n") #'inf-clojure-set-ns)
     (define-key map (kbd "C-c C-q") #'inf-clojure-quit)
     (define-key map (kbd "C-c M-c") #'inf-clojure-connect)
@@ -412,6 +419,7 @@ Either \"no process\" or \"buffer-name(repl-type)\""
         ["Show arglists" inf-clojure-show-arglists t]
         ["Show documentation for var" inf-clojure-show-var-documentation t]
         ["Show source for var" inf-clojure-show-var-source t]
+        ["Show metadata for var" inf-clojure-show-var-meta t]
         ["Show vars in ns" inf-clojure-show-ns-vars t]
         ["Apropos" inf-clojure-apropos t]
         ["Macroexpand" inf-clojure-macroexpand t]
@@ -1173,6 +1181,18 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
                 (inf-clojure-symbol-at-point)))
          (source-form (inf-clojure-get-feature proc 'source)))
     (inf-clojure--send-string proc (format source-form var))))
+
+(defun inf-clojure-show-var-meta (prompt-for-symbol)
+  "Send a command to the inferior Clojure to give metadata for VAR.
+When invoked with a prefix argument PROMPT-FOR-SYMBOL, it prompts
+for a symbol name."
+  (interactive "P")
+  (let* ((proc (inf-clojure-proc))
+         (var (if prompt-for-symbol
+                  (car (inf-clojure-symprompt "Var meta" (inf-clojure-symbol-at-point)))
+                (inf-clojure-symbol-at-point)))
+         (meta-form (inf-clojure-get-feature proc 'var-meta)))
+    (inf-clojure--send-string proc (format meta-form var))))
 
 ;;;; Response parsing
 ;;;; ================
