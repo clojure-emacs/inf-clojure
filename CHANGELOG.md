@@ -2,6 +2,17 @@
 
 ## master (unreleased)
 
+### Changes
+
+- Unify `reload` and `reload-all` forms with `inf-clojure-repl-features`, enabling per-REPL-type dispatch. The standalone `inf-clojure-reload-form` and `inf-clojure-reload-all-form` defcustoms have been removed.
+- Deduplicate Clojure-family REPL feature definitions via a shared base alist.
+
+### Bugs fixed
+
+- Fix `inf-clojure-connected-p` to check for a live process.
+- Fix truncated autoload cookie on `inf-clojure-connect`.
+- Fix `prefix-arg` vs `current-prefix-arg` in REPL startup.
+
 ## 3.3.0 (2025-05-25)
 
 ### New features
