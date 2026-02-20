@@ -755,7 +755,7 @@ The name is simply the final segment of the path."
   (file-name-nondirectory (directory-file-name dir)))
 
 (defun inf-clojure--project-dir ()
-  "Return current Clojure project root."
+  "Return current Clojure project root, or nil if not in a project."
   (let ((project-vc-extra-root-markers '("project.clj"      ; Leiningen
                                          "build.gradle"     ; Gradle
                                          "build.gradle.kts" ; Gradle
@@ -764,8 +764,10 @@ The name is simply the final segment of the path."
                                          "bb.edn"           ; babashka
                                          "nbb.edn"          ; nbb
                                          "basilisp.edn"     ; Basilisp (Python)
+                                         "squint.edn"       ; Squint
                                          )))
-    (project-root (project-current))))
+    (when-let ((project (project-current)))
+      (project-root project))))
 
 (defvar clojure-ts-mode-syntax-table)
 
