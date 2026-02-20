@@ -168,7 +168,7 @@
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
 Its root binding is nil and it can be further customized using
-either `setq-local` or an entry in `.dir-locals.el`." )
+either `setq-local` or an entry in `.dir-locals.el`.")
 
 (defvar inf-clojure-buffer nil
   "The current `inf-clojure' process buffer.
@@ -1238,7 +1238,7 @@ prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
   "Log process activity?.
 Inf-Clojure will create a log file in the project folder named
 `inf-clojure--log-file-name' and dump the process activity in it
-in case this is not nil." )
+in case this is not nil.")
 
 (defun inf-clojure--log-string (string &optional tag)
   "Log STRING to file, according to `inf-clojure-log-response'.
