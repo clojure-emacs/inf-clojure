@@ -857,7 +857,7 @@ process buffer for a list of commands.)"
             (cmdlist (if (consp cmd)
                          (list cmd)
                        (split-string-and-unquote cmd)))
-            (repl-type (or (unless prefix-arg
+            (repl-type (or (unless current-prefix-arg
                              inf-clojure-custom-repl-type)
                            (car (rassoc cmd inf-clojure-startup-forms))
                            (inf-clojure--prompt-repl-type))))
@@ -959,7 +959,7 @@ defaults provided in `inf-clojure-socket-repl-startup-forms'."
   (let* ((host "localhost")
          (port (or inf-clojure-socket-repl-port (+ 5500 (random 500))))
          (project-dir (inf-clojure--project-dir))
-         (repl-type (or (unless prefix-arg
+         (repl-type (or (unless current-prefix-arg
                           inf-clojure-custom-repl-type)
                         (car (rassoc cmd inf-clojure-socket-repl-startup-forms))
                         (inf-clojure--prompt-repl-type)))
