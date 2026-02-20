@@ -478,7 +478,7 @@ number (e.g. (\"localhost\" . 5555))."
 Can be a cons pair of (host . port) where host is a string and
 port is an integer, or a string to startup an interpreter like
 \"planck\"."
-   :type '(choice (cons string integer) (const nil)))
+   :type '(choice string (cons string integer) (const nil)))
 
 (defcustom inf-clojure-custom-repl-type
   nil
@@ -491,6 +491,7 @@ Should be a symbol that is a key in `inf-clojure-repl-features'."
                  (const :tag "planck" planck)
                  (const :tag "joker" joker)
                  (const :tag "babashka" babashka)
+                 (const :tag "node-babashka" node-babashka)
                  (const :tag "determine at startup" nil)))
 
 (defvar inf-clojure-custom-repl-name nil
