@@ -686,14 +686,41 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
   "Remove subprompts from STRING."
   (replace-regexp-in-string inf-clojure-subprompt "" string))
 
+(defvar-local inf-clojure--filtering-output nil
+  "Non-nil while filtering output from a programmatic inf-clojure command.
+Set on the first output chunk of an inf-clojure command and cleared
+when a prompt is detected, so that multi-chunk responses are filtered
+consistently without relying on `this-command'/`last-command' for
+every chunk.")
+
+(defvar-local inf-clojure--output-pending-newline nil
+  "Non-nil if the next output chunk should be preceded by a newline.
+Used to prepend a single newline before the first chunk of output
+from a programmatic command, separating it from the input.")
+
 (defun inf-clojure-preoutput-filter (str)
-  "Preprocess the output STR from interactive commands."
+  "Preprocess the output STR from interactive commands.
+For output triggered by inf-clojure commands (as opposed to direct
+user input), this removes subprompts and prepends a single newline
+before the first chunk.  Output is tracked across chunks using
+`inf-clojure--filtering-output' so that later chunks are handled
+correctly even if `this-command'/`last-command' has changed."
   (inf-clojure--log-string str "<-RES----")
-  (cond
-   ((string-prefix-p "inf-clojure-" (symbol-name (or this-command last-command)))
-    ;; Remove subprompts and prepend a newline to the output string
-    (inf-clojure-chomp (concat "\n" (inf-clojure-remove-subprompts str))))
-   (t str)))
+  ;; Detect the start of output from a programmatic inf-clojure command.
+  (when (and (not inf-clojure--filtering-output)
+             (let ((cmd (or this-command last-command)))
+               (and cmd (string-prefix-p "inf-clojure-" (symbol-name cmd)))))
+    (setq inf-clojure--filtering-output t)
+    (setq inf-clojure--output-pending-newline t))
+  (if (not inf-clojure--filtering-output)
+      str
+    ;; Stop filtering once a prompt appears (end of response).
+    (when (string-match inf-clojure-prompt str)
+      (setq inf-clojure--filtering-output nil))
+    (let ((prefix (when inf-clojure--output-pending-newline
+                    (setq inf-clojure--output-pending-newline nil)
+                    "\n")))
+      (concat prefix (inf-clojure-remove-subprompts str)))))
 
 (defun inf-clojure-clear-repl-buffer ()
   "Clear the REPL buffer."

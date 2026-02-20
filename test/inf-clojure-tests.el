@@ -240,6 +240,35 @@ is a string\")
   (it "preserves internal newlines"
     (expect (inf-clojure-chomp "hello\nworld\n") :to-equal "hello\nworld")))
 
+(describe "inf-clojure-preoutput-filter"
+  (it "passes through output when not filtering"
+    (let ((inf-clojure--filtering-output nil)
+          (last-command 'self-insert-command))
+      (expect (inf-clojure-preoutput-filter "hello") :to-equal "hello")))
+  (it "prepends a newline only to the first chunk of inf-clojure command output"
+    (let ((inf-clojure--filtering-output nil)
+          (inf-clojure--output-pending-newline nil)
+          (this-command 'inf-clojure-eval-last-sexp)
+          (inf-clojure-prompt "^[^=> \n]+=> *"))
+      ;; First chunk: should get newline prefix
+      (expect (inf-clojure-preoutput-filter "result")
+              :to-equal "\nresult")
+      ;; Second chunk: no newline prefix
+      (expect (inf-clojure-preoutput-filter " more")
+              :to-equal " more")))
+  (it "stops filtering when a prompt is detected"
+    (let ((inf-clojure--filtering-output t)
+          (inf-clojure--output-pending-newline nil)
+          (inf-clojure-prompt "^[^=> \n]+=> *"))
+      (inf-clojure-preoutput-filter "\nuser=> ")
+      (expect inf-clojure--filtering-output :to-be nil)))
+  (it "removes subprompts from filtered output"
+    (let ((inf-clojure--filtering-output t)
+          (inf-clojure--output-pending-newline nil)
+          (inf-clojure-subprompt " *#_=> *"))
+      (expect (inf-clojure-preoutput-filter "foo #_=> bar")
+              :to-equal "foobar"))))
+
 (describe "inf-clojure-remove-subprompts"
   (it "removes subprompts from a string"
     (expect (inf-clojure-remove-subprompts "foo #_=> bar")
