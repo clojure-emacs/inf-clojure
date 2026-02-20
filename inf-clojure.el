@@ -1527,9 +1527,7 @@ Returns the selected completion or nil."
   (let ((bounds (inf-clojure-completion-bounds-of-expr-at-point)))
     (when (and bounds (inf-clojure-get-feature (inf-clojure-proc) 'completion 'no-error))
       (list (car bounds) (cdr bounds)
-            (if (fboundp 'completion-table-with-cache)
-                (completion-table-with-cache #'inf-clojure-completions)
-              (completion-table-dynamic #'inf-clojure-completions))))))
+            (completion-table-with-cache #'inf-clojure-completions)))))
 
 ;;;; ElDoc
 ;;;; =====
