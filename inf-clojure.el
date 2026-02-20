@@ -1399,7 +1399,8 @@ PROMPT-FOR-NS, it prompts for a namespace name."
          (set-ns-form (inf-clojure-get-feature proc 'set-ns)))
     (when (or (not ns) (equal ns ""))
       (user-error "No namespace selected"))
-    (inf-clojure--send-string proc (format set-ns-form ns))))
+    (inf-clojure--send-string proc (format set-ns-form ns))
+    (message "Namespace set to %s" ns)))
 
 (defun inf-clojure-apropos (expr)
   "Send an expression to the inferior Clojure for apropos.
