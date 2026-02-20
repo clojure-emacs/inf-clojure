@@ -200,7 +200,7 @@ configurable.
 You can set custom values to `inf-clojure` variables on a
 per-project basis using [directory
 variables](https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html)
-or by setting them in in your [init file][Emacs init file].
+or by setting them in your [init file][Emacs init file].
 
 You can see all the configuration options available using the command
 `M-x customize-group RET inf-clojure`.
