@@ -73,6 +73,7 @@
                                     (clojure-clr . "Clojure.Main")
                                     (planck . "planck -d")
                                     (babashka . "bb")
+                                    (node-babashka . "nbb")
                                     (joker . "joker")))
 
 (defun inf-clojure--merge-repl-features (base overrides)
