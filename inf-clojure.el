@@ -670,10 +670,6 @@ If `comint-use-prompt-regexp' is nil (the default), \\[comint-insert-input] on
   "Return t if STR does not match `inf-clojure-filter-regexp'."
   (not (string-match inf-clojure-filter-regexp str)))
 
-(defun inf-clojure-chomp (string)
-  "Remove final newline from STRING."
-  (string-trim-right string "\n"))
-
 (defun inf-clojure-remove-subprompts (string)
   "Remove subprompts from STRING."
   (replace-regexp-in-string inf-clojure-subprompt "" string))

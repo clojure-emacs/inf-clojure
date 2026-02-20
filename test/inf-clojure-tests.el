@@ -228,16 +228,6 @@ is a string\")
     (expect (inf-clojure--project-name "/home/user/projects/my-app/")
             :to-equal "my-app")))
 
-(describe "inf-clojure-chomp"
-  (it "removes a trailing newline"
-    (expect (inf-clojure-chomp "hello\n") :to-equal "hello"))
-  (it "removes only the final trailing newline"
-    (expect (inf-clojure-chomp "hello\n\n\n") :to-equal "hello\n\n"))
-  (it "returns unchanged string when no trailing newline"
-    (expect (inf-clojure-chomp "hello") :to-equal "hello"))
-  (it "preserves internal newlines"
-    (expect (inf-clojure-chomp "hello\nworld\n") :to-equal "hello\nworld")))
-
 (describe "inf-clojure-preoutput-filter"
   (it "passes through output when not filtering"
     (let ((inf-clojure--filtering-output nil)
