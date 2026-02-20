@@ -69,6 +69,7 @@
 (require 'thingatpt)
 (require 'ansi-color)
 (require 'cl-lib)
+(require 'seq)
 (require 'subr-x)
 (require 'project)
 
