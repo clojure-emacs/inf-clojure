@@ -293,10 +293,6 @@ buffers after they are created with `rename-buffer'."
     (setq inf-clojure-buffer new-repl-buffer)
     (message "Current inf-clojure REPL set to %s" new-repl-buffer)))
 
-(defvar inf-clojure--repl-type-lock nil
-  "Global lock for protecting against proc filter race conditions.
-See http://blog.jorgenschaefer.de/2014/05/race-conditions-in-emacs-process-filter.html")
-
 (defun inf-clojure--prompt-repl-type ()
   "Set the REPL type to one of the available implementations."
   (interactive)
@@ -1105,22 +1101,6 @@ Indent FORM.  FORM is expected to have been trimmed."
    (buffer-substring-no-properties (save-excursion (backward-sexp) (point))
                                    (point))))
 
-;; Now that inf-clojure-eval-/defun/region takes an optional prefix arg,
-;; these commands are redundant. But they are kept around for the user
-;; to bind if he wishes, for backwards functionality, and because it's
-;; easier to type C-c e than C-u C-c C-e.
-
-(defun inf-clojure-eval-region-and-go (start end)
-  "Send the current region to the inferior Clojure, and switch to its buffer.
-START and END are the beginning and end positions in the buffer to send."
-  (interactive "r")
-  (inf-clojure-eval-region start end t))
-
-(defun inf-clojure-eval-defun-and-go ()
-  "Send the current defun to the inferior Clojure, and switch to its buffer."
-  (interactive)
-  (inf-clojure-eval-defun t))
-
 (defvar inf-clojure-prev-loaded-dir-and-file nil
   "Record last directory and file used in loading or compiling.
 This holds a cons cell of the form `(DIRECTORY . FILE)'
@@ -1650,12 +1630,6 @@ Useful for commands that can invoked outside of an ‘inf-clojure’ buffer
        ((= (length repl-buffers) 1) (car repl-buffers))
        (t (get-buffer (completing-read "Select target inf-clojure buffer: "
                                        (mapcar #'buffer-name repl-buffers))))))))
-
-(defun inf-clojure--response-match-p (form match-p proc)
-  "Send FORM and apply MATCH-P on the result of sending it to PROC.
-Note that this function will add a \n to the end of the string
-for evaluation, therefore FORM should not include it."
-  (funcall match-p (inf-clojure--process-response form proc nil)))
 
 (provide 'inf-clojure)
 
