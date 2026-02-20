@@ -920,7 +920,7 @@ EVENT is the event that triggered this function to be called."
   "Port to be used when creating a socket REPL via `inf-clojure-socket-repl'.
 If left as nil a random port will be selected between 5500-6000."
   :type '(choice integer (const nil))
-  :package-version '(inf-clojure . "3.3"))
+  :package-version '(inf-clojure . "3.3.0"))
 
 ;;;###autoload
 (defun inf-clojure-socket-repl (cmd)
