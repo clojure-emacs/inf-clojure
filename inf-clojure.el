@@ -1298,11 +1298,8 @@ output from and including the `inf-clojure-prompt`."
           response-string)))))
 
 (defun inf-clojure--nil-string-match-p (string)
-  "Return non-nil iff STRING is not nil.
-This function also takes into consideration weird escape
-character and matches if nil is anywhere within the input
-string."
-  (string-match-p "\\Ca*nil\\Ca*" string))
+  "Return non-nil if STRING represents a nil REPL response."
+  (string= (string-trim string) "nil"))
 
 (defun inf-clojure--some (data)
   "Return DATA unless nil or includes \"nil\" as string."
