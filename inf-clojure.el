@@ -878,7 +878,7 @@ process buffer for a list of commands.)"
       (pop-to-buffer repl-buffer-name))
     repl-buffer-name))
 
-;;;###autol
+;;;###autoload
 (defun inf-clojure-connect (host port &optional suppress-message)
   "Connect to a running socket REPL server via `inf-clojure'.
 HOST is the host the process is running on, PORT is where it's
