@@ -5,6 +5,7 @@
 ### New features
 
 - [#57](https://github.com/clojure-emacs/inf-clojure/issues/57): Add `inf-clojure-show-var-meta` command (`C-c C-S-m`) to display a var's metadata.
+- [#205](https://github.com/clojure-emacs/inf-clojure/issues/205): Add `inf-clojure-eval-ns-aware` option for namespace-aware evaluation.
 
 ### Changes
 
@@ -17,6 +18,7 @@
 - Fix `inf-clojure-connected-p` to check for a live process.
 - Fix truncated autoload cookie on `inf-clojure-connect`.
 - Fix `prefix-arg` vs `current-prefix-arg` in REPL startup.
+- [#219](https://github.com/clojure-emacs/inf-clojure/issues/219): Fix `project-root` error when no project is detected (e.g. Squint REPL outside a project).
 
 ## 3.3.0 (2025-05-25)
 
