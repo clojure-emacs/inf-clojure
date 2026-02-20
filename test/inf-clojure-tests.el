@@ -181,12 +181,14 @@ is a string\")
     (let ((bb-features (alist-get 'babashka inf-clojure-repl-features))
           (nbb-features (alist-get 'node-babashka inf-clojure-repl-features)))
       (expect bb-features :to-equal nbb-features)))
-  (it "differentiates arglists across clojure-family REPL types"
+  (it "shares arglists across JVM REPL types"
     (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
-          (bb-arglists (inf-clojure--get-feature 'babashka 'arglists nil))
+          (bb-arglists (inf-clojure--get-feature 'babashka 'arglists nil)))
+      (expect clj-arglists :to-equal bb-arglists)))
+  (it "uses a different arglists catch clause for lein-clr"
+    (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
           (clr-arglists (inf-clojure--get-feature 'lein-clr 'arglists nil)))
-      (expect clj-arglists :not :to-equal bb-arglists)
       (expect clj-arglists :not :to-equal clr-arglists)
-      (expect bb-arglists :not :to-equal clr-arglists))))
+      (expect clr-arglists :to-match "Exception"))))
 
 ;;; inf-clojure-tests.el ends here

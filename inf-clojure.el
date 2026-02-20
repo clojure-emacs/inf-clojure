@@ -94,13 +94,14 @@ Keys in OVERRIDES take precedence over those in BASE."
   '((load . "(clojure.core/load-file \"%s\")")
     (doc . "(clojure.repl/doc %s)")
     (source . "(clojure.repl/source %s)")
+    (arglists . "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Throwable e nil))")
     (apropos . "(doseq [var (sort (clojure.repl/apropos \"%s\"))] (println (str var)))")
     (ns-vars . "(clojure.repl/dir %s)")
     (set-ns . "(clojure.core/in-ns '%s)")
     (macroexpand . "(clojure.core/macroexpand '%s)")
     (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)"))
   "Base feature forms shared by Clojure-family REPLs.
-Individual REPL types override specific entries (typically `arglists')
+Individual REPL types override specific entries (e.g. `arglists')
 via `inf-clojure--merge-repl-features'.")
 
 (defvar inf-clojure-repl-features
@@ -134,34 +135,13 @@ via `inf-clojure--merge-repl-features'.")
               (set-ns . "(in-ns '%s)")
               (macroexpand . "(macroexpand '%s)")
               (macroexpand-1 . "(macroexpand-1 '%s)")))
-    (babashka . ,(inf-clojure--merge-repl-features
-                  inf-clojure--clojure-repl-base-features
-                  '((arglists .
-                              "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists)
-                              (catch Throwable e nil))"))))
-    (node-babashka . ,(inf-clojure--merge-repl-features
-                       inf-clojure--clojure-repl-base-features
-                       '((arglists .
-                                   "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists)
-                              (catch Throwable e nil))"))))
-    (clojure . ,(inf-clojure--merge-repl-features
-                 inf-clojure--clojure-repl-base-features
-                 '((arglists .
-                             "(try
-                             (:arglists
-                              (clojure.core/meta
-                               (clojure.core/resolve
-                                (clojure.core/read-string \"%s\"))))
-                            (catch #?(:clj Throwable :cljr Exception) e nil))"))))
+    (babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
+    (node-babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
+    (clojure . ,(copy-alist inf-clojure--clojure-repl-base-features))
     (lein-clr . ,(inf-clojure--merge-repl-features
                   inf-clojure--clojure-repl-base-features
                   '((arglists .
-                              "(try
-                             (:arglists
-                              (clojure.core/meta
-                               (clojure.core/resolve
-                                (clojure.core/read-string \"%s\"))))
-                             (catch Exception e nil))"))))))
+                              "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))))
 
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
