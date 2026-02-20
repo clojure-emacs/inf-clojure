@@ -100,7 +100,9 @@ Keys in OVERRIDES take precedence over those in BASE."
     (ns-vars . "(clojure.repl/dir %s)")
     (set-ns . "(clojure.core/in-ns '%s)")
     (macroexpand . "(clojure.core/macroexpand '%s)")
-    (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)"))
+    (macroexpand-1 . "(clojure.core/macroexpand-1 '%s)")
+    (reload . "(require '%s :reload)")
+    (reload-all . "(require '%s :reload-all)"))
   "Base feature forms shared by Clojure-family REPLs.
 Individual REPL types override specific entries (e.g. `arglists')
 via `inf-clojure--merge-repl-features'.")
@@ -113,7 +115,9 @@ via `inf-clojure--merge-repl-features'.")
              (ns-vars . "(cljs.repl/dir %s)")
              (set-ns . "(in-ns '%s)")
              (macroexpand . "(cljs.core/macroexpand '%s)")
-             (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)")))
+             (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)")
+             (reload . "(require '%s :reload)")
+             (reload-all . "(require '%s :reload-all)")))
     (planck . ((load . "(load-file \"%s\")")
                (doc . "(planck.repl/doc %s)")
                (source . "(planck.repl/source %s)")
@@ -123,7 +127,9 @@ via `inf-clojure--merge-repl-features'.")
                (set-ns . "(in-ns '%s)")
                (macroexpand . "(macroexpand '%s)")
                (macroexpand-1 . "(macroexpand-1 '%s)")
-               (completion . "(seq (js->clj (#'planck.repl/get-completions \"%s\")))")))
+               (completion . "(seq (js->clj (#'planck.repl/get-completions \"%s\")))")
+               (reload . "(require '%s :reload)")
+               (reload-all . "(require '%s :reload-all)")))
     (joker . ((load . "(load-file \"%s\")")
               (doc . "(joker.repl/doc %s)")
               (arglists .
@@ -135,7 +141,9 @@ via `inf-clojure--merge-repl-features'.")
                             (catch Error _ nil))")
               (set-ns . "(in-ns '%s)")
               (macroexpand . "(macroexpand '%s)")
-              (macroexpand-1 . "(macroexpand-1 '%s)")))
+              (macroexpand-1 . "(macroexpand-1 '%s)")
+              (reload . "(require '%s :reload)")
+              (reload-all . "(require '%s :reload-all)")))
     (babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
     (node-babashka . ,(copy-alist inf-clojure--clojure-repl-base-features))
     (clojure . ,(copy-alist inf-clojure--clojure-repl-base-features))
@@ -510,46 +518,6 @@ customizations."
   (let ((sanitized (inf-clojure--sanitize-command string)))
     (inf-clojure--log-string sanitized "----CMD->")
     (comint-send-string proc sanitized)))
-
-(defcustom inf-clojure-reload-form "(require '%s :reload)"
-  "Format-string for building a Clojure expression to reload a file.
-Reload forces loading of all the identified libs even if they are
-already loaded.
-This format string should use `%s' to substitute a namespace and
-should result in a Clojure form that will be sent to the inferior
-Clojure to load that file."
-  :type 'string
-  :safe #'stringp
-  :package-version '(inf-clojure . "2.2.0"))
-
-;; :reload forces loading of all the identified libs even if they are
-  ;; already loaded
-;; :reload-all implies :reload and also forces loading of all libs that the
-;; identified libs directly or indirectly load via require or use
-
-(defun inf-clojure-reload-form (_proc)
-  "Return the form to query the Inf-Clojure PROC for reloading a namespace.
-If you are using REPL types, it will pickup the most appropriate
-`inf-clojure-reload-form` variant."
-  inf-clojure-reload-form)
-
-(defcustom inf-clojure-reload-all-form "(require '%s :reload-all)"
-  "Format-string for building a Clojure expression to :reload-all a file.
-Reload-all implies :reload and also forces loading of all libs
-that the identified libs directly or indirectly load via require
-or use.
-This format string should use `%s' to substitute a namespace and
-should result in a Clojure form that will be sent to the inferior
-Clojure to load that file."
-  :type 'string
-  :safe #'stringp
-  :package-version '(inf-clojure . "2.2.0"))
-
-(defun inf-clojure-reload-all-form (_proc)
-  "Return the form to query the Inf-Clojure PROC for :reload-all of a namespace.
-If you are using REPL types, it will pickup the most appropriate
-`inf-clojure-reload-all-form` variant."
-  inf-clojure-reload-all-form)
 
 (defcustom inf-clojure-prompt "^[^=> \n]+=> *"
   "Regexp to recognize prompts in the Inferior Clojure mode."
@@ -1121,8 +1089,6 @@ This function delegates its job to an appropritate function, considering
 
 (defun inf-clojure-reload (arg)
   "Send a query to the inferior Clojure for reloading the namespace.
-See variable `inf-clojure-reload-form' and variable
-`inf-clojure-reload-all-form'.
 
 The prefix argument ARG can change the behavior of the command:
 
@@ -1137,8 +1103,8 @@ The prefix argument ARG can change the behavior of the command:
                 (car (inf-clojure-symprompt "Namespace" (inf-clojure--find-ns)))
               (inf-clojure--find-ns)))
          (form (if (not reload-all-p)
-                   (inf-clojure-reload-form proc)
-                 (inf-clojure-reload-all-form proc))))
+                   (inf-clojure-get-feature proc 'reload)
+                 (inf-clojure-get-feature proc 'reload-all))))
     (inf-clojure--send-string proc (format form ns))))
 
 (defun inf-clojure-connected-p ()

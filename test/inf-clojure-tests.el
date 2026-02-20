@@ -172,7 +172,8 @@ is a string\")
 (describe "inf-clojure-repl-features"
   (it "provides all base features for clojure-family REPL types"
     (let ((base-features '(load doc source apropos ns-vars set-ns
-                                macroexpand macroexpand-1 arglists)))
+                                macroexpand macroexpand-1 arglists
+                                reload reload-all)))
       (dolist (repl-type '(clojure clojure-clr babashka node-babashka lein-clr))
         (dolist (feature base-features)
           (expect (inf-clojure--get-feature repl-type feature nil)
@@ -185,6 +186,12 @@ is a string\")
     (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
           (bb-arglists (inf-clojure--get-feature 'babashka 'arglists nil)))
       (expect clj-arglists :to-equal bb-arglists)))
+  (it "provides reload and reload-all for all REPL types"
+    (dolist (repl-type '(clojure clojure-clr babashka node-babashka lein-clr cljs planck joker))
+      (expect (inf-clojure--get-feature repl-type 'reload nil)
+              :not :to-be nil)
+      (expect (inf-clojure--get-feature repl-type 'reload-all nil)
+              :not :to-be nil)))
   (it "uses a different arglists catch clause for CLR REPL types"
     (let ((clj-arglists (inf-clojure--get-feature 'clojure 'arglists nil))
           (clr-arglists (inf-clojure--get-feature 'clojure-clr 'arglists nil))
