@@ -280,8 +280,7 @@ buffers after they are created with `rename-buffer'."
     (message "Current inf-clojure REPL set to %s" new-repl-buffer)))
 
 (defun inf-clojure--prompt-repl-type ()
-  "Set the REPL type to one of the available implementations."
-  (interactive)
+  "Prompt for a REPL type and return it as a symbol."
   (let ((types (mapcar #'car inf-clojure-repl-features)))
     (intern
      (completing-read "Set REPL type: "
