@@ -146,8 +146,8 @@ via `inf-clojure--merge-repl-features'.")
     (clojure-clr . ,(inf-clojure--merge-repl-features
                      inf-clojure--clojure-repl-base-features
                      '((arglists .
-                                 "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))
-))
+                                 "(try (-> '%s clojure.core/resolve clojure.core/meta :arglists) (catch Exception e nil))"))))))
+
 
 (defvar-local inf-clojure-repl-type nil
   "Symbol to define your REPL type.
@@ -577,7 +577,7 @@ whatever namespace the REPL is currently in."
 See command `inf-clojure-minor-mode'."
   (interactive)
   (dolist (mode (inf-clojure--get-preferred-major-modes))
-    (add-hook (derived-mode-hook-name mode) #'inf-clojure-minor-mode))
+    (add-hook (intern (concat (symbol-name mode) "-hook")) #'inf-clojure-minor-mode))
   (dolist (buffer (inf-clojure--clojure-buffers))
     (with-current-buffer buffer
       (inf-clojure-minor-mode +1))))
@@ -614,7 +614,7 @@ Clojure source.
     `inf-clojure-load-file' loads a Clojure file into the REPL.
     `inf-clojure-reload' reloads the current namespace (with `M--' prefix
     for :reload-all).
-    `inf-clojure-set-ns' sets the REPL namespace to the ns of the current buffer.
+    `inf-clojure-set-ns' sets the REPL namespace to the current ns.
 
     Prefixing the inf-clojure-eval/defun/region commands with
     a \\[universal-argument] causes a switch to the Clojure process buffer after
