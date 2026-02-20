@@ -264,7 +264,8 @@ The supported REPL-features are in an alist called
            (macroexpand . "(cljs.core/macroexpand '%s)")
            (macroexpand-1 . "(cljs.core/macroexpand-1 '%s)")
            (reload . "(require '%s :reload)")
-           (reload-all . "(require '%s :reload-all)"))))
+           (reload-all . "(require '%s :reload-all)")
+           (var-meta . "(cljs.core/meta (cljs.core/resolve '%s))"))))
 ```
 
 If you want to add a new REPL type, just do something like:
