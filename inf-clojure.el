@@ -1335,17 +1335,16 @@ See variable `inf-clojure-arglists-form'."
                   (inf-clojure--some))))
 
 (defun inf-clojure-show-arglists (prompt-for-symbol)
-  "Show the arglists for function FN in the mini-buffer.
-See variable `inf-clojure-arglists-form'.  When invoked with a
-prefix argument PROMPT-FOR-SYMBOL, it prompts for a symbol name."
+  "Send a command to the inferior Clojure to show arglists for FN.
+When invoked with a prefix argument PROMPT-FOR-SYMBOL, it prompts
+for a symbol name."
   (interactive "P")
-  (let* ((fn (if prompt-for-symbol
+  (let* ((proc (inf-clojure-proc))
+         (fn (if prompt-for-symbol
                  (car (inf-clojure-symprompt "Arglists" (inf-clojure-fn-called-at-pt)))
                (inf-clojure-fn-called-at-pt)))
-         (eldoc (inf-clojure-arglists fn)))
-    (if eldoc
-        (message "%s: %s" fn eldoc)
-      (message "Arglists not supported for this repl"))))
+         (arglists-form (inf-clojure-get-feature proc 'arglists)))
+    (inf-clojure--send-string proc (format arglists-form fn))))
 
 (defun inf-clojure-show-ns-vars (prompt-for-ns)
   "Send a query to the inferior Clojure for the public vars in NS.
