@@ -437,36 +437,49 @@ You can leave it enabled, it just won't show anything in the echo area.
 
 #### Code Completion
 
-Code completion is a tricky aspect if you are trying to be as close to
-a generic REPL as possible. Some runtimes (e.g. Planck)
-explicitly provide completion functions in their REPL namespaces. For
-clojure, you will need to have a library on your classpath. If you are
-using a recent version of Leiningen, you already have
-[incomplete](https://github.com/nrepl/incomplete). You
-could alternatively use `compliment {:mvn/version "0.3.10"}`.
+Code completion requires a completion library on the classpath. `inf-clojure`
+does not ship with a default completion form — you need to configure one.
+
+The two main options are [incomplete](https://github.com/nrepl/incomplete) (simple, lightweight) and
+[compliment](https://github.com/alexander-yakushev/compliment) (richer, context-aware). Some runtimes
+(e.g. Planck) provide built-in completion functions.
+
+**Setup with `deps.edn` (including socket REPLs):**
+
+Add a completion library to your dependencies:
+
+```clojure
+{:aliases {:completions {:extra-deps {io.github.nrepl/incomplete {:mvn/version "0.1.0"}}}}}
+```
+
+Start your REPL with the alias:
+
+``` shell
+clojure -A:completions -J-Dclojure.server.repl="{:port 5555 :accept clojure.core.server/repl}"
+```
+
+Then configure `inf-clojure` to use it:
 
 ```emacs-lisp
 ;; for incomplete
 (inf-clojure-update-feature 'clojure 'completion "(incomplete.core/completions \"%s\")")
 
-;; or
-;; for compliment
+;; or for compliment
 (inf-clojure-update-feature 'clojure 'completion "(compliment.core/completions \"%s\")")
 ```
 
-If you give a form for the completion form, it is your responsibility
-to ensure that this namespace is on the classpath and required. If
-using Leiningen, this is done for you with `incomplete`. If adding
-`compliment`, the following sample `deps.edn` can conveniently add the dep
-to your program:
+> [!IMPORTANT]
+>
+> You must ensure the completion namespace is required in the REPL before
+> completions will work. For `incomplete`, run `(require 'incomplete.core)`.
+> For `compliment`, run `(require 'compliment.core)`.
 
-```clojure
-{:aliases {:compliment {:extra-deps {compliment {:mvn/version "0.3.10"}}}}}
-```
+**Setup with Leiningen:**
 
-Use the startup command: `clojure -A:compliment`. Then require the ns
-once so that the completion machinery will work: `(require
-'compliment.core)`. Now tab completion should work.
+Recent versions of Leiningen include `incomplete` automatically via
+[REPLy](https://github.com/trptcolin/reply), so completions may work
+out of the box. For socket REPLs started via Leiningen, you still need
+to add the dependency explicitly and require the namespace.
 
 You can also customize `inf-clojure-completions-fn` to specify a
 function that parses the REPL's completion response and returns Elisp
