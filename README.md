@@ -29,7 +29,7 @@ It supports the following REPLs:
 
 - Clojure
 - ClojureScript
-- ClojureCLR (via [lein-clr](https://github.com/kumarshantanu/lein-clr))
+- ClojureCLR (via [clr.tools.deps](https://github.com/clojure/clr.tools.deps) or [lein-clr](https://github.com/kumarshantanu/lein-clr))
 - [Planck](http://planck-repl.org/)
 - [Joker](https://joker-lang.org/)
 - [babashka](https://github.com/borkdude/babashka)
