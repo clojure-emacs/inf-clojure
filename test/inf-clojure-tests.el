@@ -359,4 +359,123 @@ is a string\")
     (expect (inf-clojure--string-boundaries "foo(bar)baz" "=>" "(" ")")
             :to-equal '(3 8 11))))
 
+(describe "inf-clojure-symbol-at-point"
+  (it "returns the symbol under point"
+    (ict-with-assess-buffers
+     ((a (insert "map")))
+     (with-current-buffer a
+       (goto-char 2)
+       (expect (inf-clojure-symbol-at-point) :to-equal "map"))))
+  (it "returns empty string when no symbol at point"
+    (ict-with-assess-buffers
+     ((a (insert " ")))
+     (with-current-buffer a
+       (expect (inf-clojure-symbol-at-point) :to-equal ""))))
+  (it "returns a hyphenated symbol"
+    (ict-with-assess-buffers
+     ((a (insert "my-function")))
+     (with-current-buffer a
+       (goto-char 5)
+       (expect (inf-clojure-symbol-at-point) :to-equal "my-function")))))
+
+(describe "inf-clojure-fn-called-at-pt"
+  (it "returns the function name inside a call"
+    (ict-with-assess-buffers
+     ((a (insert "(map inc [1 2 3])")))
+     (with-current-buffer a
+       (goto-char 10)
+       (expect (inf-clojure-fn-called-at-pt) :to-equal 'map))))
+  (it "returns nil when not in a list"
+    (ict-with-assess-buffers
+     ((a (insert "foo")))
+     (with-current-buffer a
+       (expect (inf-clojure-fn-called-at-pt) :to-be nil))))
+  (it "returns nil when car is not a symbol"
+    (ict-with-assess-buffers
+     ((a (insert "(42 foo)")))
+     (with-current-buffer a
+       (goto-char 5)
+       (expect (inf-clojure-fn-called-at-pt) :to-be nil)))))
+
+(describe "inf-clojure-input-filter"
+  (it "rejects blank input"
+    (expect (inf-clojure-input-filter "   ") :to-be nil))
+  (it "rejects single-letter keywords"
+    (expect (inf-clojure-input-filter ":a") :to-be nil))
+  (it "accepts normal expressions"
+    (expect (inf-clojure-input-filter "(+ 1 2)") :to-be-truthy))
+  (it "accepts multi-letter keywords"
+    (expect (inf-clojure-input-filter ":foo") :to-be-truthy)))
+
+(describe "inf-clojure--modeline-info"
+  (it "returns 'no process' when inf-clojure-buffer is nil"
+    (let ((inf-clojure-buffer nil))
+      (expect (inf-clojure--modeline-info) :to-equal "no process")))
+  (it "returns 'no process' when inf-clojure-buffer is a dead buffer"
+    (let ((inf-clojure-buffer (generate-new-buffer " *dead*")))
+      (kill-buffer inf-clojure-buffer)
+      (expect (inf-clojure--modeline-info) :to-equal "no process"))))
+
+(describe "inf-clojure-connected-p"
+  (it "returns nil when inf-clojure-buffer is nil"
+    (let ((inf-clojure-buffer nil))
+      (expect (inf-clojure-connected-p) :to-be nil))))
+
+(describe "inf-clojure--defun-at-point"
+  (it "returns the text of the defun at point"
+    (ict-with-assess-buffers
+     ((a (insert "(defn foo [] :bar)")))
+     (with-current-buffer a
+       (goto-char 5)
+       (expect (inf-clojure--defun-at-point) :to-equal "(defn foo [] :bar)"))))
+  (it "returns bounds when requested"
+    (ict-with-assess-buffers
+     ((a (insert "(defn foo [] :bar)")))
+     (with-current-buffer a
+       (goto-char 5)
+       (let ((bounds (inf-clojure--defun-at-point t)))
+         (expect (car bounds) :to-equal 1)
+         (expect (cdr bounds) :to-equal 19))))))
+
+(describe "inf-clojure-eldoc-beginning-of-sexp"
+  (it "returns 0 at the function name"
+    (ict-with-assess-buffers
+     ((a (insert "(map)")))
+     (with-current-buffer a
+       (goto-char 2)
+       (expect (inf-clojure-eldoc-beginning-of-sexp) :to-equal 0))))
+  (it "counts arguments correctly"
+    (ict-with-assess-buffers
+     ((a (insert "(map inc coll)")))
+     (with-current-buffer a
+       (goto-char 10)
+       (expect (inf-clojure-eldoc-beginning-of-sexp) :to-equal 3)))))
+
+(describe "inf-clojure-eldoc-info-in-current-sexp"
+  (it "returns function name and argument index"
+    (ict-with-assess-buffers
+     ((a (insert "(map inc coll)")))
+     (with-current-buffer a
+       (goto-char 10)
+       (expect (inf-clojure-eldoc-info-in-current-sexp)
+               :to-equal '("map" 2)))))
+  (it "returns nil inside a string"
+    (ict-with-assess-buffers
+     ((a (insert "(println \"hello\")")))
+     (with-current-buffer a
+       (goto-char 14)
+       (expect (inf-clojure-eldoc-info-in-current-sexp) :to-be nil))))
+  (it "returns nil inside a vector"
+    (ict-with-assess-buffers
+     ((a (insert "[foo bar]")))
+     (with-current-buffer a
+       (goto-char 5)
+       (expect (inf-clojure-eldoc-info-in-current-sexp) :to-be nil)))))
+
+(describe "inf-clojure-eldoc-format-thing"
+  (it "propertizes with function-name face"
+    (let ((result (inf-clojure-eldoc-format-thing "map")))
+      (expect (get-text-property 0 'face result)
+              :to-equal 'font-lock-function-name-face))))
+
 ;;; inf-clojure-tests.el ends here
