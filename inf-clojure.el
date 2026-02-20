@@ -1067,7 +1067,7 @@ Prefix argument AND-GO means switch to the Clojure buffer afterwards."
 
 (defun inf-clojure-eval-form-and-next ()
   "Send the previous sexp to the inferior Clojure process and move to the next one."
-  (interactive "")
+  (interactive)
   (while (not (zerop (car (syntax-ppss))))
     (up-list))
   (inf-clojure-eval-last-sexp)
