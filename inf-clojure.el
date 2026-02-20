@@ -1143,7 +1143,8 @@ The prefix argument ARG can change the behavior of the command:
 
 (defun inf-clojure-connected-p ()
   "Return t if inferior Clojure is currently connected, nil otherwise."
-  (not (null inf-clojure-buffer)))
+  (and inf-clojure-buffer
+       (not (null (inf-clojure-proc t)))))
 
 
 
@@ -1571,7 +1572,6 @@ Return the number of nested sexp the point was over or after."
 
 (defun inf-clojure-eldoc ()
   "Backend function for eldoc to show argument list in the echo area."
-  ;; todo: this never gets unset once connected and is a lie
   (when (and (inf-clojure-connected-p)
              inf-clojure-enable-eldoc
              ;; don't clobber an error message in the minibuffer
