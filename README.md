@@ -122,6 +122,13 @@ or if you'd rather keep it in your Emacs config:
   (package-install 'inf-clojure))
 ```
 
+With `use-package` (built into Emacs 29+):
+
+```emacs-lisp
+(use-package inf-clojure
+  :ensure t)
+```
+
 If the installation doesn't work try refreshing the package list:
 
 <kbd>M-x package-refresh-contents</kbd>
