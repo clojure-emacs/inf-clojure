@@ -1,6 +1,6 @@
 ;;; inf-clojure.el --- Basic interaction with a Clojure REPL -*- lexical-binding: t; -*-
 
-;; Copyright © 2014-2025 Bozhidar Batsov
+;; Copyright © 2014-2026 Bozhidar Batsov
 
 ;; Authors: Bozhidar Batsov <bozhidar@batsov.dev>
 ;;       Olin Shivers <shivers@cs.cmu.edu>

@@ -1,6 +1,6 @@
 ;;; inf-clojure-tests.el --- Tests for Inf-Clojure -*- lexical-binding: t; -*-
 ;;
-;; Copyright © 2014-2025 Bozhidar Batsov
+;; Copyright © 2014-2026 Bozhidar Batsov
 
 ;; Authors: Bozhidar Batsov <bozhidar@batsov.dev>
 ;;          Andrea Richiardi <a.richiardi.work@gmail.com>
