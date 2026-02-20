@@ -563,7 +563,9 @@ whatever namespace the REPL is currently in."
 
 (defun inf-clojure--clojure-buffer-p ()
   "Return TRUE if the current buffer is a Clojure buffer."
-  (derived-mode-p (inf-clojure--get-preferred-major-modes)))
+  ;; TODO: Replace `apply' with a direct call once Emacs 30 is the
+  ;; minimum version, as `derived-mode-p' accepts a list from 30+.
+  (apply #'derived-mode-p (inf-clojure--get-preferred-major-modes)))
 
 (defun inf-clojure--clojure-buffers ()
   "Return a list of all existing `clojure-mode' buffers."
