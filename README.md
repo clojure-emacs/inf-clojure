@@ -531,14 +531,14 @@ inf-clojure-completions-fn`.
 
 Inf-clojure is intentionally quite simple and just sends commands to a
 REPL on your behalf to provide features. In order to do this
-inf-clojure largely needs to know the REPL type so it can format the
-correct calls. Most end up in `(planck.repl/doc [symbol])` or
-`(cljs.repl/doc ...)` so its important that the REPL type is set
-correctly. This REPL type exists in the process buffer (REPL) and the
-source buffers as a cache. If you have problems, run `M-x
-inf-clojure-set-repl-type` from the source buffer to set the REPL type
-in both buffers. To see how simple inf-clojure is, look at
-`inf-clojure-repl-features` to see largely how things are laid out.
+inf-clojure needs to know the REPL type so it can format the correct
+calls (e.g. `(clojure.repl/doc ...)` vs `(cljs.repl/doc ...)`), so
+it's important that the REPL type is set correctly. This REPL type
+exists in the process buffer (REPL) and the source buffers as a cache.
+If you have problems, run `M-x inf-clojure-set-repl-type` from the
+source buffer to set the REPL type in both buffers. To see how simple
+inf-clojure is, look at `inf-clojure-repl-features` to see how things
+are laid out.
 
 ### REPL not responsive in Windows OS
 
