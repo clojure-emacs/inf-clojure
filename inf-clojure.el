@@ -800,6 +800,21 @@ The name is simply the final segment of the path."
 
 (defvar clojure-ts-mode-syntax-table)
 
+(defcustom inf-clojure-process-connection-type nil
+  "Connection type used when starting an `inf-clojure' REPL process.
+If nil, use a pipe; t means use a pseudo-terminal.
+
+Using a pipe avoids the PTY canonical-mode input line limit, which
+can cause `inf-clojure' to hang when sending long forms to the REPL.
+A PTY enables job-control features such as =comint-interrupt-subjob'
+for subprocess groups, but is subject to that limit.
+
+See `comint-max-line-length' for the line-length limits that apply
+to your OS when using a PTY."
+  :type '(choice (const :tag "Pipe (avoids PTY line limit)" nil)
+                 (const :tag "PTY (job control, but line length limit)" t))
+  :package-version '(inf-clojure . "3.5.0"))
+
 ;;;###autoload
 (defun inf-clojure (cmd &optional suppress-message)
   "Run an inferior Clojure process, input and output via buffer *inf-clojure*.
@@ -845,7 +860,8 @@ process buffer for a list of commands.)"
             (repl-type (or (unless current-prefix-arg
                              inf-clojure-custom-repl-type)
                            (car (rassoc cmd inf-clojure-startup-forms))
-                           (inf-clojure--prompt-repl-type))))
+                           (inf-clojure--prompt-repl-type)))
+            (process-connection-type inf-clojure-process-connection-type))
         (unless suppress-message
           (message "Starting Clojure REPL via `%s'..." cmd))
         (with-current-buffer (apply #'make-comint
