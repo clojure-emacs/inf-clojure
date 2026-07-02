@@ -2,6 +2,11 @@
 
 ## master (unreleased)
 
+### Bugs fixed
+
+- Fix [#40](https://github.com/clojure-emacs/inf-clojure/issues/40): REPL hanging after sending long lines. The REPL is now started through a pipe by default, avoiding the PTY canonical-mode input line limit.
+  Add `inf-clojure-process-connection-type` for users who prefer a PTY (for job control) and accept that limit.
+
 ## 3.4.0 (2026-02-27)
 
 ### New features
