@@ -2,6 +2,10 @@
 
 ## master (unreleased)
 
+### New features
+
+- [candid82/joker#196](https://github.com/candid82/joker/issues/196): Enable `apropos` and `ns-vars` for Joker REPLs.
+
 ## 3.4.0 (2026-02-27)
 
 ### New features

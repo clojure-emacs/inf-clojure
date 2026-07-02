@@ -132,8 +132,8 @@ via `inf-clojure--merge-repl-features'.")
                '((load . "(load-file \"%s\")")
                  (doc . "(joker.repl/doc %s)")
                  (source . nil)
-                 (apropos . nil)
-                 (ns-vars . nil)
+                 (apropos . "(joker.repl/apropos \"%s\")")
+                 (ns-vars . "(joker.repl/dir %s)")
                  (arglists .
                            "(try
                             (:arglists
